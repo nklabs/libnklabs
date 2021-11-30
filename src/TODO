@@ -1,0 +1,68 @@
+nkdbase:
+
+  more tests..
+  try all input number formats, including negatives..
+
+  make sure skipping works..
+
+  Block read/write function for SPI-flash access in nkdbase
+
+  nkoutfile_t that appends CRC
+  nkinfile_t that checks CRC?
+
+  should error output be an argument instead of nkstderr?  Better for threads
+
+Nkscan:
+
+  composing doesn't work properly: fscan1 && fscan2.  If fscan1 succeeds, input will be advanced even if fscan2 fails.  We would prefer
+  no advancing for this case.
+
+  iscan ignores case and squashes case on word and identifier.  Maybe word/identifier should be individually controllable?
+  maybe case ignore should be changable in the format string?
+
+  need tests for iscan
+
+  Expression parser for nkscan?  Allow 0x before decimal?
+
+  Some kind of options parser where we don't care about order- we can build this externally
+    while tryopt1 || tryopt2 || tryopt3 || tryopt4
+
+  Always allow whitespace before end of string?  Always allow whitespace before start of conversion?
+  Do not ignore whitespace before doubles? (but strtod does this to match C-library standard).
+
+  Versions of nkscan and friends which take a C-string, like sscanf?
+
+  Also vs. sscanf:
+    sscanf has character classes
+    sscanf automatically skips whitespace before conversions (except for a few special cases)
+    sscanf '*' modifier scans but doesn't save result
+
+Get rid of global arrays:
+
+  instead have a wrapper function with the array on the stack which calls the underlying function
+
+Naming:
+
+  nkinfile_t vs. nk_infile_t  type name
+  nkdbase vs. nk_dbase        file name
+
+nkinfile:
+
+  How do we handle read errors for nkinfile operations?
+
+Remember:
+
+  It seems like a nice idea to use non-standard format sequences in nk_printf-
+  but we can not if we also want gcc's built-in format string checking to work.  Therefore we
+  have other printing functions:
+
+	nk_indent
+	nk_byte_hex_dump
+	nk_dbase_fprint
+
+        nkprintf / nkscan:
+
+          Print not just a C-string, but also from an nkinfile
+
+          But this then means that print depends on nkinfile...
+          Likewise: Save output to an nkoutfile, not just to a C-string

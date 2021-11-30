@@ -1,0 +1,2 @@
+#define NKREADLINE_LINE_SIZE 256
+#define NKREADLINE_HIST_SIZE 4096 // Must be larger than LINE_SIZE
