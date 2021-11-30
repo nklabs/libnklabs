@@ -1,3 +1,22 @@
+bootloader:
+
+  We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
+
+targets:
+
+  Add RISCV
+  Add Xilinx
+  Add some more ST
+  Add Atmel
+
+testing:
+
+  Need target board with I2C and SPI-flash for this
+
+documentation:
+
+  Write it for nkymodem
+
 nkdbase:
 
   more tests..
@@ -10,12 +29,13 @@ nkdbase:
   nkoutfile_t that appends CRC
   nkinfile_t that checks CRC?
 
+  separate out serialization code from database code
+
   should error output be an argument instead of nkstderr?  Better for threads
 
-Nkscan:
+  Finish schema compiler
 
-  composing doesn't work properly: fscan1 && fscan2.  If fscan1 succeeds, input will be advanced even if fscan2 fails.  We would prefer
-  no advancing for this case.
+Nkscan:
 
   iscan ignores case and squashes case on word and identifier.  Maybe word/identifier should be individually controllable?
   maybe case ignore should be changable in the format string?
@@ -50,7 +70,7 @@ nkinfile:
 
   How do we handle read errors for nkinfile operations?
 
-Remember:
+Notes:
 
   It seems like a nice idea to use non-standard format sequences in nk_printf-
   but we can not if we also want gcc's built-in format string checking to work.  Therefore we
