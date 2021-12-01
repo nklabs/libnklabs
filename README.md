@@ -2,18 +2,27 @@
 
 ## C-language Software library
 
-This library provides functionality useful for many embedded controller
-projects:
+This library provides functionality useful for embedded applications on
+small microcontrollers:
 
-* Malloc is not used at all
 * A decentralized command line interface (CLI) with line editor, on-line help and history
-* A work-queue scheduler which can be used in place of an RTOS if preemptive multitasking is not required
-* A schema-defined database that supports schema changes (aka migrations), typically used for holding calibration and configuration parameters in local flash memory
+* A schema-defined database with simple schema change  / migration support, typically used for holding calibration and configuration parameters in local flash memory
+* A serialization / de-serialization system so that databases can be transferred over the CLI
 * Y-MODEM protocol for transferring files over the CLI, for example for firmware updates
-* Replacment printf that support floating point but is much smaller than the newlib one
-* Repacement scanf for command line parsing
+* Replacment printf() that supports floating point but is much smaller than the newlib one
+* Repacement scanf() designed for command line parsing
+* A work-queue scheduler which can be used in place of a RTOS if preemptive multitasking is not required
+* Commonly used CRC and cryptographic functions including SHA and AES
+* Support for firmware version numbers and automatic build-date insertion
+* CLI commands for many basic things, such as access to SPI and I2C devices
+* Real time clock support
+* Watchdog timer support
+* Malloc is not used at all for determinism
 
 ### Including libnklabs in your own project
+
+The library is designed to be modular, though many of the modules depend on
+each other.
 
 Each module includes C source and header files.  But many also include a
 configuration header file (.h) for customization options.  The idea is that
@@ -24,6 +33,9 @@ The configuration and header files are located in their own directories.
 These must be added to the include file search path, for example:
 
 	gcc -I../config -I../inc -c nkscan.c
+
+It is recommended to use -Os and link-time optimizations: these save space
+by eliminating unused code.
 
 ### Unit tests
 
@@ -41,7 +53,7 @@ a particular example and install it on a target board:
 	make
 	make flash
 
-### Modules
+### Module Documentation
 
 [nksched - minimal work queue scheduler](doc/nksched.md)
 
