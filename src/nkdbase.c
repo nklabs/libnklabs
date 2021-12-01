@@ -441,222 +441,6 @@ int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location)
 	return status;
 }
 
-// Xpath traversal
-// It would be nice if this worked for tables...
-
-const struct type *xpath(char *key, const struct type *type, void **location_loc, uint32_t *triggers)
-{
-    char buf[NKDBASE_MAXIDENTLEN];
-    nkinfile_t f;
-    void *location = *location_loc;
-    size_t idx;
-    nkinfile_open_string(&f, key);
-
-    while (!nk_feof(&f)) {
-        if (nk_fscan(&f, "[ %u ]%e", &idx)) {
-            size_t count;
-            if (type->what == tVARRAY || type->what == tTABLE) {
-                count = ((union len *)location)->len;
-                location = (char *)location + sizeof(union len);
-                if (idx >= count) {
-                    nk_fprintf(nkstderr, "Array index out of bounds in key %s\n", key);
-                    return 0;
-                }
-                location = (char *)location + idx * type->subtype->size;
-                type = type->subtype;
-            } else if (type->what == tARRAY) {
-                count = (type->size / type->subtype->size);
-                if (idx >= count) {
-                    nk_fprintf(nkstderr, "Array index out of bounds in key %s\n", key);
-                    return 0;
-                }
-                location = (char *)location + idx * type->subtype->size;
-                type = type->subtype;
-            } else {
-                nk_fprintf(nkstderr, "Attempt to index a non-array in key %s\n", key);
-                return 0;
-            }
-            if (nk_fpeek(&f) == '.')
-                nk_fnext_fast(&f);
-            else if (nk_fpeek(&f) == '[')
-                ;
-            else
-                break;
-        } else if (nk_fscan(&f, "%i%e", buf, sizeof(buf))) {
-            const struct member *m;
-            if (type->what != tSTRUCT) {
-                nk_fprintf(nkstderr, "Attempt to index a non-struct in key %s\n", key);
-                return 0;
-            }
-            for (m = type->members; m->name; ++m)
-                if (!strcmp(m->name, buf))
-                    break;
-            if (!m->name) {
-                nk_fprintf(nkstderr, "Item does not exist %s\n", buf);
-                return 0;
-            }
-            type = m->type;
-            location = (char *)location + m->offset;
-            *triggers |= m->triggers;
-            if (nk_fpeek(&f) == '.')
-                nk_fnext_fast(&f);
-            else if (nk_fpeek(&f) == '[')
-                ;
-            else
-                break;
-        } else {
-            nk_fprintf(nkstderr, "Syntax error in key %s\n", key);
-            return 0;
-        }
-    }
-    if (!nk_feof(&f)) {
-        nk_fprintf(nkstderr, "Syntax error in key %s\n", key);
-        return 0;
-    }
-    *location_loc = location;
-    return type;
-}
-
-// Database management
-
-int nk_dbase_save(
-    const struct nk_dbase *dbase,
-    char *rev,
-    void *ram
-) {
-    nkoutfile_t str;
-    int sta = 0;
-    unsigned int cr;
-    nkoutfile_open_mem(&str, dbase->bigbuf, dbase->bigbuf_size);
-    if (nk_dbase_serialize(&str, dbase->ty, ram)) {
-        nk_fprintf(nkstderr, "Database is too large! Not saving.\n");
-        return -1;
-    }
-    size_t size = (char *)str.ptr - dbase->bigbuf;
-    dbase->bigbuf[size++] = 0;
-    dbase->bigbuf[size++] = ++*rev;
-    nk_printf("saving: %s\n", dbase->bigbuf);
-    nk_printf("size = %u\n", size);
-    nk_printf("rev = %d\n", *rev);
-    cr = nk_crc32be_check((unsigned char *)dbase->bigbuf, size);
-    dbase->bigbuf[size++] = (char)(cr >> 24);
-    dbase->bigbuf[size++] = (char)(cr >> 16);
-    dbase->bigbuf[size++] = (char)(cr >> 8);
-    dbase->bigbuf[size++] = (char)(cr);
-    if (size >= dbase->bank_size) {
-        nk_fprintf(nkstderr, "Database it too large! Not saving.\n");
-        return -1;
-    }
-    if (*rev & 1) { // It goes in bank 2
-        nk_printf("Bank 1:\n");
-        nk_printf("  Erasing...\n");
-        sta = dbase->flash_erase(dbase->bank1, dbase->bank_size);
-        if (sta) {
-            nk_printf("  Erase error\n");
-            goto bye;
-        }
-        nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank1, (uint8_t *)dbase->bigbuf, (size + dbase->flash_granularity - 1) & ~(dbase->flash_granularity - 1)); // Padding
-        if (sta) {
-            nk_fprintf(nkstderr, "  Write error\n");
-            goto bye;
-        }
-        nk_printf("  done.\n");
-    } else { // It goes in bank 1
-        nk_printf("Bank 0:\n");
-        nk_printf("  Erasing...\n");
-        sta = dbase->flash_erase(dbase->bank0, dbase->bank_size);
-        if (sta) {
-            nk_fprintf(nkstderr, "  Erase error\n");
-            goto bye;
-        }
-        nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank0, (uint8_t *)dbase->bigbuf, (size + dbase->flash_granularity - 1) & ~(dbase->flash_granularity - 1)); // Padding
-        if (sta) {
-            nk_fprintf(nkstderr, "  Write error\n");
-            goto bye;
-        }
-        nk_printf("  done.\n");
-    }
-    bye:
-    return sta;
-}
-
-static int nk_dbase_read(int bank, char *rev, const struct nk_dbase *dbase)
-{
-    int sta = 0;
-    size_t x;
-    nk_printf("Read bank %d:\n", bank);
-    if (bank)
-        sta = dbase->flash_read(dbase->bank1, (uint8_t *)dbase->bigbuf, dbase->bank_size);
-    else
-        sta = dbase->flash_read(dbase->bank0, (uint8_t *)dbase->bigbuf, dbase->bank_size);
-    if (sta) {
-        nk_fprintf(nkstderr, "  Read error\n");
-        goto bye;
-    }
-    for (x = 0; x != dbase->bank_size && dbase->bigbuf[x]; ++x);
-    if (x == dbase->bank_size) {
-        nk_fprintf(nkstderr, "  size is bad\n");
-        return -1;
-    }
-    ++x;
-    *rev = dbase->bigbuf[x++];
-    nk_printf("  size = %lu\n", (unsigned long)x);
-    nk_printf("  rev = %d\n", *rev);
-    x += 4;
-    if (nk_crc32be_check((unsigned char *)dbase->bigbuf, x)) {
-        nk_fprintf(nkstderr, "  crc is bad\n");
-        sta = -1;
-    }
-    // nk_printf("data = %s\n", dbase->bigbuf);
-    bye:
-    return sta;
-}
-
-int nk_dbase_load(const struct nk_dbase *dbase, char *rev, void *ram)
-{
-    int zero_good = !nk_dbase_read(0, rev, dbase);
-    char zero_rev = *rev;
-    int one_good = !nk_dbase_read(1, rev, dbase);
-    char one_rev = *rev;
-    int use_bank = -1;
-
-    if (one_good && zero_good) {
-        if ((signed char)(zero_rev - one_rev) >= 0) // Must be signed comparison equal to rev size!
-            use_bank = 0;
-        else {
-            use_bank = 1;
-        }
-    } else if (one_good) {
-        use_bank = 1;
-    } else if (zero_good) {
-        use_bank = 0;
-    }
-
-
-    if (use_bank == 0) {
-        nk_printf("Using bank 0\n");
-        // Need to re-read it
-        nk_dbase_read(0, rev, dbase);
-    } else if (use_bank == 1) { 
-        nk_printf("Using bank 1\n");
-    } else {
-        nk_fprintf(nkstderr, "Neither bank is good!\n");
-        return -1;
-    }
-
-    nkinfile_t f;
-    nkinfile_open_string(&f, dbase->bigbuf);
-    if (nk_fscan(&f, " %v", dbase->ty, ram)) {
-        nk_printf("Calibration store loaded OK\n");
-        return 0;
-    } else {
-        nk_fprintf(nkstderr, "CRC good, but calibration store failed to parse on load?\n");
-        return -1;
-    }
-}
-
 // Skip over a value without saving it
 
 static char keyval_buf[NKDBASE_MAXIDENTLEN];
@@ -1241,4 +1025,326 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 	}
 
 	return sta;
+}
+
+// Xpath traversal
+// It would be nice if this worked for tables...
+
+const struct type *xpath(char *key, const struct type *type, void **location_loc, uint32_t *triggers)
+{
+    char buf[NKDBASE_MAXIDENTLEN];
+    nkinfile_t f;
+    void *location = *location_loc;
+    size_t idx;
+    nkinfile_open_string(&f, key);
+
+    while (!nk_feof(&f)) {
+        if (nk_fscan(&f, "[ %u ]%e", &idx)) {
+            size_t count;
+            if (type->what == tVARRAY || type->what == tTABLE) {
+                count = ((union len *)location)->len;
+                location = (char *)location + sizeof(union len);
+                if (idx >= count) {
+                    nk_fprintf(nkstderr, "Array index out of bounds in key %s\n", key);
+                    return 0;
+                }
+                location = (char *)location + idx * type->subtype->size;
+                type = type->subtype;
+            } else if (type->what == tARRAY) {
+                count = (type->size / type->subtype->size);
+                if (idx >= count) {
+                    nk_fprintf(nkstderr, "Array index out of bounds in key %s\n", key);
+                    return 0;
+                }
+                location = (char *)location + idx * type->subtype->size;
+                type = type->subtype;
+            } else {
+                nk_fprintf(nkstderr, "Attempt to index a non-array in key %s\n", key);
+                return 0;
+            }
+            if (nk_fpeek(&f) == '.')
+                nk_fnext_fast(&f);
+            else if (nk_fpeek(&f) == '[')
+                ;
+            else
+                break;
+        } else if (nk_fscan(&f, "%i%e", buf, sizeof(buf))) {
+            const struct member *m;
+            if (type->what != tSTRUCT) {
+                nk_fprintf(nkstderr, "Attempt to index a non-struct in key %s\n", key);
+                return 0;
+            }
+            for (m = type->members; m->name; ++m)
+                if (!strcmp(m->name, buf))
+                    break;
+            if (!m->name) {
+                nk_fprintf(nkstderr, "Item does not exist %s\n", buf);
+                return 0;
+            }
+            type = m->type;
+            location = (char *)location + m->offset;
+            *triggers |= m->triggers;
+            if (nk_fpeek(&f) == '.')
+                nk_fnext_fast(&f);
+            else if (nk_fpeek(&f) == '[')
+                ;
+            else
+                break;
+        } else {
+            nk_fprintf(nkstderr, "Syntax error in key %s\n", key);
+            return 0;
+        }
+    }
+    if (!nk_feof(&f)) {
+        nk_fprintf(nkstderr, "Syntax error in key %s\n", key);
+        return 0;
+    }
+    *location_loc = location;
+    return type;
+}
+
+struct ofilt
+{
+    struct nk_dbase *dbase;
+    uint32_t pos;
+    uint32_t bank_addr;
+    unsigned long crc;
+};
+
+// Save buffer to flash, calculate CRC along the way
+
+static int dbase_save_block_write(void *ptr, unsigned char *buffer, size_t len)
+{
+    int sta;
+    size_t x;
+    struct ofilt *f = (struct ofilt *)ptr;
+    unsigned long crc;
+    crc = f->crc;
+    if (f->pos >= f->dbase->bank_size)
+        return -1;
+    for (x = 0; x != len; ++x)
+        crc = nk_crc32be_update(crc, buffer[x]);
+    f->crc = crc;
+    sta = f->dbase->flash_write(f->bank_addr + f->pos, buffer, (len + f->dbase->flash_granularity - 1) & ~(f->dbase->flash_granularity - 1));
+    f->pos += len;
+    return sta;
+}
+
+// Database management
+
+int nk_dbase_save(
+    const struct nk_dbase *dbase,
+    char *rev,
+    void *ram
+) {
+    int x;
+    nkoutfile_t f[1];
+    int sta = 0;
+    struct ofilt ofilt;
+    unsigned long crc;
+    int bank = (1 & (*rev + 1));
+
+    nk_printf("Saving to bank %d...\n", bank);
+
+    ofilt.dbase = dbase;
+    ofilt.pos = 0;
+    ofilt.crc = 0;
+    if (bank)
+    {
+        ofilt.bank_addr = dbase->bank1;
+    }
+    else
+    {
+        ofilt.bank_addr = dbase->bank0;
+    }
+
+    nk_printf("Erasing...\n");
+    sta = dbase->flash_erase(ofilt.bank_addr, dbase->bank_size);
+    if (sta) {
+        nk_printf("  Erase error\n");
+        return -1;
+    }
+
+    nkoutfile_open(f, dbase_save_block_write, &ofilt, dbase->bigbuf, dbase->bigbuf_size);
+
+    nk_printf("Writing...\n");
+
+    sta |= nk_dbase_serialize(f, dbase->ty, ram);
+
+    sta |= nk_fputc(f, 0); // End of text marker
+    sta |= nk_fputc(f, 1 + *rev); // Revision
+
+    crc = ofilt.crc;
+    for (x = 0; x != f->ptr - f->start; ++x)
+        crc = nk_crc32be_update(crc, f->start[x]);
+
+    sta |= nk_fputc(f, (crc >> 24));
+    sta |= nk_fputc(f, (crc >> 16));
+    sta |= nk_fputc(f, (crc >> 8));
+    sta |= nk_fputc(f, (crc >> 0));
+
+    if (sta) {
+        nk_fprintf(nkstderr, "Database is too large! Not saved.\n");
+        return -1;
+    }
+
+    nk_printf("  size = %u\n", ofilt.pos + f->ptr - f->start);
+    nk_printf("  rev = %d\n", 1 + *rev);
+
+    nk_fflush(f);
+
+    // Only bump rev if we are successful
+    ++*rev;
+    nk_printf("done.\n");
+    return 0;
+}
+
+// Read function for nkinfile: we just call the dbase flash read function, but we limit the length to either the bank size
+// (for checking CRC), or to the actual data size (for parsing).
+
+struct filt
+{
+	struct nk_dbase *dbase;
+	uint32_t bank_addr;
+	size_t size;
+};
+
+static size_t dbase_flash_read(void *ptr, unsigned char *buffer, size_t offset)
+{
+	struct filt *f = (struct filt *)ptr;
+	if (offset >= f->size)
+	{
+		return 0;
+	}
+	else
+	{
+		f->dbase->flash_read(f->bank_addr + offset, (unsigned char *)f->dbase->bigbuf, f->dbase->bigbuf_size);
+		if (f->size - offset >= f->dbase->bigbuf_size)
+			return f->dbase->bigbuf_size;
+		else
+			return f->size - offset;
+	}
+}
+
+// Check CRC of database of a particular bank.
+// Return 0 if it's bad, or the actual data size if it's good
+
+static int nk_dbase_check(int bank, char *rev, const struct nk_dbase *dbase)
+{
+    unsigned long crc = 0;
+    int c;
+    nkinfile_t f[1];
+    struct filt filt;
+    int sta = 0;
+    int x;
+    nk_printf("Check bank %d:\n", bank);
+    filt.dbase = dbase;
+    filt.size = dbase->bank_size;
+    if (bank)
+    {
+    	filt.bank_addr = dbase->bank1;
+    }
+    else
+    {
+    	filt.bank_addr = dbase->bank0;
+    }
+
+    nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    // Fixme: how to handle read errors?
+    if (sta) {
+        nk_fprintf(nkstderr, "  Read error\n");
+        return 0;
+    }
+    // Find end of text, calculate CRC
+    while ((c = nk_fpeek(f)), c != -1 && c)
+    {
+	crc = nk_crc32be_update(crc, c);
+    	nk_fnext_fast(f);
+    }
+
+    // NUL
+    if (c == -1)  goto badsize;
+    crc = nk_crc32be_update(crc, c);
+    nk_fnext_fast(f);
+
+    // rev
+    c = nk_fpeek(f);
+    if (c == -1) goto badsize;
+    *rev = c;
+    crc = nk_crc32be_update(crc, c);
+    nk_fnext_fast(f);
+
+    // CRC bytes
+    for (x = 0; x != 4; ++x)
+    {
+    	c = nk_fpeek(f);
+    	if (c == -1) goto badsize;
+    	nk_fnext_fast(f);
+	crc = nk_crc32be_update(crc, c);
+    }
+
+    sta = nk_ftell(f);
+    nk_printf("  size = %d\n", sta);
+    nk_printf("  rev = %d\n", *rev);
+    if (crc)
+    {
+        nk_fprintf(nkstderr, "  crc is bad\n");
+        return 0;
+    }
+
+    return sta - 6; // Return size of just the data part
+
+    badsize:
+    nk_fprintf(nkstderr, "  size is bad\n");
+    return 0;
+}
+
+// Choose most recent good version of database and load it
+
+int nk_dbase_load(const struct nk_dbase *dbase, char *rev, void *ram)
+{
+    nkinfile_t f[1];
+    struct filt filt;
+    int zero_good = nk_dbase_check(0, rev, dbase);
+    char zero_rev = *rev;
+    int one_good = nk_dbase_check(1, rev, dbase);
+    char one_rev = *rev;
+    int use_bank = -1;
+
+    if (one_good && zero_good) {
+        if ((signed char)(zero_rev - one_rev) >= 0) // Must be signed comparison equal to rev size!
+            use_bank = 0;
+        else {
+            use_bank = 1;
+        }
+    } else if (one_good) {
+        use_bank = 1;
+    } else if (zero_good) {
+        use_bank = 0;
+    }
+
+    filt.dbase = dbase;
+    if (use_bank == 0) {
+        nk_printf("Using bank 0\n");
+        // Need to re-read it
+        filt.bank_addr = dbase->bank0;
+        filt.size = zero_good;
+    	nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    } else if (use_bank == 1) { 
+        nk_printf("Using bank 1\n");
+        filt.bank_addr = dbase->bank1;
+        filt.size = one_good;
+    	nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    } else {
+        nk_fprintf(nkstderr, "Neither bank is good!\n");
+        return -1;
+    }
+
+    if (nk_fscan(f, " %v", dbase->ty, ram)) {
+        nk_printf("Calibration store loaded OK\n");
+        return 0;
+    } else {
+        nk_fprintf(nkstderr, "CRC good, but calibration store failed to parse on load?\n");
+        return -1;
+    }
 }

@@ -77,7 +77,8 @@ Naming:
 
 nkinfile:
 
-  How do we handle read errors for nkinfile operations?
+  How do we handle read errors for nkinfile operations?  Maybe use ssize_t
+for block_read..
 
 Notes:
 

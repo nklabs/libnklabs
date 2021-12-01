@@ -35,7 +35,8 @@ nkoutfile_t *nkoutfile_open(
     size_t len
 ) {
     f->start = f->ptr = buffer;
-    f->end = f->start + len;
+    f->size = len;
+    f->end = f->start + f->size;
     f->block_write_ptr = block_write_ptr;
     f->block_write = block_write;
     return f;

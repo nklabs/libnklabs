@@ -44,10 +44,13 @@ To execute the unit tests:
 	cd tests
 	make
 
-### Example targets
+### Examples
 
-A number of example targets are provided in the target directory.  To build
-a particular example and install it on a target board:
+An example application is available in [app/](app/).
+
+It can be compiled for various targets, see [target/](target/).
+
+To build a particular example and install it on a target board:
 
 	cd target/nucleo-g071rb
 	make

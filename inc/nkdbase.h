@@ -113,7 +113,7 @@ struct nk_dbase {
 	// Flash write granularity
 	//  flash_writes are padded to a multiple of this size
 	//  flash_granularity must be a power of 2 (including 2^0 == 1)
-	uint32_t flash_granularity;
+	const uint32_t flash_granularity;
 };
 
 // Bump version number and save a database from RAM to flash
