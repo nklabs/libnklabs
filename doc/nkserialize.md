@@ -1,4 +1,4 @@
-# NK Labs Serialization Library
+# NK Labs Serialization Library and Database
 
 nkserialize is a schema-driven serialization / deserialization library
 similar to Google's Protocol Buffers, but suitable for embedded systems with
@@ -239,29 +239,38 @@ any type.
 There are a number of built-in types that can appear in the .subtype field
 of "struct type" or in the .type field of struct member:
 
-	tyINT		Specifies a C "int"
-	tyFLOAT		Specifies a C "float"
-	tyDOUBLE	Specifies a C "double"
-	tyBOOL		Specifies a C "int" (true is 1, false is 0)
+	tyINT		"int"
+	tyUINT		"unsigned int"
+	tyINT8          "char"
+	tyUINT8		"unsigned char"
+	tyINT16		"short"
+	tyUINT16	"unsigned short"
+	tyFLOAT		"float"
+	tyDOUBLE	"double"
+	tyBOOL		"int" (true is 1, false is 0)
 
-## nk_serialize()
+## nk_dbase_serialize()
 
 ```c
-int nk_serialize(char *buf, const struct type *type, void *data);
+int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location);
 ```
 
-nk_serialize() is used to serialize a structure.  For example,
+nk_dbase_serialize() is used to serialize a structure.  For example,
 
 ```c
 char buffer[100];
+nkoutfile_t f;
 
-int len = nk_serialize(buffer, &tyTOP, &fred);
+nkoutfile_open_mem(&f, buffer, sizeof(buffer)-1);
+int status = nk_dbase_serialize(&f, &tyTOP, &fred);
+nk_fputc(f, 0); // Terminating NUL
 ```
 
-nk_serialize() requires a buffer for the resulting string, the schema for the
-structure (&tyTOP) and the structure's address (&fred).
+nk_dbase_serialize() requires an output file for the resulting string, the
+schema for the structure (&tyTOP) and the structure's address (&fred).
 
-nk_serialize() returns the length of the resulting string.
+nk_dbase_serialize() returns the output status (bit-wise OR of all calls to
+nk_fputc).  0 means no errors.
 
 ## nk_scan()
 
@@ -275,15 +284,16 @@ It takes a format string, and includes a conversion
 specifier for nkserialized data.  For example:
 
 ```c
-char *ptr = buffer;
-if (nk_scan(&ptr, "%v %e", &tyTOP, &fred))
-	printf("Deserialization OK!\n");
+nkinfile_t f;
+nkinfile_open_string(&f, buffer);
+
+if (nk_scan(&ptr, "%v ", &tyTOP, &fred))
+	nk_printf("Deserialization OK!\n");
 ```
 
-%v means that serialized data appears at that point in the input string.  %e
-means that the end of string must appear at that point.  You must supply the
-schema (&tyTOP) and an address to where you want the deserialized data to go
-(&fred in this case).
+%v means that serialized data appears at that point in the input string. 
+You must supply the schema (&tyTOP) and an address to where you want the
+deserialized data to go (&fred in this case).
 
 ## nk_xpath()
 
@@ -294,7 +304,7 @@ const struct type *nk_xpath(char *key, const struct type *type, void **location)
 
 nk_xpath can be used to navigate deserialized data and its schema using an
 expression syntax.  It is just like [XML XPath](https://www.w3schools.com/xml/xml_xpath.asp).
-You can use it to focus on to any subset of your structure.  For example:
+You can use it to focus to any subset of your structure.  For example:
 
 ```c
 void *ptr = &fred;
@@ -318,23 +328,70 @@ structure.  For example:
 	a.ary[3]	Access an array element
 	a.ary[3].x	Access a member of an array of structures
 
+## Database
+
+Functions are provided to create a database located in flash memory.  This
+just means that we save a serialized form of a structure into flash memory. 
+The serialized form is useful because it tends to preserve data across
+schema changes.
+
+Two areas of memory (banks) are allocated so that an older version of the
+database is always preserved in case of a power outage during a write.   The
+data in each bank is marked with a revision number and a 32-bit CRC.
+
+An nk_dbase structure should be filled out with information about the database:
+
+~~~c
+	const struct nk_dbase test_dbase =
+	{
+	    .ty = &tyTESTTOP,			// Schema for database
+	    .bank0 = 65536+32768+0,		// Location of bank0 in flash memory
+	    .bank1 = 65536+32768+8192,		// Location of bank1 in flash memory
+	    .bank_size = 8192,			// Size of each flash memory bank
+	    .bigbuf = big_buf,			// Transfer buffer
+	    .bigbuf_size = sizeof(big_buf),	// Sizeof transfer buffer
+	    .flash_read = nk_mcuflash_read,	// Flash read access function
+	    .flash_erase = nk_mcuflash_erase,	// Flash erase function
+	    .flash_write = nk_mcuflash_write,	// Flash write function
+	    .flash_granularity = 8		// Write granularity- writes are padded so that they always a multiple of this size
+						// 1 is allowed for granularity
+	};
+~~~
+
+## nk_dbase_load()
+
+~~~c
+int nk_dbase_load(
+	const struct nk_dbase *dbase,
+	char *rev, // Address of version number
+	void *ram // Address of database in RAM
+);
+~~~
+
+Load a database into RAM.  The revision number of the loaded database is
+saved in *rev.
+
+## nk_dbase_save()
+
+~~~c
+int nk_dbase_save(
+	const struct nk_dbase *dbase,
+	char *rev, // Address of version number
+	void *ram // Address of database in RAM
+);
+~~~
+
+Save a database from RAM into flash.  This bumps the revision number if the
+database was successfully saved.
+
 ## Configuration or calibration database
 
-A template CLI command is provided which shows how to implement a
-configuration or calibration database using the above functions.  The
-command allows you to query or set elements of the database.  The advantage
-of this method is that it avoids the need for writing a user interface for
-each configuration variable.
+A template CLI command is provided which shows how a user interface for a
+database might work, see (../app/database.c)[../app/database.c]
 
-The database could be stored in serialized form in flash memory.  On boot
-up, the string in flash memory is deserialized into the configuration data
-structure in RAM.  The advantage of saving the data in serialized form is
-that it allows you to preserve configuration data through changes to the
-schema (changes to the structure containing the configuration data).  New
-members will get their default values.  Data in the string for removed
-members will be ignored.  The technical name for this is that it supports
-database schema migration.  Note that it does not fully support migration:
-you can not rename an element and expect the data to be preserved.
+The command allows you to query or set elements of the database.  The
+advantage of this method is that it avoids the need for writing a user
+interface for each configuration variable.
 
 A typical CLI command looks like this:
 
