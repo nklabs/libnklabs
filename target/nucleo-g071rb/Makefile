@@ -56,6 +56,7 @@ ${APPSRC}/basic_cmds.c \
 ${NKSRC}/nkprintf_fp.c \
 ${NKSRC}/nkrtc.c \
 ${NKSRC}/nkdbase.c \
+${NKSRC}/nkserialize.c \
 ${NKSRC}/nkmcuflash.c \
 ${NKSRC}/nkspiflash.c \
 ${NKSRC}/nkcrclib.c \

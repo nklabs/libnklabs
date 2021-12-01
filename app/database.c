@@ -204,7 +204,7 @@ int cmd_dbase(nkinfile_t *args)
     } else if (nk_fscan(args, "get %w ", key, sizeof(key))) {
         void *loc = &testdb;
         uint32_t trigs = 0;
-        const struct type *t = xpath(key, &tyTESTTOP, &loc, &trigs);
+        const struct type *t = nk_xpath(key, &tyTESTTOP, &loc, &trigs);
         if (!t) {
             nk_printf("Not found.\n");
         } else {
@@ -215,7 +215,7 @@ int cmd_dbase(nkinfile_t *args)
     } else if (nk_fscan(args, "set %w %e", key, sizeof(key))) {
         void *loc = &testdb;
         uint32_t trigs = 0;
-        const struct type *t = xpath(key, &tyTESTTOP, &loc, &trigs);
+        const struct type *t = nk_xpath(key, &tyTESTTOP, &loc, &trigs);
         if (!t) {
             nk_printf("Not found.\n");
         } else {

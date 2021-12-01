@@ -1,6 +1,8 @@
 TARGET = nkdbase
 
-OBJS = build/nkdbase.o build/nkscan.o build/nkprintf.o build/nkprintf_fp.o build/nkstring.o build/nkdbase_test.o build/nkinfile.o build/nkstrtod.o build/nkdectab.o build/nkcrclib.o build/nkoutfile.o
+OBJS = build/nkdbase.o build/nkscan.o build/nkprintf.o build/nkprintf_fp.o \
+build/nkstring.o build/nkdbase_test.o build/nkinfile.o build/nkstrtod.o \
+build/nkdectab.o build/nkcrclib.o build/nkoutfile.o build/nkserialize.o
 
 # Run test
 test : build/$(TARGET)
