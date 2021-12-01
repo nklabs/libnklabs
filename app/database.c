@@ -132,7 +132,7 @@ const struct testtop testdb_defaults = {
 struct testtop testdb;
 char testdb_rev;
 
-unsigned char big_buf[128];
+unsigned char xfer_buf[128];
 
 const struct nk_dbase test_dbase =
 {
@@ -140,8 +140,8 @@ const struct nk_dbase test_dbase =
     .bank0 = 65536+32768+0,
     .bank1 = 65536+32768+8192,
     .bank_size = 8192,
-    .bigbuf = big_buf,
-    .bigbuf_size = sizeof(big_buf),
+    .buf = xfer_buf,
+    .buf_size = sizeof(xfer_buf),
     .flash_read = nk_mcuflash_read,
     .flash_erase = nk_mcuflash_erase,
     .flash_write = nk_mcuflash_write,

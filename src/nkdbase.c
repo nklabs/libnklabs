@@ -107,7 +107,7 @@ int nk_dbase_save(
         return -1;
     }
 
-    nkoutfile_open(f, dbase_save_block_write, &ofilt, dbase->bigbuf, dbase->bigbuf_size);
+    nkoutfile_open(f, dbase_save_block_write, &ofilt, dbase->buf, dbase->buf_size);
 
     nk_printf("Writing...\n");
 
@@ -160,9 +160,9 @@ static size_t dbase_flash_read(void *ptr, unsigned char *buffer, size_t offset)
 	}
 	else
 	{
-		f->dbase->flash_read(f->bank_addr + offset, (unsigned char *)f->dbase->bigbuf, f->dbase->bigbuf_size);
-		if (f->size - offset >= f->dbase->bigbuf_size)
-			return f->dbase->bigbuf_size;
+		f->dbase->flash_read(f->bank_addr + offset, (unsigned char *)f->dbase->buf, f->dbase->buf_size);
+		if (f->size - offset >= f->dbase->buf_size)
+			return f->dbase->buf_size;
 		else
 			return f->size - offset;
 	}
@@ -191,7 +191,7 @@ static int nk_dbase_check(int bank, char *rev, const struct nk_dbase *dbase)
     	filt.bank_addr = dbase->bank0;
     }
 
-    nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    nkinfile_open(f, dbase_flash_read, &filt, dbase->buf_size, dbase->buf);
     // Fixme: how to handle read errors?
     if (sta) {
         nk_fprintf(nkstderr, "  Read error\n");
@@ -271,12 +271,12 @@ int nk_dbase_load(const struct nk_dbase *dbase, char *rev, void *ram)
         // Need to re-read it
         filt.bank_addr = dbase->bank0;
         filt.size = zero_good;
-    	nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    	nkinfile_open(f, dbase_flash_read, &filt, dbase->buf_size, dbase->buf);
     } else if (use_bank == 1) { 
         nk_printf("Using bank 1\n");
         filt.bank_addr = dbase->bank1;
         filt.size = one_good;
-    	nkinfile_open(f, dbase_flash_read, &filt, dbase->bigbuf_size, dbase->bigbuf);
+    	nkinfile_open(f, dbase_flash_read, &filt, dbase->buf_size, dbase->buf);
     } else {
         nk_fprintf(nkstderr, "Neither bank is good!\n");
         return -1;

@@ -1,4 +1,4 @@
-# NK Labs Serialization Library and Database
+# NK Labs Serialization Library
 
 nkserialize is a schema-driven serialization / deserialization library
 similar to Google's Protocol Buffers, but suitable for embedded systems with
@@ -68,10 +68,9 @@ The following types are supported:
 * Arrays, such as [ "first", "second", "third" ].  The types of all the members must be the same, but they can be complex types such as structures.
 * Tables, such as ( name, ssno : "joe", "123-45-6890" : "bill", "111-22-3333" ).  There is a header row specifying the column names followed by 0 or more data rows.  The deserialized format of a table is an array of structures.  Tables are printed so that they can be imported into spreadsheets.
 
-nkserialize is schema driven.  This means that unlike JSON, a schema
-determines which types and fields are expected in the serialized string.  If
-you add an extra field to a structure for example, it will be ignored during
-deserialization.
+nkserialize is schema driven.  This means that a schema determines which
+types and fields are expected in the serialized string.  If you add an extra
+field to a structure for example, it will be ignored during deserialization.
 
 The schema is defined in C (in the future there may be a dedicated schema
 language, but not yet).  For example, suppose the C data structure that you
@@ -327,81 +326,4 @@ structure.  For example:
 	a.b.c		Access a member in a sub-structure
 	a.ary[3]	Access an array element
 	a.ary[3].x	Access a member of an array of structures
-
-## Database
-
-Functions are provided to create a database located in flash memory.  This
-just means that we save a serialized form of a structure into flash memory. 
-The serialized form is useful because it tends to preserve data across
-schema changes.
-
-Two areas of memory (banks) are allocated so that an older version of the
-database is always preserved in case of a power outage during a write.   The
-data in each bank is marked with a revision number and a 32-bit CRC.
-
-An nk_dbase structure should be filled out with information about the database:
-
-~~~c
-	const struct nk_dbase test_dbase =
-	{
-	    .ty = &tyTESTTOP,			// Schema for database
-	    .bank0 = 65536+32768+0,		// Location of bank0 in flash memory
-	    .bank1 = 65536+32768+8192,		// Location of bank1 in flash memory
-	    .bank_size = 8192,			// Size of each flash memory bank
-	    .bigbuf = big_buf,			// Transfer buffer
-	    .bigbuf_size = sizeof(big_buf),	// Sizeof transfer buffer
-	    .flash_read = nk_mcuflash_read,	// Flash read access function
-	    .flash_erase = nk_mcuflash_erase,	// Flash erase function
-	    .flash_write = nk_mcuflash_write,	// Flash write function
-	    .flash_granularity = 8		// Write granularity- writes are padded so that they always a multiple of this size
-						// 1 is allowed for granularity
-	};
-~~~
-
-## nk_dbase_load()
-
-~~~c
-int nk_dbase_load(
-	const struct nk_dbase *dbase,
-	char *rev, // Address of version number
-	void *ram // Address of database in RAM
-);
-~~~
-
-Load a database into RAM.  The revision number of the loaded database is
-saved in *rev.
-
-## nk_dbase_save()
-
-~~~c
-int nk_dbase_save(
-	const struct nk_dbase *dbase,
-	char *rev, // Address of version number
-	void *ram // Address of database in RAM
-);
-~~~
-
-Save a database from RAM into flash.  This bumps the revision number if the
-database was successfully saved.
-
-## Configuration or calibration database
-
-A template CLI command is provided which shows how a user interface for a
-database might work, see (../app/database.c)[../app/database.c]
-
-The command allows you to query or set elements of the database.  The
-advantage of this method is that it avoids the need for writing a user
-interface for each configuration variable.
-
-A typical CLI command looks like this:
-
-	config show			Print entire configuration database in serialized format
-	config replace			Replace the entire database with following multi-line input
-	config get a.b			Print a particular element
-	config set a.b 7		Set a particular element
-	config set a { b:7, c:6 }	Set an entire sub-structure
-	config set a			Set an entire sub-structure with following multi-line input
-	config flush			Save database to flash
-	config load			Load database from flash
-	config reset			Reset database to default values
 

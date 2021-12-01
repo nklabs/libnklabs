@@ -76,6 +76,8 @@ To build a particular example and install it on a target board:
 
 [nkserialize - schema driven serialization](doc/nkserialize.md)
 
+[nkdbase - schema driven database](doc/nkdbase.md)
+
 [nkzmodem - ZMODEM protocol](doc/nkzmodem.md)
 
 # Licensing

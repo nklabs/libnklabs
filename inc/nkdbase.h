@@ -34,9 +34,9 @@ struct nk_dbase {
 	const struct type *ty; // Schema describing the data layout
 	const uint32_t bank0; // Flash address of bank0
 	const uint32_t bank1; // Flash address of bank1
-	const uint32_t bank_size; // Size of each bank
-	unsigned char * const bigbuf; // Buffer large enough to hold serialized database: this can be shared
-	const uint32_t bigbuf_size; // Size of above buffer: this size is used for flash_erase and flash_read
+	const uint32_t bank_size; // Size of each bank, this is the size passed to flash_erase
+	unsigned char * const buf; // Transfer buffer for flash memory: this is used for flash_read and flash_write
+	const uint32_t buf_size; // Size of above buffer
 	// Flash access functions
 	// These should all return 0 for success
 	int (* const flash_read)(uint32_t addr, uint8_t *buf, uint32_t size);
