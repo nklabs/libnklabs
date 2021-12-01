@@ -45,6 +45,7 @@ BUILD_DIR = build
 
 
 C_SOURCES =  \
+../../src/database.c \
 ../../src/nkprintf_fp.c \
 ../../src/startup.c \
 ../../src/nkrtc.c \

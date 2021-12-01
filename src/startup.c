@@ -5,6 +5,7 @@
 #include "nksched.h"
 #include "nkcli.h"
 #include "nkdbase.h"
+#include "database.h"
 #include "startup.h"
 
 void note_reset_cause(void)
@@ -30,5 +31,6 @@ void user_main(void)
   //keyval_init();
   wdt_tid = nk_alloc_tid();
   nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
+  database_init();
   nk_sched_loop();
 }

@@ -536,7 +536,7 @@ int nk_dbase_save(
     dbase->bigbuf[size++] = 0;
     dbase->bigbuf[size++] = ++*rev;
     nk_printf("saving: %s\n", dbase->bigbuf);
-    nk_printf("size = %zu\n", size);
+    nk_printf("size = %u\n", size);
     nk_printf("rev = %d\n", *rev);
     cr = nk_crc32be_check((unsigned char *)dbase->bigbuf, size);
     dbase->bigbuf[size++] = (char)(cr >> 24);
@@ -556,7 +556,7 @@ int nk_dbase_save(
             goto bye;
         }
         nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank1, (uint8_t *)dbase->bigbuf, size);
+        sta = dbase->flash_write(dbase->bank1, (uint8_t *)dbase->bigbuf, (size + 8) & ~7); // Padding
         if (sta) {
             nk_fprintf(nkstderr, "  Write error\n");
             goto bye;
@@ -571,7 +571,7 @@ int nk_dbase_save(
             goto bye;
         }
         nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank0, (uint8_t *)dbase->bigbuf, size);
+        sta = dbase->flash_write(dbase->bank0, (uint8_t *)dbase->bigbuf, (size + 8) & ~7); // Padding
         if (sta) {
             nk_fprintf(nkstderr, "  Write error\n");
             goto bye;
