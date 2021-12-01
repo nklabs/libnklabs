@@ -1105,7 +1105,7 @@ const struct type *xpath(char *key, const struct type *type, void **location_loc
 
 struct ofilt
 {
-    struct nk_dbase *dbase;
+    const struct nk_dbase *dbase;
     uint32_t pos;
     uint32_t bank_addr;
     unsigned long crc;
@@ -1204,7 +1204,7 @@ int nk_dbase_save(
 
 struct filt
 {
-	struct nk_dbase *dbase;
+	const struct nk_dbase *dbase;
 	uint32_t bank_addr;
 	size_t size;
 };

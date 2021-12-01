@@ -132,7 +132,7 @@ const struct testtop testdb_defaults = {
 struct testtop testdb;
 char testdb_rev;
 
-char big_buf[128];
+unsigned char big_buf[128];
 
 const struct nk_dbase test_dbase =
 {
