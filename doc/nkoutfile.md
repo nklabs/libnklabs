@@ -53,11 +53,11 @@ __nkoutfile_open__ and __nkoutfile_open_mem__ return the nkoutfile_t
 pointer.
 
 __nk_fputc__ appends a byte to the buffer.  If the buffer becomes full, it
-calls the __block_write__ provided in __nkoutfile_open__ to write out the
-buffer.  If __nk_fputc__ calls __block_write__ it returns __block_write's__
-return value, otherwise it returns 0.  When __nk_fputc__ calls
-__block_write__, its __len__ argument will always be equal to the block
-size.  __nk_fputc__ is implemented as a macro.
+calls the __block_write__ function provided in __nkoutfile_open__ to write
+out the buffer.  If __nk_fputc__ calls __block_write__ it returns
+__block_write's__ return value, otherwise it returns 0.  When __nk_fputc__
+calls __block_write__, its __len__ argument will always be equal to the
+block size.  __nk_fputc__ is implemented as a macro.
 
 __nk_fflush__ calls __block_write__ with any remaining bytes to write out. 
 In this case, __block_write's__ __len__ argument can be anything from 0 to

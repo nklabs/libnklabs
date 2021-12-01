@@ -9,13 +9,11 @@ targets:
   Add some more ST
   Add Atmel
 
+  Some example in an RTOS
+
 testing:
 
   Need target board with I2C and SPI-flash for this
-
-documentation:
-
-  Write it for nkymodem
 
 event driven:
 
@@ -24,21 +22,20 @@ event driven:
 
   maybe call sched recursively?
 
+nkymodem
+
+  actual file download test
+  write documentation
+
 nkdbase:
 
-  dbase needs to know flash write granularity- we had to round up to a multiple of 8 bytes for mcuflash
+  more generic way to deal with crc checking: the infile_t and outfile_t could be used for
+  other things
 
   more tests..
   try all input number formats, including negatives..
 
   make sure skipping works..
-
-  Block read/write function for SPI-flash access in nkdbase
-
-  nkoutfile_t that appends CRC
-  nkinfile_t that checks CRC?
-
-  separate out serialization code from database code
 
   should error output be an argument instead of nkstderr?  Better for threads
 
