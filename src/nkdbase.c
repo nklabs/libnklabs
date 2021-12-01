@@ -556,7 +556,7 @@ int nk_dbase_save(
             goto bye;
         }
         nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank1, (uint8_t *)dbase->bigbuf, (size + 8) & ~7); // Padding
+        sta = dbase->flash_write(dbase->bank1, (uint8_t *)dbase->bigbuf, (size + dbase->flash_granularity - 1) & ~(dbase->flash_granularity - 1)); // Padding
         if (sta) {
             nk_fprintf(nkstderr, "  Write error\n");
             goto bye;
@@ -571,7 +571,7 @@ int nk_dbase_save(
             goto bye;
         }
         nk_printf("  Writing...\n");
-        sta = dbase->flash_write(dbase->bank0, (uint8_t *)dbase->bigbuf, (size + 8) & ~7); // Padding
+        sta = dbase->flash_write(dbase->bank0, (uint8_t *)dbase->bigbuf, (size + dbase->flash_granularity - 1) & ~(dbase->flash_granularity - 1)); // Padding
         if (sta) {
             nk_fprintf(nkstderr, "  Write error\n");
             goto bye;

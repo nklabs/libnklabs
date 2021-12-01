@@ -21,6 +21,10 @@ MINUTE=$(shell expr $(shell echo $(DATE) | cut -b 15-16) + 0)
 ######################################
 TARGET = nucleo_g071rb
 
+NKSRC = ../../src
+APPSRC = ../../app
+NKINC = ../../inc
+NKCONFIG = ../../config
 
 ######################################
 # building variables
@@ -45,28 +49,29 @@ BUILD_DIR = build
 
 
 C_SOURCES =  \
-../../src/database.c \
-../../src/nkprintf_fp.c \
-../../src/startup.c \
-../../src/nkrtc.c \
-../../src/nkdbase.c \
-../../src/nkmcuflash.c \
-../../src/nkspiflash.c \
-../../src/nkcrclib.c \
-../../src/nkscan.c \
-../../src/nksched.c \
-../../src/nkcli.c \
-../../src/nkreadline.c \
-../../src/nkuart_stm32.c \
-../../src/nkarch_stm32.c \
-../../src/nkymodem.c \
-../../src/nkymodem_cmd.c \
-../../src/nkprintf.c \
-../../src/nkinfile.c \
-../../src/nkoutfile.c \
-../../src/nkdectab.c \
-../../src/nkstring.c \
-../../src/nkstrtod.c \
+${APPSRC}/startup.c \
+${APPSRC}/database.c \
+${APPSRC}/nkymodem_cmd.c \
+${APPSRC}/basic_cmds.c \
+${NKSRC}/nkprintf_fp.c \
+${NKSRC}/nkrtc.c \
+${NKSRC}/nkdbase.c \
+${NKSRC}/nkmcuflash.c \
+${NKSRC}/nkspiflash.c \
+${NKSRC}/nkcrclib.c \
+${NKSRC}/nkscan.c \
+${NKSRC}/nksched.c \
+${NKSRC}/nkcli.c \
+${NKSRC}/nkreadline.c \
+${NKSRC}/nkuart_stm32.c \
+${NKSRC}/nkarch_stm32.c \
+${NKSRC}/nkymodem.c \
+${NKSRC}/nkprintf.c \
+${NKSRC}/nkinfile.c \
+${NKSRC}/nkoutfile.c \
+${NKSRC}/nkdectab.c \
+${NKSRC}/nkstring.c \
+${NKSRC}/nkstrtod.c \
 Core/Src/main.c \
 Core/Src/stm32g0xx_it.c \
 Core/Src/stm32g0xx_hal_msp.c \
@@ -150,8 +155,8 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I../../config \
--I../../inc \
+-I${NKCONFIG} \
+-I${NKINC} \
 -ICore/Inc \
 -IDrivers/STM32G0xx_HAL_Driver/Inc \
 -IDrivers/STM32G0xx_HAL_Driver/Inc/Legacy \
@@ -163,7 +168,7 @@ C_INCLUDES =  \
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-CFLAGS += -DVERSION_MAJOR=`cat ../../src/VERSION_MAJOR`  -DVERSION_MINOR=`cat ../../src/VERSION_MINOR` -DYEAR=$(YEAR) -DMONTH=$(MONTH) -DDAY=$(DAY) -DHOUR=$(HOUR) -DMINUTE=$(MINUTE)
+CFLAGS += -DVERSION_MAJOR=`cat ${APPSRC}/VERSION_MAJOR`  -DVERSION_MINOR=`cat ${APPSRC}/VERSION_MINOR` -DYEAR=$(YEAR) -DMONTH=$(MONTH) -DDAY=$(DAY) -DHOUR=$(HOUR) -DMINUTE=$(MINUTE)
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
@@ -224,7 +229,7 @@ $(BUILD_DIR):
 	mkdir $@		
 
 # Rebuild version.o if anything changed
-$(BUILD_DIR)/version.o: $(OBJECTS) ../../src/VERSION_MAJOR ../../src/VERSION_MINOR ../../src/version.c
+$(BUILD_DIR)/version.o: $(OBJECTS) ${APPSRC}/VERSION_MAJOR ${APPSRC}/VERSION_MINOR ${APPSRC}/version.c
 
 #######################################
 # clean up
@@ -238,16 +243,16 @@ flash:
 # Bump version numbers...
 
 bump_minor:
-	@expr `cat ../../../src/VERSION_MINOR` + 1 >../../../src/VERSION_MINOR
+	@expr `cat ${APPSRC}/VERSION_MINOR` + 1 >../${APPSRC}/VERSION_MINOR
 	@echo
-	@echo New version V`cat ../../../src/VERSION_MAJOR`R`cat ../../../src/VERSION_MINOR`
+	@echo New version V`cat ${APPSRC}/VERSION_MAJOR`R`cat ${APPSRC}/VERSION_MINOR`
 	@echo
 
 bump_major:
-	@expr `cat ../../../src/VERSION_MAJOR` + 1 >../../../src/VERSION_MAJOR
-	@echo 0 > ../../src/VERSION_MINOR
+	@expr `cat ${APPSRC}/VERSION_MAJOR` + 1 >${APPSRC}/VERSION_MAJOR
+	@echo 0 > ${APPSRC}/VERSION_MINOR
 	@echo
-	@echo New version V`cat ../../src/VERSION_MAJOR`R`cat ../../src/VERSION_MINOR`
+	@echo New version V`cat ${APPSRC}/VERSION_MAJOR`R`cat ${APPSRC}/VERSION_MINOR`
 	@echo
   
 #######################################

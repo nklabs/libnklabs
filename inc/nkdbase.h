@@ -104,12 +104,16 @@ struct nk_dbase {
 	const uint32_t bank1; // Flash address of bank1
 	const uint32_t bank_size; // Size of each bank
 	char * const bigbuf; // Buffer large enough to hold serialized database: this can be shared
-	const uint32_t bigbuf_size; // Size of above buffer
+	const uint32_t bigbuf_size; // Size of above buffer: this size is used for flash_erase and flash_read
 	// Flash access functions
 	// These should all return 0 for success
 	int (* const flash_read)(uint32_t addr, uint8_t *buf, uint32_t size);
 	int (* const flash_erase)(uint32_t addr, uint32_t size);
 	int (* const flash_write)(uint32_t addr, uint8_t *buf, uint32_t size);
+	// Flash write granularity
+	//  flash_writes are padded to a multiple of this size
+	//  flash_granularity must be a power of 2 (including 2^0 == 1)
+	uint32_t flash_granularity;
 };
 
 // Bump version number and save a database from RAM to flash
