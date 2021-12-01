@@ -2,6 +2,17 @@
 
 ## C-language Software library
 
+This library provides functionality useful for many embedded controller
+projects:
+
+* Malloc is not used at all
+* A decentralized command line interface (CLI) with line editor, on-line help and history
+* A work-queue scheduler which can be used in place of an RTOS if preemptive multitasking is not required
+* A schema-defined database that supports schema changes (aka migrations), typically used for holding calibration and configuration parameters in local flash memory
+* Y-MODEM protocol for transferring files over the CLI, for example for firmware updates
+* Replacment printf that support floating point but is much smaller than the newlib one
+* Repacement scanf for command line parsing
+
 ### Including libnklabs in your own project
 
 Each module includes C source and header files.  But many also include a

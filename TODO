@@ -17,7 +17,16 @@ documentation:
 
   Write it for nkymodem
 
+event driven:
+
+  multi-line gets for dbase
+  nkymodem- pause cli input until communication is done
+
+  maybe call sched recursively?
+
 nkdbase:
+
+  dbase needs to know flash write granularity- we had to round up to a multiple of 8 bytes for mcuflash
 
   more tests..
   try all input number formats, including negatives..
