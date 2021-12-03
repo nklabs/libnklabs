@@ -53,6 +53,7 @@ ${APPSRC}/startup.c \
 ${APPSRC}/database.c \
 ${APPSRC}/nkymodem_cmd.c \
 ${APPSRC}/basic_cmds.c \
+${APPSRC}/spiflash.c \
 ${NKSRC}/nkprintf_fp.c \
 ${NKSRC}/nkrtc.c \
 ${NKSRC}/nkdbase.c \

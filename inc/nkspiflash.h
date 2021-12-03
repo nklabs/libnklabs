@@ -3,66 +3,77 @@
 #ifndef _Inkspiflash
 #define _Inkspiflash
 
-// Return 0 for success, -1 for error.
-int nk_init_spiflash();
+#include <stdint.h>
 
-// Get sector size.  This is the minimum size that nk_flash_erase can erase.
-//uint32_t nk_flash_sector_size();
-#define NK_SPIFLASH_ERASE_SECTOR_SIZE 65536
+// Standard EEPROM/Flash commands
 
-// Erase 1 or more sectors.  Address and byte_count should both be multiples of
-// the sector size.
+#define NK_FLASH_CMD_WRITE_ENABLE 0x06
+#define NK_FLASH_CMD_READ_STATUS 0x05
+#define NK_FLASH_CMD_WRITE 0x02
+#define NK_FLASH_CMD_READ 0x03
+
+#define NK_FLASH_CMD_ERASE_64K 0xD8
+#define NK_FLASH_CMD_ERASE_32K 0x52
+#define NK_FLASH_CMD_ERASE_4K 0x20
+
+// Describe a particular SPI-flash
+
+struct nk_spiflash_info
+{
+	// SPI interface
+	int (*spi_transfer)(void *spi_ptr, uint8_t *data, uint32_t len);
+	void *spi_ptr;
+
+	// Pointer to transfer buffer
+	// This must be page_size + addr_size + 1 or more
+	uint8_t *buffer;
+
+	// Information about SPI-flash or EEPROM
+	uint32_t page_size; // Should be power of 2 but page_size + addr_size + 1 must not be larger than maximum spi_transfer size
+	int busy_timeout;
+	int addr_size; // 1, 2, 3 or 4
+
+	int n_erase_options; // Number of available erase options.  0 means erase not required (EEPROM).
+
+	// Table of erase options sorted with largest size first.
+
+	struct {
+		uint32_t erase_size;
+		unsigned char erase_cmd;
+	} erase_options[4];
+};
+
+// Write enable
+
+int nk_flash_write_enable(struct nk_spiflash_info *info);
+
+// Wait for not busy
+
+int nk_flash_busy_wait(struct nk_spiflash_info *info);
+
+// Erase a region
+// Region must start and end on a mutliple of the device's smallest erasable unit size
 // Return 0 for success, -1 for error.
-int nk_spiflash_erase(uint32_t address, uint32_t byte_count);
+
+int nk_spiflash_erase(struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count);
 
 // Write to flash. This handles any number for byte_count- it will break up the write
 // into multiple page writes as necessary.
 // Return 0 for success, -1 for error.
-int nk_spiflash_write(uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
 
 // Read from flash.  address and byte_count can be any values- the flash memory
 // automatically crosses page boundaries.
 // Return 0 for success, -1 for error.
-int nk_spiflash_read(uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
 
-// Flash locations
+// Hex dump of spi-flash
+void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
 
-// FPGA attemps the load FLASH_PFGA_BUFFER_MAIN first.  If it has bad CRC, it then loads
-// FLASH_GOLDEN_JUMP which commands it to load from FLASH_FPGA_BUFFER_GOLDEN.
+// Compute CRC on a region of flash
+uint32_t nk_spiflash_crc(struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
 
-// There are two copies of the RISC-V firmware: FLASH_FIRMWARE_BUFFER_0 and FLASH_FIRMWARE_BUFFER_1.
-// Bit 0 of first byte of FLASH_FIRMWARE_FLAG indicates which of these will be used for
-// execute in place on next boot up.
-
-#define FLASH_FIRMWARE_BUFFER (0)
-#define FLASH_FIRMWARE_BUFFER_SIZE (0x20000)
-
-// Calibration store
-#define FLASH_KEYVAL_SIZE 8192
-#define FLASH_CAL_KEYVAL_ADDR_0 (0x100000 + 0)
-#define FLASH_CAL_KEYVAL_ADDR_1 (0x100000 + 0x10000)
-
-// Consumption log
-#define FLASH_LOG_ADDR (0x100000 + 0x20000)
-#define FLASH_LOG_SIZE 0x40000
-
-// Configuration store
-#define FLASH_KEYVAL_SIZE 8192
-#define FLASH_CONFIG_KEYVAL_ADDR_0 (0x100000 + 0x60000 + 0)
-#define FLASH_CONFIG_KEYVAL_ADDR_1 (0x100000 + 0x60000 + 0x10000)
-
-// We want the SPI-flash to last a long time, but we write to it every LOGPERIOD ms (currently once a minute)
-// Log entry is 64 bytes
-// 1024 writes to fill a sector
-// Four sectors, gives 4096 writes
-// We write to all sectors every 4096 * LOGPERIOD / 60000 minutes (currently 4096 minutes).
-// SPI-flash lasts 100000 writes, so it will last 100000 * 4096 minutes.
-
-// Only lower 16-bits of these make it to S2868A1_EEPROM_ReadPage
-#define FLASH_FAKE_BOARD_DATA 0x801F000
-#define FLASH_FAKE_SIGFOX_DATA 0x801E000
-
-#define FLASH_BOARD_DATA 0xF000
-#define FLASH_SIGFOX_DATA 0xE000
+// Generic user interface to SPI-flash or EEPROM
+int nk_spiflash_command(struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_addr);
 
 #endif

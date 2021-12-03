@@ -1,204 +1,174 @@
+// SPI-flash and SPI-EEPROM driver
+
+// Copyright 2020 NK Labs, LLC
+
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+// OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+// THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #include <string.h>
-#include "nkarch.h"
 #include "nkcli.h"
 #include "nkcrclib.h"
 #include "nkspiflash.h"
 
-#include "main.h" // For pin definitions
-
-// Proto board has SPI-flash
-// Dev board has EEPROM
-
-// SPI-transfer
-
-static void flashio(uint8_t *data, uint32_t len)
+int nk_spiflash_write_enable(struct nk_spiflash_info *info)
 {
-        HAL_GPIO_WritePin(SPI1_CS_L_GPIO_Port, SPI1_CS_L_Pin, 0); // CS_L
-
-	HAL_SPI_TransmitReceive(&spi1_port, data, data, len, 1000);
-
-        HAL_GPIO_WritePin(SPI1_CS_L_GPIO_Port, SPI1_CS_L_Pin, 1); // CS_L
+	info->buffer[0] = NK_FLASH_CMD_WRITE_ENABLE;
+	return info->spi_transfer(info->spi_ptr, info->buffer, 1);
 }
 
-int nk_init_spiflash()
-{
-	return 0;
-}
-
-int spiflash_enabled;
-
-static void write_enable()
-{
-	uint8_t xfer[1];
-	xfer[0] = 0x06;
-	flashio(xfer, sizeof(xfer));
-	spiflash_enabled = 1;
-}
-
-static void busy_wait()
+int nk_spiflash_busy_wait(struct nk_spiflash_info *info)
 {
 	int x;
-	for (x = 0; x != 10000; ++x) {
-		uint8_t xfer[2];
-		xfer[0] = 0x05;
-		xfer[1] = 0x00;
-		flashio(xfer, sizeof(xfer));
-		if ((xfer[1] & 1) == 0) {
-			// nk_printf("done after %d loops, %x\n", x, xfer[1]);
+	int status = 0;
+	for (x = 0; x != info->busy_timeout; ++x) {
+		info->buffer[0] = NK_FLASH_CMD_READ_STATUS;
+		info->buffer[1] = 0;
+		status |= info->spi_transfer(info->spi_ptr, info->buffer, 2);
+		if ((info->buffer[0] & 1) == 0)
+		{
+			// nk_printf("done after %d loops, %x\n", x, info->buffer[1]);
 			// 540 loops for a 4K erase
-			return;
+			return status;
 		}
 	}
 	nk_printf("Timeout!\n");
+	status = -1;
+	return status;
 }
 
-int nk_spiflash_erase(uint32_t address, uint32_t byte_count)
+int nk_spiflash_erase(struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count)
 {
-#ifdef junk
-	// As long as we're not done..
-	while (byte_count) {
-		// Try to use largest erase that works..
-		if ((address & 65535) == 0 && byte_count >= 65536) {
-			uint8_t xfer[4];
-			xfer[0] = 0xd8;
-			xfer[1] = (uint8_t)(address >> 16);
-			xfer[2] = (uint8_t)(address >> 8);
-			xfer[3] = (uint8_t)(address);
-			nk_printf("  Erase 64K\n");
-			write_enable();
-			flashio(xfer, sizeof(xfer));
-			busy_wait();
-			nk_printf("  Erase done\n");
-			address += 65536;
-			byte_count -= 65536;
-		} else if ((address & 32767) == 0 && byte_count >= 32768) {
-			uint8_t xfer[4];
-			xfer[0] = 0x52;
-			xfer[1] = (uint8_t)(address >> 16);
-			xfer[2] = (uint8_t)(address >> 8);
-			xfer[3] = (uint8_t)(address);
-			nk_printf("  Erase 32K\n");
-			write_enable();
-			flashio(xfer, sizeof(xfer));
-			busy_wait();
-			nk_printf("  Erase done\n");
-			address += 32768;
-			byte_count -= 32768;
-		} else if ((address & 4095) == 0 && byte_count >= 4096) {
-			uint8_t xfer[4];
-			xfer[0] = 0x20;
-			xfer[1] = (uint8_t)(address >> 16);
-			xfer[2] = (uint8_t)(address >> 8);
-			xfer[3] = (uint8_t)(address);
-			nk_printf("  Erase 4K at %lx\n", address);
-			write_enable();
-			flashio(xfer, sizeof(xfer));
-			busy_wait();
-			nk_printf("  done.\n");
-			address += 4096;
-			byte_count -= 4096;
-		} else {
-			// None work? Fail..
-			break;
+	int status = 0;
+	if (info->n_erase_options)
+	{
+		// As long as we're not done..
+		while (byte_count) {
+			int work = 0;
+			int x;
+			for (x = 0; x != info->n_erase_options; ++x)
+			{
+				if ((address & (info->erase_options[x].erase_size - 1)) == 0 && byte_count >= info->erase_options[x].erase_size)
+				{
+					int y;
+					uint32_t addr = address;
+					status |= nk_spiflash_write_enable(info);
+					info->buffer[0] = info->erase_options[x].erase_cmd;
+					for (y = 0; y != info->addr_size; ++y)
+					{
+						info->buffer[info->addr_size - y] = addr;
+						addr >>= 8;
+					}
+					nk_printf("  Erase addr=%lx size=%lu\n", (unsigned long)address, (unsigned long)info->erase_options[x].erase_size);
+					status |= info->spi_transfer(info->spi_ptr, info->buffer, info->addr_size + 1);
+					address += info->erase_options[x].erase_size;
+					byte_count -= info->erase_options[x].erase_size;
+					work = 1;
+					break;
+				}
+			}
+			if (!work)
+			{
+				nk_printf("ERROR: Invalid erase size\n");
+				status = -1;
+				break;
+			}
 		}
 	}
-
-	if (byte_count) {
-		nk_printf("ERROR: Invalid erase size\n");
-		return -1;
-	}
-#endif
-	return 0;
+	return status;
 }
 
-int nk_spiflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
-	uint8_t xfer[256+4];
-	int rtn = 0; // Assume success
-	int hdrlen;
-
-	uint32_t page_size = 128;
+	int status = 0; // Assume success
+	uint32_t page_size = info->page_size;
 
 	// Write a page at a time
 	while (byte_count) {
 		uint32_t page_offset = (address & (page_size - 1)); // Starting offset within page
-		uint32_t page_len = page_size - page_offset; // Up to one page
+		uint32_t transfer_len = page_size - page_offset; // Up to one page
+		uint32_t addr = address;
+		int y;
 
-		if (byte_count < page_len)
-			page_len = byte_count;
+		if (byte_count < transfer_len)
+			transfer_len = byte_count;
 
+		status |= nk_spiflash_write_enable(info);
 
-		xfer[0] = 0x02;
-#ifdef junk
-		xfer[1] = (uint8_t)(address >> 8);
-		xfer[2] = (uint8_t)(address);
-		hdrlen = 3;
-#else
-		xfer[1] = (uint8_t)(address >> 16);
-		xfer[2] = (uint8_t)(address >> 8);
-		xfer[3] = (uint8_t)(address);
-		hdrlen = 4;
-#endif
-		memcpy(xfer + hdrlen, data, page_len);
-		// nk_printf("Write, len = %lu\n", page_len + 4);
-		// byte_hex_dump((unsigned long)(xfer), 0, page_len + 4, NULL);
-		write_enable();
-		flashio(xfer, page_len + hdrlen);
-		busy_wait();
+		info->buffer[0] = NK_FLASH_CMD_WRITE;
+		for (y = 0; y != info->addr_size; ++y)
+		{
+			info->buffer[info->addr_size - y] = addr;
+			addr >>= 8;
+		}
+
+		memcpy(info->buffer + 1 + info->addr_size, data, transfer_len);
+		// nk_printf("Write, len = %lu\n", transfer_len + 1 + info->addr_size);
+		// byte_hex_dump((unsigned long)(xfer), 0, transfer_len + 1 + info->addr_size, NULL);
+		status |= info->spi_transfer(info->spi_ptr, info->buffer, 1 + info->addr_size + transfer_len);
+		status |= nk_spiflash_busy_wait(info);
 		// nk_printf("After write\n");
 
-		byte_count -= page_len;
-		address += page_len;
-		data += page_len;
+		byte_count -= transfer_len;
+		address += transfer_len;
+		data += transfer_len;
 	}
 
-	return rtn;
+	return status;
 }
 
-int nk_spiflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
-	uint8_t xfer[256+4];
-	int rtn = 0; // Assume success
-	int hdrlen;
-
-	uint32_t page_size = 256;
-
-	// nk_printf("addr=%x, byte_count=%d\n", address, byte_count);
+	int status = 0; // Assume success
+	uint32_t page_size = info->page_size;
 
 	// Read a page at a time
 	while (byte_count) {
 		uint32_t page_offset = (address & (page_size - 1)); // Starting offset within page
-		uint32_t page_len = page_size - page_offset; // Up to one page
+		uint32_t transfer_len = page_size - page_offset; // Up to one page
+		uint32_t addr = address;
+		int y;
 
-		if (byte_count < page_len)
-			page_len = byte_count;
+		if (byte_count < transfer_len)
+			transfer_len = byte_count;
 
-		xfer[0] = 0x03;
-#ifdef junk
-		xfer[1] = (uint8_t)(address >> 8);
-		xfer[2] = (uint8_t)(address);
-		hdrlen = 3;
-#else
-		xfer[1] = (uint8_t)(address >> 16);
-		xfer[2] = (uint8_t)(address >> 8);
-		xfer[3] = (uint8_t)(address);
-		hdrlen = 4;
-#endif
-//		nk_printf("hdrlen = %d pagelen = %d\n", hdrlen, page_len);
-		flashio(xfer, page_len + hdrlen);
-		memcpy(data, xfer + hdrlen, page_len);
+		info->buffer[0] = NK_FLASH_CMD_READ;
+		for (y = 0; y != info->addr_size; ++y)
+		{
+			info->buffer[info->addr_size - y] = addr;
+			addr >>= 8;
+		}
 
-		byte_count -= page_len;
-		address += page_len;
-		data += page_len;
+		// nk_printf("Read, len = %lu\n", transfer_len + 1 + info->addr_size);
+		// byte_hex_dump((unsigned long)(xfer), 0, transfer_len + 1 + info->addr_size, NULL);
+		status |= info->spi_transfer(info->spi_ptr, info->buffer, 1 + info->addr_size + transfer_len);
+		// nk_printf("After read\n");
+		memcpy(data, info->buffer + 1 + info->addr_size, transfer_len);
+
+		byte_count -= transfer_len;
+		address += transfer_len;
+		data += transfer_len;
 	}
 
-	return rtn;
+	return status;
 }
 
-static uint32_t old_spiflash_addr;
-
-static void spiflash_hex_dump(uint32_t addr, uint32_t len)
+void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
 {
     unsigned char buf[256];
     while(len) {
@@ -208,7 +178,7 @@ static void spiflash_hex_dump(uint32_t addr, uint32_t len)
         if (this_len > len)
             this_len = len;
 
-        nk_spiflash_read(this_page + this_ofst, buf + this_ofst, this_len);
+        nk_spiflash_read(info, this_page + this_ofst, buf + this_ofst, this_len);
         nkinfile_t f[1];
         nkinfile_open_mem(f, buf, 256);
         nk_byte_hex_dump(this_page, this_ofst, this_len, f);
@@ -218,7 +188,7 @@ static void spiflash_hex_dump(uint32_t addr, uint32_t len)
     }
 }
 
-static uint32_t spiflash_crc(uint32_t addr, uint32_t len)
+uint32_t nk_spiflash_crc(struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
 {
     unsigned char buf[256];
     uint32_t x, crc = 0;
@@ -229,7 +199,7 @@ static uint32_t spiflash_crc(uint32_t addr, uint32_t len)
         if (this_len > len)
             this_len = len;
 
-        nk_spiflash_read(this_page, buf, this_len);
+        nk_spiflash_read(info, this_page, buf, this_len);
 
         for (x = 0; x != this_len; ++x)
             crc = nk_crc32be_update(crc, buf[x]);
@@ -240,56 +210,43 @@ static uint32_t spiflash_crc(uint32_t addr, uint32_t len)
     return crc;
 }
 
-static int cmd_spiflash(nkinfile_t *args)
+int nk_spiflash_command(struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_spiflash_addr)
 {
     uint32_t addr;
     uint32_t len;
     uint32_t val;
     if (facmode && nk_fscan(args, "rd %lx ", &addr)) {
-        nk_spiflash_read(addr, (uint8_t *)&val, 4);
+        nk_spiflash_read(info, addr, (uint8_t *)&val, 4);
         nk_printf("[%lx] has %lx\n", addr, val);
     } else if (facmode && nk_fscan(args, "wr %lx %lx ", &addr, &val)) {
-        nk_spiflash_write(addr, (uint8_t *)&val, 4);
+        nk_spiflash_write(info, addr, (uint8_t *)&val, 4);
         nk_printf("Wrote %lx to [%lx]\n", val, addr);
-    } else if (facmode && nk_fscan(args, "hd %lx %x ", &old_spiflash_addr, &len)) {
-        spiflash_hex_dump(old_spiflash_addr, len);
-	old_spiflash_addr += len;
-    } else if (facmode && nk_fscan(args, "hd %lx ", &old_spiflash_addr)) {
+    } else if (facmode && nk_fscan(args, "hd %lx %x ", old_spiflash_addr, &len)) {
+        nk_spiflash_hex_dump(info, *old_spiflash_addr, len);
+	*old_spiflash_addr += len;
+    } else if (facmode && nk_fscan(args, "hd %lx ", old_spiflash_addr)) {
     	len = 0x100;
-        spiflash_hex_dump(old_spiflash_addr, len);
-	old_spiflash_addr += len;
+        nk_spiflash_hex_dump(info, *old_spiflash_addr, len);
+	*old_spiflash_addr += len;
     } else if (facmode && nk_fscan(args, "crc %lx %lu ", &addr, &len)) {
         nk_printf("Calculate CRC of %lx - %lx\n", addr, addr + len);
-        val = spiflash_crc(addr, len);
+        val = nk_spiflash_crc(info, addr, len);
         nk_printf("CRC is %lx\n", val);
     } else if (facmode && nk_fscan(args, "erase %lx %x ", &addr, &len)) {
     	nk_printf("Erasing %lu bytes...\n", len);
-        nk_spiflash_erase(addr, len);
+        nk_spiflash_erase(info, addr, len);
         nk_printf("done.\n");
     } else if (facmode && nk_fscan(args, "erase %lx ", &addr)) {
     	len = 4096;
     	nk_printf("Erasing %lu bytes...\n", len);
-        nk_spiflash_erase(addr, len);
+        nk_spiflash_erase(info, addr, len);
         nk_printf("done.\n");
     } else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len)) {
         nk_printf("Writing %lu bytes...\n", len);
-        nk_spiflash_write(addr, (uint8_t *)0x100, len);
+        nk_spiflash_write(info, addr, (uint8_t *)0x100, len);
         nk_printf("done.\n");
     } else {
         nk_printf("Syntax error\n");
     }
     return 0;
 }
-
-COMMAND(spiflash,
-    "spiflash                  Read/write flash memory\n",
-    "spiflash rd <addr>        Read word\n"
-    "spiflash wr <addr> <val>  Write word\n"
-    "spiflash hd <addr> <len>  Hex dump flash memory\n"
-    "spiflash crc <addr> <len> Calculate CRC of flash memory\n"
-    "spiflash erase <addr> <len>\n"
-    "                          Erase flash memory\n"
-    "spiflash fill <addr> <len>\n"
-    "                          Write flash memory\n",
-    ""
-)
