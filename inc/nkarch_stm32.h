@@ -76,10 +76,8 @@ void nk_udelay(unsigned long usec);
 
 // SPI master
 
-#define s2lp_spi_port hspi1
-#define stpm_spi_port hspi2
+#define spi1_port hspi1
 extern SPI_HandleTypeDef hspi1;
-extern SPI_HandleTypeDef hspi2;
 
 void reboot();
 

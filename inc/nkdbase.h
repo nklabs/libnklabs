@@ -58,6 +58,7 @@ int nk_dbase_save(
 );
 
 // Load a database from flash to RAM
+// The highest version of the database with a good CRC is the one loaded
 // Returns zero for success
 
 int nk_dbase_load(

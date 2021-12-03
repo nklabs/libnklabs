@@ -41,7 +41,7 @@ int nk_indent(int ind)
     return nk_findent(nkstdout, ind);
 }
 
-int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long offset, unsigned long count, nkinfile_t *g)
+int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g)
 {
 	int status = 0;
 	unsigned int y, x;
@@ -51,7 +51,7 @@ int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long offset, unsigned long count,
 	for (y = 0; count; y += 16) {
 		unsigned int st = start;
 		unsigned long cn = count;
-		status |= nk_fprintf(f, "%4.4lx:", offset + y);
+		status |= nk_fprintf(f, "%4.4lx:", base + offset + y);
 		for (x = 0; x != 16; ++x) {
 			if (x == 8)
 				status |= nk_fprintf(f, " ");
@@ -87,9 +87,9 @@ int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long offset, unsigned long count,
 	return status;
 }
 
-int nk_byte_hex_dump(unsigned long offset, unsigned long count, nkinfile_t *g)
+int nk_byte_hex_dump(unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g)
 {
-	return nk_fbyte_hex_dump(nkstdout, offset, count, g);
+	return nk_fbyte_hex_dump(nkstdout, base, offset, count, g);
 }
 
 // Small printf()

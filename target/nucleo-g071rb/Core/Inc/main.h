@@ -60,31 +60,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define USER_BUTTON_Pin GPIO_PIN_13
 #define USER_BUTTON_GPIO_Port GPIOC
-#define STPM1_CSN_Pin GPIO_PIN_0
-#define STPM1_CSN_GPIO_Port GPIOC
-#define STPM_SYN_Pin GPIO_PIN_1
-#define STPM_SYN_GPIO_Port GPIOC
-#define S2LP_GPIO0_Pin GPIO_PIN_0
-#define S2LP_GPIO0_GPIO_Port GPIOA
-#define S2LP_CSN_Pin GPIO_PIN_1
-#define S2LP_CSN_GPIO_Port GPIOA
-#define S2LP_GPIO1_Pin GPIO_PIN_4
-#define S2LP_GPIO1_GPIO_Port GPIOA
-#define USER_LED_Pin GPIO_PIN_5
-#define USER_LED_GPIO_Port GPIOA
-#define S2LP_GPIO2_Pin GPIO_PIN_1
-#define S2LP_GPIO2_GPIO_Port GPIOB
-#define S2LP_GPIO3_Pin GPIO_PIN_12
-#define S2LP_GPIO3_GPIO_Port GPIOB
-#define S2LP_GPIO3_EXTI_IRQn EXTI4_15_IRQn
-#define S2LP_SDN_Pin GPIO_PIN_8
-#define S2LP_SDN_GPIO_Port GPIOA
-#define EEPROM_CSN_Pin GPIO_PIN_9
-#define EEPROM_CSN_GPIO_Port GPIOA
-#define RADIO_LED_Pin GPIO_PIN_7
-#define RADIO_LED_GPIO_Port GPIOC
-#define STPM1_EN_Pin GPIO_PIN_11
-#define STPM1_EN_GPIO_Port GPIOA
+#define SPI1_CS_L_Pin GPIO_PIN_0
+#define SPI1_CS_L_GPIO_Port GPIOB
+#define SPI1_CS_L_1_Pin GPIO_PIN_7
+#define SPI1_CS_L_1_GPIO_Port GPIOC
+#define SPI1_CS_L_2_Pin GPIO_PIN_10
+#define SPI1_CS_L_2_GPIO_Port GPIOA
 void   MX_TIM3_Init(void);
 void   MX_TIM15_Init(void);
 /* USER CODE BEGIN Private defines */

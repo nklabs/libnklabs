@@ -36,9 +36,9 @@
 
 // Hex dump
 
-int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g);
 
-int nk_byte_hex_dump(unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_byte_hex_dump(unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g);
 
 // print 'ind' spaces- used for indentation
 

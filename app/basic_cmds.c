@@ -92,13 +92,13 @@ static int cmd_mem(nkinfile_t *args)
     } else if (facmode && nk_fscan(args, "hd %lx %x ", &old_addr, &len)) {
         nkinfile_t f[1];
         nkinfile_open_mem(f, 0, old_addr + len);
-	nk_byte_hex_dump(old_addr, len, f);
+	nk_byte_hex_dump(0, old_addr, len, f);
 	old_addr += len;
     } else if (facmode && nk_fscan(args, "hd %lx ", &old_addr)) {
         nkinfile_t f[1];
     	len = 0x100;
         nkinfile_open_mem(f, 0, old_addr + len);
-	nk_byte_hex_dump(old_addr, len, f);
+	nk_byte_hex_dump(0, old_addr, len, f);
 	old_addr += len;
     } else {
         nk_printf("Syntax error\n");

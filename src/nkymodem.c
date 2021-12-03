@@ -124,7 +124,7 @@ static void debug_log_show()
     if (last_idx) {
         nkinfile_t f[1];
         nkinfile_open_mem(f, packet_buf, last_idx);
-        nk_byte_hex_dump(0, last_idx, f);
+        nk_byte_hex_dump(0, 0, last_idx, f);
         
     }
     for (x = 0; x != debug_log_idx; ++x)

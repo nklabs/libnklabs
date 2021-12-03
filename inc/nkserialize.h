@@ -90,16 +90,19 @@ extern const struct type tyBOOL;
 extern const struct type tyDOUBLE;
 extern const struct type tyFLOAT;
 
-// Convert database at 'location' to a string 'org'.
-// Schema of database given in 'type'.
-
+// Serialize a data structure at the specified address (location) with the specified type.
+// The serialized output is sent to the nkoutfile_t.
 int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location);
 
-const struct type *nk_xpath(char *key, const struct type *type, void **location_loc, uint32_t *triggers);
+// Same as above, but in a more human readable format
+//  ind is number of space to indent the entire output
+//  ed is string to print at line ends, usually "\n"
 int nk_dbase_fprint(nkoutfile_t *f, const struct type *type, void *location, int ind, const char *ed);
 
-// Parse a serialized database- used by nkscan
+// Locate a subset of a data structure by following an expression
+const struct type *nk_xpath(char *key, const struct type *type, void **location_loc, uint32_t *triggers);
 
+// Parse a serialized database- used by nkscan
 int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location);
 
 #endif

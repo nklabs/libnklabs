@@ -13,15 +13,11 @@
 
 static void flashio(uint8_t *data, uint32_t len)
 {
-#ifdef DEV_BOARD
-        HAL_GPIO_WritePin(S2LP_SDN_GPIO_Port, S2LP_SDN_Pin, 1); // Bug on older S2LPs- they only tristate MISO when shutdown
-#endif
-        HAL_GPIO_WritePin(S2LP_CSN_GPIO_Port, S2LP_CSN_Pin, 1); // CS_L
-        HAL_GPIO_WritePin(EEPROM_CSN_GPIO_Port, EEPROM_CSN_Pin, 0); // CS_L
+        HAL_GPIO_WritePin(SPI1_CS_L_GPIO_Port, SPI1_CS_L_Pin, 0); // CS_L
 
-	HAL_SPI_TransmitReceive(&s2lp_spi_port, data, data, len, 1000);
+	HAL_SPI_TransmitReceive(&spi1_port, data, data, len, 1000);
 
-        HAL_GPIO_WritePin(EEPROM_CSN_GPIO_Port, EEPROM_CSN_Pin, 1); // CS_L
+        HAL_GPIO_WritePin(SPI1_CS_L_GPIO_Port, SPI1_CS_L_Pin, 1); // CS_L
 }
 
 int nk_init_spiflash()
@@ -58,7 +54,7 @@ static void busy_wait()
 
 int nk_spiflash_erase(uint32_t address, uint32_t byte_count)
 {
-#ifdef PROTO_BOARD
+#ifdef junk
 	// As long as we're not done..
 	while (byte_count) {
 		// Try to use largest erase that works..
@@ -133,7 +129,7 @@ int nk_spiflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 
 
 		xfer[0] = 0x02;
-#ifdef DEV_BOARD
+#ifdef junk
 		xfer[1] = (uint8_t)(address >> 8);
 		xfer[2] = (uint8_t)(address);
 		hdrlen = 3;
@@ -178,7 +174,7 @@ int nk_spiflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 			page_len = byte_count;
 
 		xfer[0] = 0x03;
-#ifdef DEV_BOARD
+#ifdef junk
 		xfer[1] = (uint8_t)(address >> 8);
 		xfer[2] = (uint8_t)(address);
 		hdrlen = 3;
@@ -214,8 +210,8 @@ static void spiflash_hex_dump(uint32_t addr, uint32_t len)
 
         nk_spiflash_read(this_page + this_ofst, buf + this_ofst, this_len);
         nkinfile_t f[1];
-        nkinfile_open_mem(f, buf - this_page, 256);
-        nk_byte_hex_dump(addr, this_len, f);
+        nkinfile_open_mem(f, buf, 256);
+        nk_byte_hex_dump(this_page, this_ofst, this_len, f);
 
         addr += this_len;
         len -= this_len;

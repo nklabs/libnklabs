@@ -17,8 +17,8 @@ static void flash_hex_dump(uint32_t addr, uint32_t len)
 
         nk_mcuflash_read(this_page + this_ofst, buf + this_ofst, this_len);
         nkinfile_t f[1];
-        nkinfile_open_mem(f, buf - this_page, 256);
-        nk_byte_hex_dump(addr, this_len, f);
+        nkinfile_open_mem(f, buf, 256);
+        nk_byte_hex_dump(this_page, this_ofst, this_len, f);
 
         addr += this_len;
         len -= this_len;
