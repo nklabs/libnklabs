@@ -35,17 +35,17 @@ uint8_t spi_buffer[132];
 
 // M95M04 EEPROM on X-NUCLEO-EEPRMA2 board
 
-struct flash_device m95m04_bus =
+const struct flash_device m95m04_bus =
 {
     .cs_port = SPI1_CS_L_GPIO_Port,
     .cs_pin = SPI1_CS_L_Pin,
     .hspi = &spi1_port
 };
 
-struct nk_spiflash_info m95m04 =
+const struct nk_spiflash_info m95m04 =
 {
 	.spi_transfer = flashio,
-	.spi_ptr = &m95m04_bus,
+	.spi_ptr = (void *)&m95m04_bus,
 	.buffer = spi_buffer,
 	.page_size = 128,
 	.busy_timeout = 10000,
@@ -79,17 +79,17 @@ COMMAND(m95m04,
 
 // M95256 EEPROM on X-NUCLEO-EEPRMA2 board
 
-struct flash_device m95256_bus =
+const struct flash_device m95256_bus =
 {
     .cs_port = SPI1_CS_L_1_GPIO_Port,
     .cs_pin = SPI1_CS_L_1_Pin,
     .hspi = &spi1_port
 };
 
-struct nk_spiflash_info m95256 =
+const struct nk_spiflash_info m95256 =
 {
 	.spi_transfer = flashio,
-	.spi_ptr = &m95256_bus,
+	.spi_ptr = (void *)&m95256_bus,
 	.buffer = spi_buffer,
 	.page_size = 64,
 	.busy_timeout = 10000,
@@ -123,17 +123,17 @@ COMMAND(m95256,
 
 // M95040 EEPROM on X-NUCLEO-EEPRMA2 board
 
-struct flash_device m95040_bus =
+const struct flash_device m95040_bus =
 {
     .cs_port = SPI1_CS_L_2_GPIO_Port,
     .cs_pin = SPI1_CS_L_2_Pin,
     .hspi = &spi1_port
 };
 
-struct nk_spiflash_info m95040 =
+const struct nk_spiflash_info m95040 =
 {
 	.spi_transfer = flashio,
-	.spi_ptr = &m95040_bus,
+	.spi_ptr = (void *)&m95040_bus,
 	.buffer = spi_buffer,
 	.page_size = 16,
 	.busy_timeout = 1000000,

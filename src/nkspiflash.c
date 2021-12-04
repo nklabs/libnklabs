@@ -26,19 +26,19 @@
 #include "nkcrclib.h"
 #include "nkspiflash.h"
 
-int nk_spiflash_write_enable(struct nk_spiflash_info *info)
+int nk_spiflash_write_enable(const struct nk_spiflash_info *info)
 {
 	info->buffer[0] = NK_FLASH_CMD_WRITE_ENABLE;
 	return info->spi_transfer(info->spi_ptr, info->buffer, 1);
 }
 
-int nk_spiflash_write_disable(struct nk_spiflash_info *info)
+int nk_spiflash_write_disable(const struct nk_spiflash_info *info)
 {
 	info->buffer[0] = NK_FLASH_CMD_WRITE_DISABLE;
 	return info->spi_transfer(info->spi_ptr, info->buffer, 1);
 }
 
-int nk_spiflash_write_status(struct nk_spiflash_info *info, uint8_t val)
+int nk_spiflash_write_status(const struct nk_spiflash_info *info, uint8_t val)
 {
 	nk_spiflash_write_enable(info);
 	info->buffer[0] = NK_FLASH_CMD_WRITE_STATUS;
@@ -46,7 +46,7 @@ int nk_spiflash_write_status(struct nk_spiflash_info *info, uint8_t val)
 	return info->spi_transfer(info->spi_ptr, info->buffer, 2);
 }
 
-int nk_spiflash_busy_wait(struct nk_spiflash_info *info)
+int nk_spiflash_busy_wait(const struct nk_spiflash_info *info)
 {
 	int x;
 	int status = 0;
@@ -66,7 +66,7 @@ int nk_spiflash_busy_wait(struct nk_spiflash_info *info)
 	return status;
 }
 
-int nk_spiflash_erase(struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count)
+int nk_spiflash_erase(const struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count)
 {
 	int status = 0;
 	if (info->n_erase_options)
@@ -107,7 +107,7 @@ int nk_spiflash_erase(struct nk_spiflash_info *info, uint32_t address, uint32_t 
 	return status;
 }
 
-int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_write(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
 	int status = 0; // Assume success
 	uint32_t page_size = info->page_size;
@@ -146,7 +146,7 @@ int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *
 	return status;
 }
 
-int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_read(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
 	int status = 0; // Assume success
 	uint32_t page_size = info->page_size;
@@ -182,7 +182,7 @@ int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *d
 	return status;
 }
 
-void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
+void nk_spiflash_hex_dump(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
 {
     unsigned char buf[256];
     while(len) {
@@ -200,7 +200,7 @@ void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t
     }
 }
 
-uint32_t nk_spiflash_crc(struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
+uint32_t nk_spiflash_crc(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len)
 {
     unsigned char buf[256];
     uint32_t x, crc = 0;
@@ -222,7 +222,7 @@ uint32_t nk_spiflash_crc(struct nk_spiflash_info *info, uint32_t addr, uint32_t 
     return crc;
 }
 
-int nk_spiflash_command(struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_spiflash_addr)
+int nk_spiflash_command(const struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_spiflash_addr)
 {
     uint32_t addr;
     uint32_t len;

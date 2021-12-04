@@ -48,43 +48,43 @@ struct nk_spiflash_info
 
 // Write enable
 
-int nk_flash_write_enable(struct nk_spiflash_info *info);
+int nk_flash_write_enable(const struct nk_spiflash_info *info);
 
 // Write status
 
-int nk_flash_write_status(struct nk_spiflash_info *info, uint8_t val);
+int nk_flash_write_status(const struct nk_spiflash_info *info, uint8_t val);
 
 // Write disable
 
-int nk_flash_write_disable(struct nk_spiflash_info *info);
+int nk_flash_write_disable(const struct nk_spiflash_info *info);
 
 // Wait for not busy
 
-int nk_flash_busy_wait(struct nk_spiflash_info *info);
+int nk_flash_busy_wait(const struct nk_spiflash_info *info);
 
 // Erase a region
 // Region must start and end on a mutliple of the device's smallest erasable unit size
 // Return 0 for success, -1 for error.
 
-int nk_spiflash_erase(struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count);
+int nk_spiflash_erase(const struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count);
 
 // Write to flash. This handles any number for byte_count- it will break up the write
 // into multiple page writes as necessary.
 // Return 0 for success, -1 for error.
-int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_write(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
 
 // Read from flash.  address and byte_count can be any values- the flash memory
 // automatically crosses page boundaries.
 // Return 0 for success, -1 for error.
-int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_read(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
 
 // Hex dump of spi-flash
-void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
+void nk_spiflash_hex_dump(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
 
 // Compute CRC on a region of flash
-uint32_t nk_spiflash_crc(struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
+uint32_t nk_spiflash_crc(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
 
 // Generic user interface to SPI-flash or EEPROM
-int nk_spiflash_command(struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_addr);
+int nk_spiflash_command(const struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_addr);
 
 #endif

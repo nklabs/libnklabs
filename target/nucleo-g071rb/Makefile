@@ -57,6 +57,7 @@ ${APPSRC}/spiflash.c \
 ${APPSRC}/i2c.c \
 ${NKSRC}/nkprintf_fp.c \
 ${NKSRC}/nki2c.c \
+${NKSRC}/nki2c_eeprom.c \
 ${NKSRC}/nki2c_stm.c \
 ${NKSRC}/nkrtc.c \
 ${NKSRC}/nkdbase.c \
