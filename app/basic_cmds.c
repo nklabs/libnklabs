@@ -96,6 +96,10 @@ static int cmd_mem(nkinfile_t *args)
     	len = 0x100;
 	nk_byte_hex_dump((unsigned char *)0, 0, old_addr, len);
 	old_addr += len;
+    } else if (facmode && nk_fscan(args, "hd ")) {
+    	len = 0x100;
+	nk_byte_hex_dump((unsigned char *)0, 0, old_addr, len);
+	old_addr += len;
     } else {
         nk_printf("Syntax error\n");
     }
@@ -106,7 +110,9 @@ COMMAND(mem,
     "mem                       Read/write memory\n",
     "mem rd <addr>             Read 32-bit word from address\n"
     "mem wr <addr> <data>      Write 32-bit word to address\n"
-    "mem hd <addr> <len>       Hex dump memory\n",
+    "mem hd <addr> <len>       Hex dump memory\n"
+    "mem hd <addr>             Hex dump 256 bytes\n"
+    "mem hd                    Hex dump next256 bytes\n",
     ""
 )
 

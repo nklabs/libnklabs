@@ -8,7 +8,10 @@
 // Standard EEPROM/Flash commands
 
 #define NK_FLASH_CMD_WRITE_ENABLE 0x06
+#define NK_FLASH_CMD_WRITE_DISABLE 0x04
+
 #define NK_FLASH_CMD_READ_STATUS 0x05
+#define NK_FLASH_CMD_WRITE_STATUS 0x01
 #define NK_FLASH_CMD_WRITE 0x02
 #define NK_FLASH_CMD_READ 0x03
 
@@ -46,6 +49,14 @@ struct nk_spiflash_info
 // Write enable
 
 int nk_flash_write_enable(struct nk_spiflash_info *info);
+
+// Write status
+
+int nk_flash_write_status(struct nk_spiflash_info *info, uint8_t val);
+
+// Write disable
+
+int nk_flash_write_disable(struct nk_spiflash_info *info);
 
 // Wait for not busy
 
