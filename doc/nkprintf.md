@@ -12,9 +12,9 @@ int nk_indent(int ind);
 
 int nk_findent(nkoutfile_t *f, int ind);
 
-int nk_byte_hex_dump(unsiged long base, unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_byte_hex_dump(unsigned char *buf, unsiged long base, unsigned long offset, unsigned long count);
 
-int nk_fbyte_hex_dump(nkoutfile_t *f, unsigne long base, unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned char *buf, unsigned long base, unsigned long offset, unsigned long count);
 
 ```
 
@@ -55,14 +55,9 @@ the specified __nkoutfile_t__.
 
 __count__ is the number of bytes to dump.
 
-__offset__ is the starting byte offset within the nkinfile_t of the bytes to
-dump.
+__offset__ is the starting byte offset within the __buf__ to dump.
 
 __base__ is added to __offset__ for the printed address.
-
-__g__ is an nkinfile_t that is read for each byte to print.  For example,
-this could be an nkinfile_t that reads from an external SPI-flash device or
-something like that.
 
 __nk_byte_hex_dump__ and __nk_fbyte_hex_dump__ return the bit-wise OR of the
 return values of all calls to __nk_fputc__.  A return value of 0 means no

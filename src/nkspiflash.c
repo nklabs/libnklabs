@@ -119,7 +119,7 @@ int nk_spiflash_write(struct nk_spiflash_info *info, uint32_t address, uint8_t *
 
 		memcpy(info->buffer + 1 + info->addr_size, data, transfer_len);
 		// nk_printf("Write, len = %lu\n", transfer_len + 1 + info->addr_size);
-		// byte_hex_dump((unsigned long)(xfer), 0, transfer_len + 1 + info->addr_size, NULL);
+		// nk_byte_hex_dump(xfer, 0, 0, transfer_len + 1 + info->addr_size);
 		status |= info->spi_transfer(info->spi_ptr, info->buffer, 1 + info->addr_size + transfer_len);
 		status |= nk_spiflash_busy_wait(info);
 		// nk_printf("After write\n");
@@ -155,7 +155,7 @@ int nk_spiflash_read(struct nk_spiflash_info *info, uint32_t address, uint8_t *d
 		}
 
 		// nk_printf("Read, len = %lu\n", transfer_len + 1 + info->addr_size);
-		// byte_hex_dump((unsigned long)(xfer), 0, transfer_len + 1 + info->addr_size, NULL);
+		// nk_byte_hex_dump(xfer, 0, 0, transfer_len + 1 + info->addr_size);
 		status |= info->spi_transfer(info->spi_ptr, info->buffer, 1 + info->addr_size + transfer_len);
 		// nk_printf("After read\n");
 		memcpy(data, info->buffer + 1 + info->addr_size, transfer_len);
@@ -179,9 +179,7 @@ void nk_spiflash_hex_dump(struct nk_spiflash_info *info, uint32_t addr, uint32_t
             this_len = len;
 
         nk_spiflash_read(info, this_page + this_ofst, buf + this_ofst, this_len);
-        nkinfile_t f[1];
-        nkinfile_open_mem(f, buf, 256);
-        nk_byte_hex_dump(this_page, this_ofst, this_len, f);
+        nk_byte_hex_dump(buf, this_page, this_ofst, this_len);
 
         addr += this_len;
         len -= this_len;

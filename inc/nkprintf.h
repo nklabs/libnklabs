@@ -35,10 +35,12 @@
 #include "nkprintf_config.h"
 
 // Hex dump
+// Print from buf[offset] to buf[offset+count]
+// Base is added to offset for the printed address
 
-int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned char *buf, unsigned long base, unsigned long offset, unsigned long count);
 
-int nk_byte_hex_dump(unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g);
+int nk_byte_hex_dump(unsigned char *buf, unsigned long base, unsigned long offset, unsigned long count);
 
 // print 'ind' spaces- used for indentation
 

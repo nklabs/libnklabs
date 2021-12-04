@@ -35,9 +35,7 @@ void flash_hex_dump(uint32_t addr, uint32_t len)
             this_len = len;
 
         nk_flash_read(this_page, buf, this_len);
-        nkinfile_t f[1];
-        nkinfile_open_mem(f, buf, 256);
-        nk_byte_hex_dump(this_page, this_ofst, this_len, f);
+        nk_byte_hex_dump(buf, this_page, this_ofst, this_len);
 
         addr += this_len;
         len -= this_len;

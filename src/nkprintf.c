@@ -41,11 +41,10 @@ int nk_indent(int ind)
     return nk_findent(nkstdout, ind);
 }
 
-int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g)
+int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned char *buf, unsigned long base, unsigned long offset, unsigned long count)
 {
 	int status = 0;
 	unsigned int y, x;
-	unsigned char buf[16];
 	unsigned int start = (offset & 15);
 	offset &= ~15UL;
 	for (y = 0; count; y += 16) {
@@ -60,15 +59,13 @@ int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, 
 				if (st)
 					--st;
 			} else {
-				nk_fseek(g, offset + y + x);
-				buf[x] = nk_fpeek(g);
-				status |= nk_fprintf(f, " %2.2x", buf[x]);
+				status |= nk_fprintf(f, " %2.2x", buf[offset + y + x]);
 				--cn;
 			}
 		}
 		status |= nk_fprintf(f, "  ");
 		for (x = 0; x != 16; ++x) {
-			int c = buf[x];
+			int c = buf[offset + y + x];
 			if (c < 32)
 				c = '.';
 			if (c >= 127 && c <= 255)
@@ -87,9 +84,9 @@ int nk_fbyte_hex_dump(nkoutfile_t *f, unsigned long base, unsigned long offset, 
 	return status;
 }
 
-int nk_byte_hex_dump(unsigned long base, unsigned long offset, unsigned long count, nkinfile_t *g)
+int nk_byte_hex_dump(unsigned char *buf, unsigned long base, unsigned long offset, unsigned long count)
 {
-	return nk_fbyte_hex_dump(nkstdout, base, offset, count, g);
+	return nk_fbyte_hex_dump(nkstdout, buf, base, offset, count);
 }
 
 // Small printf()
