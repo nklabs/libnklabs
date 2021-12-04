@@ -54,7 +54,10 @@ ${APPSRC}/database.c \
 ${APPSRC}/nkymodem_cmd.c \
 ${APPSRC}/basic_cmds.c \
 ${APPSRC}/spiflash.c \
+${APPSRC}/i2c.c \
 ${NKSRC}/nkprintf_fp.c \
+${NKSRC}/nki2c.c \
+${NKSRC}/nki2c_stm.c \
 ${NKSRC}/nkrtc.c \
 ${NKSRC}/nkdbase.c \
 ${NKSRC}/nkserialize.c \
