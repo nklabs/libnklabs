@@ -123,7 +123,11 @@ void nk_i2c_eeprom_hex_dump(const struct nk_i2c_eeprom_info *info, uint32_t addr
         if (this_len > len)
             this_len = len;
 
-        nk_i2c_eeprom_read(info, this_page + this_ofst, buf + this_ofst, this_len);
+        if (nk_i2c_eeprom_read(info, this_page + this_ofst, buf + this_ofst, this_len))
+	{
+		nk_printf("I2C error\n");
+		break;
+	}
         nk_byte_hex_dump(buf, this_page, this_ofst, this_len);
 
         addr += this_len;
@@ -142,7 +146,11 @@ uint32_t nk_i2c_eeprom_crc(const struct nk_i2c_eeprom_info *info, uint32_t addr,
         if (this_len > len)
             this_len = len;
 
-        nk_i2c_eeprom_read(info, this_page, buf, this_len);
+        if (nk_i2c_eeprom_read(info, this_page, buf, this_len))
+	{
+		nk_printf("I2C error\n");
+		break;
+	}
 
         for (x = 0; x != this_len; ++x)
             crc = nk_crc32be_update(crc, buf[x]);
@@ -155,14 +163,15 @@ uint32_t nk_i2c_eeprom_crc(const struct nk_i2c_eeprom_info *info, uint32_t addr,
 
 int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *args, uint32_t *old_i2c_eeprom_addr)
 {
+    int status = 0;
     uint32_t addr;
     uint32_t len;
     uint32_t val;
     if (facmode && nk_fscan(args, "rd %lx ", &addr)) {
-        nk_i2c_eeprom_read(info, addr, (uint8_t *)&val, 4);
+        status |= nk_i2c_eeprom_read(info, addr, (uint8_t *)&val, 4);
         nk_printf("[%lx] has %lx\n", addr, val);
     } else if (facmode && nk_fscan(args, "wr %lx %lx ", &addr, &val)) {
-        nk_i2c_eeprom_write(info, addr, (uint8_t *)&val, 4);
+        status |= nk_i2c_eeprom_write(info, addr, (uint8_t *)&val, 4);
         nk_printf("Wrote %lx to [%lx]\n", val, addr);
     } else if (facmode && nk_fscan(args, "hd %lx %x ", old_i2c_eeprom_addr, &len)) {
         nk_i2c_eeprom_hex_dump(info, *old_i2c_eeprom_addr, len);
@@ -193,7 +202,9 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
     			th = 16;
 		else
 			th = len;
-		nk_i2c_eeprom_write(info, addr, buf, th);
+		status |= nk_i2c_eeprom_write(info, addr, buf, th);
+		if (status)
+			break;
 		len -= th;
 		addr += th;
     	}
@@ -209,7 +220,9 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
     			th = 16;
 		else
 			th = len;
-		nk_i2c_eeprom_write(info, addr, buf, th);
+		status |= nk_i2c_eeprom_write(info, addr, buf, th);
+		if (status)
+			break;
 		len -= th;
 		addr += th;
     	}
@@ -217,5 +230,7 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
     } else {
         nk_printf("Syntax error\n");
     }
+    if (status)
+    	nk_printf("I2C error\n");
     return 0;
 }
