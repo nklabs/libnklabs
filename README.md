@@ -5,8 +5,13 @@
 This library provides functionality useful for embedded applications on
 small microcontrollers:
 
-* A decentralized command line interface (CLI) with line editor, on-line help and history
-* A schema-defined database with simple schema change  / migration support, typically used for holding calibration and configuration parameters in local flash memory
+* A command line interface (CLI) with line editor, on-line help and history. 
+  Commands are declared statically anywhere in the project instead of
+  requiring a central command table or registration functions.
+
+* A schema-defined database with simple schema change  / migration support,
+  typically used for holding calibration and configuration parameters in local flash memory
+
 * A serialization / de-serialization system so that databases can be transferred over the CLI
 * Y-MODEM protocol for transferring files over the CLI, for example for firmware updates
 * Replacment printf() that supports floating point but is much smaller than the newlib one
