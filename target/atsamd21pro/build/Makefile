@@ -103,9 +103,8 @@ samd21a/gcc/system_samd21.o \
 hpl/rtc/hpl_rtc.o \
 examples/driver_examples.o \
 driver_init.o \
-hal/src/hal_usart_async.o \
+hal/src/hal_usart_sync.o \
 hpl/sercom/hpl_sercom.o \
-hal/utils/src/utils_ringbuffer.o \
 hal/src/hal_gpio.o \
 hal/utils/src/utils_event.o \
 hal/src/hal_sleep.o \
@@ -161,9 +160,8 @@ OBJS_AS_ARGS +=  \
 "hpl/rtc/hpl_rtc.o" \
 "examples/driver_examples.o" \
 "driver_init.o" \
-"hal/src/hal_usart_async.o" \
+"hal/src/hal_usart_sync.o" \
 "hpl/sercom/hpl_sercom.o" \
-"hal/utils/src/utils_ringbuffer.o" \
 "hal/src/hal_gpio.o" \
 "hal/utils/src/utils_event.o" \
 "hal/src/hal_sleep.o" \
@@ -245,12 +243,11 @@ DEPS_AS_ARGS +=  \
 "hpl/gclk/hpl_gclk.d" \
 "hal/src/hal_init.d" \
 "driver_init.d" \
-"hal/src/hal_usart_async.d" \
+"hal/src/hal_usart_sync.d" \
 "samd21a/gcc/system_samd21.d" \
 "examples/driver_examples.d" \
 "hpl/rtc/hpl_rtc.d" \
 "hal/src/hal_sleep.d" \
-"hal/utils/src/utils_ringbuffer.d" \
 "hpl/sercom/hpl_sercom.d" \
 "hal/src/hal_gpio.d" \
 "hal/src/hal_atomic.d" \
