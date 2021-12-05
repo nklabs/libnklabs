@@ -25,6 +25,7 @@ NKSRC = ../../src
 APPSRC = ../../app
 NKINC = ../../inc
 NKCONFIG = ../../config
+NKARCHCONFIG = ../../config_stm32
 
 ######################################
 # building variables
@@ -164,6 +165,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -I${NKCONFIG} \
+-I${NKARCHCONFIG} \
 -I${NKINC} \
 -ICore/Inc \
 -IDrivers/STM32G0xx_HAL_Driver/Inc \
@@ -176,7 +178,7 @@ C_INCLUDES =  \
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-CFLAGS += -DVERSION_MAJOR=`cat ${APPSRC}/VERSION_MAJOR`  -DVERSION_MINOR=`cat ${APPSRC}/VERSION_MINOR` -DYEAR=$(YEAR) -DMONTH=$(MONTH) -DDAY=$(DAY) -DHOUR=$(HOUR) -DMINUTE=$(MINUTE)
+CFLAGS += -DNKVERSION_MAJOR=`cat ${APPSRC}/VERSION_MAJOR`  -DNKVERSION_MINOR=`cat ${APPSRC}/VERSION_MINOR` -DNKYEAR=$(YEAR) -DNKMONTH=$(MONTH) -DNKDAY=$(DAY) -DNKHOUR=$(HOUR) -DNKMINUTE=$(MINUTE)
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2

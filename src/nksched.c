@@ -22,6 +22,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+#include "nkmacros.h"
 #include "nkcli.h"
 #include "nksched.h"
 
@@ -233,7 +234,7 @@ void nk_init_sched()
 
 static void do_nothing(void *data)
 {
-	UNUSED(data);
+	nk_unused(data);
 	nk_printf("Did some work!\n");
 }
 
