@@ -35,6 +35,7 @@ int main(void)
 
 
     nk_init_sched();
+    nk_rtc_init();
     nk_init_cli();
     wdt_tid = nk_alloc_tid();
     nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
