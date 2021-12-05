@@ -27,8 +27,7 @@
 #include "nkprintf.h"
 #include "nkuart.h"
 
-//#include "hal_usart_async.h"
-#include "hal_usart_sync.h"
+#include "hal_usart_async.h"
 #include <hal_atomic.h>
 #include <utils.h>
 
@@ -72,14 +71,15 @@ void nk_putc(char ch)
 {
 	struct io_descriptor *io;
 	char cr = '\r';
-	//usart_async_get_io_descriptor(&USART_0, &io);
-	usart_sync_get_io_descriptor(&USART_0, &io);
-	tx_busy = 1;
+	usart_async_get_io_descriptor(&USART_0, &io);
 	if (!tty_mode && ch == '\n') {
+		tx_busy = 1;
 		io_write(io, (const uint8_t *)&cr, 1);
+		while (tx_busy);
 	}
+	tx_busy = 1;
 	io_write(io, (const uint8_t *)&ch, 1);
-	//while (tx_busy);
+	while (tx_busy);
 }
 
 void nk_puts(const char *s)
@@ -98,16 +98,8 @@ void nk_uart_write(const char *s, int len)
 
 int nk_getc()
 {
-	uint8_t ch;
-	struct io_descriptor *io;
-	usart_sync_get_io_descriptor(&USART_0, &io);
-	if (1 == io_read(io, &ch, 1))
-		return ch;
-	else
-		return -1;
-
-#if 0
-        struct io_descriptor *const io_descr = &USART_0.io;
+        struct io_descriptor *const io_descr;
+	usart_async_get_io_descriptor(&USART_0, &io_descr);
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
         if (ringbuffer_num(&descr->rx) < 1) {
@@ -117,13 +109,13 @@ int nk_getc()
 		ringbuffer_get(&descr->rx, &ch);
 		return ch;
         }
-#endif
 }
 
 int nk_kbhit()
 {
-#if 0
-        struct io_descriptor *const io_descr = &USART_0.io;
+        struct io_descriptor *const io_descr;
+	usart_async_get_io_descriptor(&USART_0, &io_descr);
+
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
         if (ringbuffer_num(&descr->rx) < 1) {
@@ -131,7 +123,6 @@ int nk_kbhit()
         } else {
         	return 1;
         }
-#endif
 	return 1;
 }
 
@@ -158,7 +149,6 @@ int nk_uart_read(char *s, int len, nk_time_t timeout)
 	return l;
 }
 
-#if 0
 static void tx_cb(const struct usart_async_descriptor *const io_descr)
 {
 	tx_busy = 0;
@@ -171,23 +161,30 @@ static void rx_cb(const struct usart_async_descriptor *const io_descr)
 		waiting_rx_task = 0;
 	}
 }
-#endif
 
 // UART configuration settings.
 
 void nk_init_uart()
 {
 	struct io_descriptor *io;
+	int x;
 	//usart_async_set_baud_rate(&USART_0, 115200);
-        //usart_async_register_callback(&USART_0, USART_ASYNC_TXC_CB, tx_cb);
-        //usart_async_register_callback(&USART_0, USART_ASYNC_RXC_CB, rx_cb);
-	//usart_async_get_io_descriptor(&USART_0, &io);
-	//usart_async_enable(&USART_0);
-	usart_sync_get_io_descriptor(&USART_0, &io);
-	//usart_sync_set_baud_rate(&USART_0, 115200);
-	usart_sync_enable(&USART_0);
+        usart_async_register_callback(&USART_0, USART_ASYNC_TXC_CB, tx_cb);
+        usart_async_register_callback(&USART_0, USART_ASYNC_RXC_CB, rx_cb);
 
-	io_write(io, "Hello, world!\r\n", 15);
+	usart_async_enable(&USART_0);
+	usart_async_get_io_descriptor(&USART_0, &io);
+
+	io_write(io, "\r\n", 2);
+	nk_udelay(100000);
+
+	for (x = 0; x != 3; ++x)
+	{
+		tx_busy = 1;
+		io_write(io, "Hello, world!\r\n", 15);
+		while(tx_busy);
+	}
+	nk_udelay(100000);
 
         // First startup line
         nk_putc('\n');
