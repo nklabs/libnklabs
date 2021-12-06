@@ -65,22 +65,20 @@ int nk_set_uart_mode(int new_mode)
 	return old_mode;
 }
 
-volatile int tx_busy;
-
 void nk_putc(char ch)
 {
-	struct io_descriptor *io;
-	char cr = '\r';
-	usart_async_get_io_descriptor(&USART_0, &io);
+	struct io_descriptor *io_descr;
+	usart_async_get_io_descriptor(&USART_0, &io_descr);
+	struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
+
 	if (!tty_mode && ch == '\n') {
-		tx_busy = 1;
-		io_write(io, (const uint8_t *)&cr, 1);
-		while (tx_busy);
+		_usart_async_write_byte(&descr->device, '\r');
+                while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
 	}
-	tx_busy = 1;
-	io_write(io, (const uint8_t *)&ch, 1);
-	while (tx_busy);
+	_usart_async_write_byte(&descr->device, ch);
+	while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
 }
+
 
 void nk_puts(const char *s)
 {
@@ -149,11 +147,6 @@ int nk_uart_read(char *s, int len, nk_time_t timeout)
 	return l;
 }
 
-static void tx_cb(const struct usart_async_descriptor *const io_descr)
-{
-	tx_busy = 0;
-}
-
 static void rx_cb(const struct usart_async_descriptor *const io_descr)
 {
 	if (waiting_rx_task) {
@@ -169,22 +162,10 @@ void nk_init_uart()
 	struct io_descriptor *io;
 	int x;
 	//usart_async_set_baud_rate(&USART_0, 115200);
-        usart_async_register_callback(&USART_0, USART_ASYNC_TXC_CB, tx_cb);
         usart_async_register_callback(&USART_0, USART_ASYNC_RXC_CB, rx_cb);
 
 	usart_async_enable(&USART_0);
 	usart_async_get_io_descriptor(&USART_0, &io);
-
-	io_write(io, "\r\n", 2);
-	nk_udelay(100000);
-
-	for (x = 0; x != 3; ++x)
-	{
-		tx_busy = 1;
-		io_write(io, "Hello, world!\r\n", 15);
-		while(tx_busy);
-	}
-	nk_udelay(100000);
 
         // First startup line
         nk_putc('\n');
