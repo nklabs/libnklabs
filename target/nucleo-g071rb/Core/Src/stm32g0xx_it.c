@@ -47,7 +47,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+extern void nk_uart_irq_handler(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

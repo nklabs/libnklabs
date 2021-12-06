@@ -16,6 +16,8 @@ void wdt_poke(void *data)
     nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
 }
 
+extern void spiflash_init(void);
+
 int main(void)
 {
     atmel_start_init();
@@ -39,5 +41,6 @@ int main(void)
     wdt_tid = nk_alloc_tid();
     nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
     database_init();
+    spiflash_init();
     nk_sched_loop();
 }

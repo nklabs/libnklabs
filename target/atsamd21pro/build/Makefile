@@ -56,6 +56,7 @@ hpl/core
 
 # List the object files
 OBJS +=  \
+spiflash_atsam.o \
 basic_cmds_atsam.o \
 database.o \
 nkymodem_cmd.o \
@@ -114,6 +115,7 @@ hpl/tc/hpl_tc.o \
 hal/src/hal_atomic.o
 
 OBJS_AS_ARGS +=  \
+"spiflash_atsam.o" \
 "basic_cmds_atsam.o" \
 "database.o" \
 "nkymodem_cmd.o" \
@@ -201,6 +203,7 @@ DIR_INCLUDES +=  \
 DEPS := $(OBJS:%.o=%.d)
 
 DEPS_AS_ARGS +=  \
+"spiflash_atsam.d" \
 "basic_cmds_atsam.d" \
 "database.d" \
 "nkymodem_cmd.d" \
