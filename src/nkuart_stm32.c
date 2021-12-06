@@ -52,11 +52,19 @@ void nk_putc(char ch)
         nk_irq_lock(&console_lock, irq_flag);
 	if (!tty_mode && ch == '\n') {
 		char cr = '\r';
+#ifdef USART_ISR_TXE_TXFNF
 		while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
+#else
+		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
+#endif
 		console_uart.Instance->TDR = (uint8_t)cr;
 		
 	}
+#ifdef USART_ISR_TXE_TXFNF
 	while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
+#else
+		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
+#endif
 	console_uart.Instance->TDR = (uint8_t)ch;
 	nk_irq_unlock(&console_lock, irq_flag);
 }
@@ -92,7 +100,11 @@ void nk_uart_write(const char *s, int len)
 
 void nk_uart_irq_handler(void)
 {
+#ifdef USART_ISR_RXNE_RXFNE
 	while (console_uart.Instance->ISR & USART_ISR_RXNE_RXFNE) // Character available?
+#else
+	while (console_uart.Instance->ISR & USART_ISR_RXNE) // Character available?
+#endif
 	{
 		uint8_t ch = console_uart.Instance->RDR; // Read it
 
@@ -171,5 +183,10 @@ void nk_init_uart()
   	SET_BIT(console_uart.Instance->CR1, USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 
   	// Enable Rx interrupts
+#ifdef USART_CR1_RXNEIE_RXFNEIE
+	// FIFO
   	SET_BIT(console_uart.Instance->CR1, USART_CR1_RXNEIE_RXFNEIE);
+#else
+  	SET_BIT(console_uart.Instance->CR1, USART_CR1_RXNEIE);
+#endif
 }

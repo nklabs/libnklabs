@@ -1,12 +1,7 @@
 #ifndef _Inkarch_stm32
 #define _Inkarch_stm32
 
-// MCU abstraction layer
-
-#include "stm32g0xx_hal.h"
-
-// GPIO pins and devices
-
+// GPIO pins and devices, also includes stm32g0xx_hal.h
 #include "main.h"
 
 // Borrow Linux kernel lock syntax

@@ -137,8 +137,14 @@ unsigned char xfer_buf[128];
 const struct nk_dbase test_dbase =
 {
     .ty = &tyTESTTOP,
-    .bank0 = 65536+32768+0,
-    .bank1 = 65536+32768+8192,
+// On systems with 128K of flash
+//    .bank0 = 65536+32768+0,
+//    .bank1 = 65536+32768+8192,
+
+// Small systems
+    .bank0 = 49152,
+    .bank1 = 57344,
+
     .bank_size = 8192,
     .buf = xfer_buf,
     .buf_size = sizeof(xfer_buf),

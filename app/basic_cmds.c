@@ -24,8 +24,10 @@
 #include "nkreadline.h"
 #include "nkcli.h"
 
+#if 0
 #include "stm32g0xx_ll_system.h"
 #include "stm32g0xx_ll_utils.h"
+#endif
 
 // Transmit Ctrl-S to test XON/XOFF
 
@@ -168,6 +170,8 @@ static int cmd_info(nkinfile_t *args)
 #ifdef STM32G071xx
                 nk_printf("for STM32G071xx\n");
 #endif
+
+#if 0
                 nk_printf("Build date: %4.4d-%2.2d-%2.2d %2.2d:%2.2d\n", build_year, build_month, build_day, build_hour, build_minute);
 	        nk_printf("CPU frequency = %lu\n", HAL_RCC_GetHCLKFreq());
 	        nk_printf("CPU IDCODE = %lx REV = %lx\n", LL_DBGMCU_GetDeviceID(), LL_DBGMCU_GetRevisionID());
@@ -186,6 +190,7 @@ static int cmd_info(nkinfile_t *args)
 	            (0xFF & idlow),
 	            lot
                 );
+#endif
 	            
 	        nk_printf("Reset cause = %s\n", reset_cause_get_name(reset_cause));
 	        //nk_printf("Current time = %u\n", reg_wallclock);

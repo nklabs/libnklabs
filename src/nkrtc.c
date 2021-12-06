@@ -1,4 +1,5 @@
-#include "stm32g0xx_hal.h"
+
+#include "nkarch.h"
 #include "nkcli.h"
 #include "nkrtc.h"
 

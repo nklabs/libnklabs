@@ -81,7 +81,7 @@ int nk_init_mcuflash()
 }
 
 // Erase one page
-// Page size == FLASH_PAGE_SIZE == 2048
+// Page size == FLASH_PAGE_SIZE
 
 int flash_erase(uint32_t address)
 {
@@ -93,18 +93,31 @@ int flash_erase(uint32_t address)
 	FLASH_EraseInitTypeDef erase;
 
 	erase.TypeErase = FLASH_TYPEERASE_PAGES;
+#ifdef FLASH_FLAG_PGAERR // Maybe?
 	erase.Banks = 0;
 	erase.Page = (address / FLASH_PAGE_SIZE);
+#else
+	erase.PageAddress = address;
+#endif
 	erase.NbPages = 1;
 
 	HAL_FLASH_Unlock();
 
 	__HAL_FLASH_CLEAR_FLAG(
-		FLASH_FLAG_EOP |
-		FLASH_FLAG_OPERR |
-		FLASH_FLAG_WRPERR |
-		FLASH_FLAG_PGAERR |
-		FLASH_FLAG_PGSERR
+		FLASH_FLAG_EOP
+		| FLASH_FLAG_WRPERR
+#ifdef FLASH_FLAG_OPERR
+		| FLASH_FLAG_OPERR
+#endif
+#ifdef FLASH_FLAG_PGAERR
+		| FLASH_FLAG_PGAERR
+#endif
+#ifdef FLASH_FLAG_PGERR
+		| FLASH_FLAG_PGERR
+#endif
+#ifdef FLASH_FLAG_PGSERR
+		| FLASH_FLAG_PGSERR
+#endif
 	);
 
 	rtn = (HAL_FLASHEx_Erase(&erase, &err) != HAL_OK);
@@ -201,36 +214,50 @@ int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 // Obtain the STM32 system reset cause
 reset_cause_t reset_cause_get(void)
 {
-    reset_cause_t reset_cause;
+    reset_cause_t reset_cause = RESET_CAUSE_UNKNOWN;
 
+#ifdef RCC_FLAG_LPWRRST
     if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
     {
         reset_cause = RESET_CAUSE_LOW_POWER_RESET;
     }
-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
+#endif
+#ifdef RCC_FLAG_WWDGRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
     {
         reset_cause = RESET_CAUSE_WINDOW_WATCHDOG_RESET;
     }
-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
+#endif
+#ifdef RCC_FLAG_IWDGRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
     {
         reset_cause = RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET;
     }
-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
+#endif
+#ifdef RCC_FLAG_SFTRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
     {
         reset_cause = RESET_CAUSE_SOFTWARE_RESET; // This reset is induced by calling the ARM CMSIS `NVIC_SystemReset()` function!
     }
-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
+#endif
+#ifdef RCC_FLAG_PINRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
     {
         reset_cause = RESET_CAUSE_EXTERNAL_RESET_PIN_RESET;
     }
-    else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PWRRST))
+#endif
+#ifdef RCC_FLAG_PWRRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PWRRST))
     {
         reset_cause = RESET_CAUSE_POWER_ON_POWER_DOWN_RESET;
     }
-    else
+#endif
+#ifdef RCC_FLAG_PORRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST))
     {
-        reset_cause = RESET_CAUSE_UNKNOWN;
+        reset_cause = RESET_CAUSE_POWER_ON_POWER_DOWN_RESET;
     }
+#endif
 
     // Clear all the reset flags or else they will remain set during future resets until system power is fully removed.
     __HAL_RCC_CLEAR_RESET_FLAGS();

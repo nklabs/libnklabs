@@ -1,4 +1,4 @@
-Platform descriptions
+P*latform descriptions
 
 nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
 
@@ -17,7 +17,7 @@ abstraction:
 atsamd:
   low power modes?  which is the best clock to use?
   should we be using systick or an atsam timer?
-
+*
 rtc:
   better abtraction
   atsamd clock sometimes doesn't start until you read it.. are missing some initialization step?
@@ -32,7 +32,7 @@ targets:
   Add RISCV
   Add Xilinx
   Add some more ST
-  Add Atmel
+  Add some more Atmel
 
   Some example in an RTOS
 
