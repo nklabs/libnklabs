@@ -41,7 +41,7 @@ int ext_rtc_get_time(int *year, int *month, int *day, int *hour, int *min, int *
 
 void nk_rtc_init()
 {
-    startup("Real time clock");
+    startup("Real time clock\n");
     calendar_enable(&CALENDAR_0);
 }
 
@@ -86,6 +86,6 @@ void date_string(char *buf)
     hour = 0;
     min = 0;
     sec = 0;
-    int rtn = ext_rtc_get_time(&year, &month, &day, &hour, &min, &sec);
+    ext_rtc_get_time(&year, &month, &day, &hour, &min, &sec);
     nk_snprintf(buf, 40, "%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d ", year, month, day, hour, min, sec);
 }

@@ -96,7 +96,7 @@ void nk_uart_write(const char *s, int len)
 
 int nk_getc()
 {
-        struct io_descriptor *const io_descr;
+        struct io_descriptor *io_descr;
 	usart_async_get_io_descriptor(&USART_0, &io_descr);
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
@@ -111,7 +111,7 @@ int nk_getc()
 
 int nk_kbhit()
 {
-        struct io_descriptor *const io_descr;
+        struct io_descriptor *io_descr;
 	usart_async_get_io_descriptor(&USART_0, &io_descr);
 
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
@@ -121,7 +121,6 @@ int nk_kbhit()
         } else {
         	return 1;
         }
-	return 1;
 }
 
 int nk_uart_read(char *s, int len, nk_time_t timeout)
@@ -160,7 +159,6 @@ static void rx_cb(const struct usart_async_descriptor *const io_descr)
 void nk_init_uart()
 {
 	struct io_descriptor *io;
-	int x;
 	//usart_async_set_baud_rate(&USART_0, 115200);
         usart_async_register_callback(&USART_0, USART_ASYNC_RXC_CB, rx_cb);
 

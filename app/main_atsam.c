@@ -2,6 +2,7 @@
 #include "nkuart.h"
 #include "nksched.h"
 #include "nkcli.h"
+#include "nkrtc.h"
 #include "nkdbase.h"
 #include "database.h"
 #include "startup.h"
@@ -17,11 +18,11 @@ void wdt_poke(void *data)
 
 int main(void)
 {
-    int x;
     atmel_start_init();
 
 #ifdef junk
     // Show we're alive even if uart isn't working
+    int x;
     for (x = 0; x != 5;++x)
     {
         gpio_set_pin_level(USER_LED, false);

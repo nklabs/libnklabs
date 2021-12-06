@@ -79,8 +79,6 @@ void nk_udelay(unsigned long usec);
 #define spi1_port hspi1
 extern SPI_HandleTypeDef hspi1;
 
-void reboot();
-
 typedef enum reset_cause_e
 {
     RESET_CAUSE_UNKNOWN = 0,
@@ -103,5 +101,8 @@ const char *reset_cause_get_name(reset_cause_t reset_cause);
 // Get sector size.  This is the minimum size that nk_flash_erase can erase.
 //uint32_t nk_flash_sector_size();
 #define NK_MCUFLASH_ERASE_SECTOR_SIZE 2048
+
+// Reboot MCU
+void reboot(void);
 
 #endif

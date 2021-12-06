@@ -75,4 +75,6 @@ void nk_udelay(unsigned long usec);
 //uint32_t nk_flash_sector_size();
 #define NK_MCUFLASH_ERASE_SECTOR_SIZE 8192
 
+void reboot(void);
+
 #endif

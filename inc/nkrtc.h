@@ -1,7 +1,7 @@
 #ifndef _Inkrtc
 #define _Inkrtc
 
-//void rtc_init();
+void nk_rtc_init();
 //int cmd_hwclock(char *args);
 void date_string(char *buf); // 20 characters plus NUL
 int set_datetime(int year, int month, int day, int weekday, int hour, int min, int sec);

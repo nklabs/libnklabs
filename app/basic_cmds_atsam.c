@@ -151,10 +151,6 @@ reset_cause_t reset_cause;
 
 static int cmd_info(nkinfile_t *args)
 {
-        char lot[8];
-        uint32_t idxy;
-        uint32_t idlow;
-        uint32_t idhigh;
 	if (nk_fscan(args, "")) {
                 nk_printf("Firmware version %d.%d\n", firmware_major, firmware_minor);
                 nk_printf("Build date: %4.4d-%2.2d-%2.2d %2.2d:%2.2d\n", build_year, build_month, build_day, build_hour, build_minute);

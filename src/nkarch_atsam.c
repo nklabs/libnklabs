@@ -23,7 +23,6 @@
 #include "nkprintf.h"
 #include "nkarch_atsam.h"
 
-
 #define SCHED_TIMER_HZ 1000
 
 static volatile uint32_t current_time; // The current time in ticks
@@ -49,7 +48,7 @@ uint32_t nk_convert_delay(uint32_t delay)
 
 // Timer callback: execution context for this is timer service task
 
-void timer_callback(const struct timer_task *const timer_task)
+static void timer_callback(const struct timer_task *const timer_task)
 {
 	current_time += timeout;
 	timeout = 0;
@@ -60,7 +59,7 @@ void nk_init_sched_timer()
 	current_time = 0;
 }
 
-struct timer_task sched_timer_task;
+static struct timer_task sched_timer_task;
 
 // delay in timer ticks
 void nk_start_sched_timer(uint32_t delay)
@@ -99,7 +98,7 @@ void nk_udelay(unsigned long usec)
 	//while ((nk_get_time() - old) < clocks);
 }
 
-void reboot()
+void reboot(void)
 {
 	NVIC_SystemReset();
 }
@@ -138,7 +137,6 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 
 int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 {
-	uint8_t xfer[256+4];
 	int rtn = 0; // Assume success
 
 	uint32_t page_size = 512;
