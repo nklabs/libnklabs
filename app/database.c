@@ -145,7 +145,7 @@ const struct nk_dbase test_dbase =
     .flash_read = nk_mcuflash_read,
     .flash_erase = nk_mcuflash_erase,
     .flash_write = nk_mcuflash_write,
-    .flash_granularity = 8
+    .flash_granularity = NK_MCUFLASH_MIN_SIZE
 };
 
 // Initialize calibration database

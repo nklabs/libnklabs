@@ -1,3 +1,28 @@
+Platform descriptions
+
+nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
+
+Instructions for openocd
+
+Example CLI manual
+
+better abstraction for info command
+
+install git hash of build
+
+abstraction:
+  simpler diretory structure?  do we have too many of them?
+  maybe have an arch/ directory..
+
+atsamd:
+  low power modes?  which is the best clock to use?
+  should we be using systick or an atsam timer?
+
+rtc:
+  better abtraction
+  atsamd clock sometimes doesn't start until you read it.. are missing some initialization step?
+
+
 bootloader:
 
   We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate

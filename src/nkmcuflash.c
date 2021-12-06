@@ -47,6 +47,7 @@ static uint32_t flash_crc(uint32_t addr, uint32_t len)
 
 static int cmd_mcuflash(nkinfile_t *args)
 {
+    int status = 0;
     uint32_t addr;
     uint32_t len;
     uint64_t val;
@@ -77,12 +78,49 @@ static int cmd_mcuflash(nkinfile_t *args)
         nk_mcuflash_erase(addr, len);
         nk_printf("done.\n");
     } else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len)) {
+    	uint8_t buf[16];
+    	uint8_t x = 0x10;
         nk_printf("Writing %lu bytes...\n", len);
-        nk_mcuflash_write(addr, (uint8_t *)0x100, len);
+    	while (len)
+    	{
+    		int th;
+    		int n;
+    		for (n = 0; n != 16; ++n)
+    			buf[n] = x++;
+    		if (len >= 16)
+    			th = 16;
+		else
+			th = len;
+		status |= nk_mcuflash_write(addr, buf, th);
+		if (status)
+			break;
+		len -= th;
+		addr += th;
+    	}
+        nk_printf("done.\n");
+    } else if (facmode && nk_fscan(args, "fill %lx %x %x ", &addr, &len, &val)) {
+    	uint8_t buf[16];
+    	memset(buf, val, sizeof(buf));
+        nk_printf("Writing %lu bytes...\n", len);
+    	while (len)
+    	{
+    		int th;
+    		if (len >= 16)
+    			th = 16;
+		else
+			th = len;
+		status |= nk_mcuflash_write(addr, buf, th);
+		if (status)
+			break;
+		len -= th;
+		addr += th;
+    	}
         nk_printf("done.\n");
     } else {
         nk_printf("Syntax error\n");
     }
+    if (status)
+    	nk_printf("Flash error\n");
     return 0;
 }
 
@@ -95,6 +133,8 @@ COMMAND(mcuflash,
     "mcuflash erase <addr> <len>\n"
     "                          Erase flash memory\n"
     "mcuflash fill <addr> <len>\n"
-    "                          Write flash memory\n",
+    "                          Fill flash memory with pattern\n"
+    "mcuflash fill <addr> <len> <val>\n"
+    "                          Fill flash memory with byte\n",
     ""
 )

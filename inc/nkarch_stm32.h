@@ -100,7 +100,9 @@ const char *reset_cause_get_name(reset_cause_t reset_cause);
 
 // Get sector size.  This is the minimum size that nk_flash_erase can erase.
 //uint32_t nk_flash_sector_size();
-#define NK_MCUFLASH_ERASE_SECTOR_SIZE 2048
+#define NK_MCUFLASH_ERASE_SIZE 2048
+
+#define NK_MCUFLASH_MIN_SIZE 8
 
 // Reboot MCU
 void reboot(void);
