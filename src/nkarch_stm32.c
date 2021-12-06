@@ -216,34 +216,10 @@ reset_cause_t reset_cause_get(void)
 {
     reset_cause_t reset_cause = RESET_CAUSE_UNKNOWN;
 
-#ifdef RCC_FLAG_LPWRRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
+#ifdef RCC_FLAG_PORRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST))
     {
-        reset_cause = RESET_CAUSE_LOW_POWER_RESET;
-    }
-#endif
-#ifdef RCC_FLAG_WWDGRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
-    {
-        reset_cause = RESET_CAUSE_WINDOW_WATCHDOG_RESET;
-    }
-#endif
-#ifdef RCC_FLAG_IWDGRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
-    {
-        reset_cause = RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET;
-    }
-#endif
-#ifdef RCC_FLAG_SFTRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
-    {
-        reset_cause = RESET_CAUSE_SOFTWARE_RESET; // This reset is induced by calling the ARM CMSIS `NVIC_SystemReset()` function!
-    }
-#endif
-#ifdef RCC_FLAG_PINRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
-    {
-        reset_cause = RESET_CAUSE_EXTERNAL_RESET_PIN_RESET;
+        reset_cause = RESET_CAUSE_POWER_ON_POWER_DOWN_RESET;
     }
 #endif
 #ifdef RCC_FLAG_PWRRST
@@ -252,10 +228,34 @@ reset_cause_t reset_cause_get(void)
         reset_cause = RESET_CAUSE_POWER_ON_POWER_DOWN_RESET;
     }
 #endif
-#ifdef RCC_FLAG_PORRST
-    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST))
+#ifdef RCC_FLAG_PINRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
     {
-        reset_cause = RESET_CAUSE_POWER_ON_POWER_DOWN_RESET;
+        reset_cause = RESET_CAUSE_EXTERNAL_RESET_PIN_RESET;
+    }
+#endif
+#ifdef RCC_FLAG_SFTRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
+    {
+        reset_cause = RESET_CAUSE_SOFTWARE_RESET; // This reset is induced by calling the ARM CMSIS `NVIC_SystemReset()` function!
+    }
+#endif
+#ifdef RCC_FLAG_IWDGRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
+    {
+        reset_cause = RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET;
+    }
+#endif
+#ifdef RCC_FLAG_WWDGRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
+    {
+        reset_cause = RESET_CAUSE_WINDOW_WATCHDOG_RESET;
+    }
+#endif
+#ifdef RCC_FLAG_LPWRRST
+    if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
+    {
+        reset_cause = RESET_CAUSE_LOW_POWER_RESET;
     }
 #endif
 

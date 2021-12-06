@@ -1,3 +1,4 @@
+#include <string.h>
 #include "nksched.h"
 #include "nkuart.h"
 
@@ -54,18 +55,30 @@ void nk_putc(char ch)
 		char cr = '\r';
 #ifdef USART_ISR_TXE_TXFNF
 		while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
-#else
-		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
-#endif
 		console_uart.Instance->TDR = (uint8_t)cr;
+#else
+#ifdef USART_ISR_TXE
+		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
+		console_uart.Instance->TDR = (uint8_t)cr;
+#else
+		while (!(console_uart.Instance->SR & USART_SR_TXE));
+		console_uart.Instance->DR = (uint8_t)cr;
+#endif
+#endif
 		
 	}
 #ifdef USART_ISR_TXE_TXFNF
 	while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
-#else
-		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
-#endif
 	console_uart.Instance->TDR = (uint8_t)ch;
+#else
+#ifdef USART_ISR_TXE
+	while (!(console_uart.Instance->ISR & USART_ISR_TXE));
+	console_uart.Instance->TDR = (uint8_t)ch;
+#else
+	while (!(console_uart.Instance->SR & USART_SR_TXE));
+	console_uart.Instance->DR = (uint8_t)ch;
+#endif
+#endif
 	nk_irq_unlock(&console_lock, irq_flag);
 }
 
@@ -103,10 +116,22 @@ void nk_uart_irq_handler(void)
 #ifdef USART_ISR_RXNE_RXFNE
 	while (console_uart.Instance->ISR & USART_ISR_RXNE_RXFNE) // Character available?
 #else
+#ifdef USART_ISR_RXNE
 	while (console_uart.Instance->ISR & USART_ISR_RXNE) // Character available?
+#else
+	while (console_uart.Instance->SR & USART_SR_RXNE)
+#endif
 #endif
 	{
+#ifdef USART_ISR_RXNE_RXFNE
 		uint8_t ch = console_uart.Instance->RDR; // Read it
+#else
+#ifdef USART_ISR_RXNE
+		uint8_t ch = console_uart.Instance->RDR; // Read it
+#else
+		uint8_t ch = console_uart.Instance->DR; // Read it
+#endif
+#endif
 
 		// Append to buffer if we have space
 		if (rx_buf_wr - rx_buf_rd != sizeof(rx_buf)) {
@@ -179,7 +204,10 @@ void nk_init_uart()
   	CLEAR_BIT(console_uart.Instance->CR1, USART_CR1_UE);
   	// Disable overflow checking
   	// UART must be disabled to change this bit
+#ifdef USART_CR3_OVRDIS
   	SET_BIT(console_uart.Instance->CR3, USART_CR3_OVRDIS);
+#endif
+
   	SET_BIT(console_uart.Instance->CR1, USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 
   	// Enable Rx interrupts

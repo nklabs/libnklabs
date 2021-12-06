@@ -1,4 +1,4 @@
-
+#include <string.h>
 #include "nkarch.h"
 #include "nkcli.h"
 #include "nkrtc.h"
@@ -203,6 +203,9 @@ int set_datetime(int year, int month, int day, int weekday, int hour, int min, i
     RTC_TimeTypeDef sTime;
     RTC_DateTypeDef sDate;
 
+    memset(&sTime, 0, sizeof(sTime));
+    memset(&sDate, 0, sizeof(sDate));
+
     if (year < 2000 || year > 2099)
         return -1;
 
@@ -229,12 +232,7 @@ int set_datetime(int year, int month, int day, int weekday, int hour, int min, i
     sTime.Hours = hour;
     sTime.Minutes = min;
     sTime.Seconds = sec;
-    sTime.TimeFormat = 0;
-    sTime.SubSeconds = 0;
-    sTime.SecondFraction = 0;
-    sTime.DayLightSaving = 0;
-    sTime.StoreOperation = 0;
-    
+
     HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
     HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
     return 0;
@@ -269,6 +267,7 @@ void date_string(char *buf)
 COMMAND(date,
     "date                      Date/time\n",
     "date                      Print date/time\n"
-    "date yyyy-mm-dd hh:mm:ss  Set date/time\n",
+    "date yyyy-mm-dd day hh:mm:ss\n"
+    "                          Set date/time including weekday\n",
     ""
 )
