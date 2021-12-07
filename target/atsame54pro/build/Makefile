@@ -1,3 +1,9 @@
+# Where is atmel_start code?
+ATMEL_START_DIR := ../atmel_start
+ATZIP := atsame54pro.atzip
+# Where is ATZIP relative to ATMEL_START_DIR?
+ATZIP_DIR := ../
+
 # libnklabs paths
 
 NK_SRC := ../../../src
@@ -19,7 +25,9 @@ NK_MONTH := $(shell expr $(shell echo $(NK_DATE) | cut -b 6-7) + 0)
 NK_DAY := $(shell expr $(shell echo $(NK_DATE) | cut -b 9-10) + 0)
 NK_HOUR := $(shell expr $(shell echo $(NK_DATE) | cut -b 12-13) + 0)
 NK_MINUTE := $(shell expr $(shell echo $(NK_DATE) | cut -b 15-16) + 0)
-NK_GIT_REV := "$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)"
+# Get git hash as a string
+# It is postfixed with -dirty if there are uncommitted changed; otherwise, it is postfixed with -clean.
+NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)\"
 
 ifdef SystemRoot
 	SHELL = cmd.exe
@@ -100,33 +108,7 @@ DIR_INCLUDES +=  \
 # List the dependency files
 DEPS := $(OBJS:%.o=%.d)
 
-DEPS_AS_ARGS += $(shell make -C ../atmel_start/gcc -p -n | egrep '^DEPS_AS_ARGS ' | cut -b 15-)
-DEPS_AS_ARGS +=  \
-"spiflash_atsam.d" \
-"basic_cmds_atsam.d" \
-"database.d" \
-"nkymodem_cmd.d" \
-"main_atsam.d" \
-"nkprintf_fp.d" \
-"nkrtc_atsam.d" \
-"nkdbase.d" \
-"nkserialize.d" \
-"nkmcuflash.d" \
-"nkspiflash.d" \
-"nkcrclib.d" \
-"nkscan.d" \
-"nksched.d" \
-"nkcli.d" \
-"nkreadline.d" \
-"nkuart_atsam.d" \
-"nkarch_atsam.d" \
-"nkymodem.d" \
-"nkprintf.d" \
-"nkinfile.d" \
-"nkoutfile.d" \
-"nkdectab.d" \
-"nkstring.d" \
-"nkstrtod.d"
+DEPS_AS_ARGS = $(DEPS)
 
 OUTPUT_FILE_NAME :=AtmelStart
 QUOTE := "
@@ -168,10 +150,7 @@ $(OUTPUT_FILE_PATH): $(OBJS) version.o ../atmel_start/gcc/Makefile
 
 # Compiler targets
 
-
-
-
-%.o: %.c ../atmel_start/gcc/Makefile
+%.o: %.c $(ATMEL_START_DIR)/gcc/Makefile
 	@echo Building file: $<
 	@echo ARM/GNU C Compiler
 	$(QUOTE)arm-none-eabi-gcc$(QUOTE) -x c -mthumb -DDEBUG -Os -ffunction-sections -mlong-calls -g3 -Wall -c -std=gnu99 \
@@ -225,8 +204,8 @@ jlink:
 
 # Update files from atmel start
 
-../atmel_start/gcc/Makefile: ../atsame54pro.atzip
-	rm -rf ../atmel_start
-	mkdir ../atmel_start
-	(cd ../atmel_start; unzip ../atsame54pro.atzip)
-	(cd ../atmel_start; find . -type f -exec touch {} +)
+$(ATMEL_START_DIR)/gcc/Makefile: $(ATMEL_START_DIR)/$(ATZIP_DIR)/$(ATZIP)
+	rm -rf $(ATMEL_START_DIR)
+	mkdir $(ATMEL_START_DIR)
+	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
+	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)

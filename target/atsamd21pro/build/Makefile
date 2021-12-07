@@ -1,10 +1,33 @@
+# Where is atmel_start code?
+ATMEL_START_DIR := ../atmel_start
+ATZIP := atsamd21pro.atzip
+# Where is ATZIP relative to ATMEL_START_DIR?
+ATZIP_DIR := ../
 
-DATE=$(shell date -u -Iminute)
-YEAR=$(shell expr $(shell echo $(DATE) | cut -b 1-4) + 0)
-MONTH=$(shell expr $(shell echo $(DATE) | cut -b 6-7) + 0)
-DAY=$(shell expr $(shell echo $(DATE) | cut -b 9-10) + 0)
-HOUR=$(shell expr $(shell echo $(DATE) | cut -b 12-13) + 0)
-MINUTE=$(shell expr $(shell echo $(DATE) | cut -b 15-16) + 0)
+# libnklabs paths
+
+NK_SRC := ../../../src
+NK_APP := ../../../app
+NK_INC := ../../../inc
+NK_CONFIG := ../../../config
+NK_ARCHCONFIG := ../../../config_atsam
+
+# Get application version number
+
+NK_VERSION_MAJOR := $(shell cat $(NK_APP)/VERSION_MAJOR)
+NK_VERSION_MINOR := $(shell cat $(NK_APP)/VERSION_MINOR)
+
+# Get date/time
+
+NK_DATE := $(shell date -u -Iminute)
+NK_YEAR := $(shell expr $(shell echo $(NK_DATE) | cut -b 1-4) + 0)
+NK_MONTH := $(shell expr $(shell echo $(NK_DATE) | cut -b 6-7) + 0)
+NK_DAY := $(shell expr $(shell echo $(NK_DATE) | cut -b 9-10) + 0)
+NK_HOUR := $(shell expr $(shell echo $(NK_DATE) | cut -b 12-13) + 0)
+NK_MINUTE := $(shell expr $(shell echo $(NK_DATE) | cut -b 15-16) + 0)
+# Get git hash as a string
+# It is postfixed with -dirty if there are uncommitted changed; otherwise, it is postfixed with -clean.
+NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)\"
 
 ################################################################################
 # Automatically-generated file. Do not edit!
@@ -36,26 +59,15 @@ else
 endif
 
 # List the subdirectories for creating object files
-SUB_DIRS +=  \
- \
-hpl/tc \
-hpl/systick \
-hpl/dmac \
-hal/src \
-samd21a/gcc \
-hpl/pm \
-hpl/sysctrl \
-hal/utils/src \
-hpl/sercom \
-examples \
-hpl/gclk \
-samd21a/gcc/gcc \
-hpl/rtc \
-hpl/nvmctrl \
-hpl/core
+# Get them from atmel-start's Makefile
+SUB_DIRS += $(shell make -C ../atmel_start/gcc -p -n | egrep '^SUB_DIRS ' | cut -b 11- )
 
 # List the object files
-OBJS +=  \
+# Get them from atmel-start's Makefile
+OBJS += $(shell make -C ../atmel_start/gcc -p -n | egrep '^OBJS ' | cut -b 7-)
+# But we don't want main.o
+OBJS := $(filter-out main.o, $(OBJS))
+OBJS += \
 spiflash_atsam.o \
 basic_cmds_atsam.o \
 database.o \
@@ -80,201 +92,39 @@ nkinfile.o \
 nkoutfile.o \
 nkdectab.o \
 nkstring.o \
-nkstrtod.o \
-hal/src/hal_io.o \
-hpl/systick/hpl_systick.o \
-hal/src/hal_calendar.o \
-samd21a/gcc/gcc/startup_samd21.o \
-hal/utils/src/utils_syscalls.o \
-hpl/nvmctrl/hpl_nvmctrl.o \
-hal/src/hal_spi_m_sync.o \
-hal/src/hal_timer.o \
-hal/src/hal_delay.o \
-hpl/sysctrl/hpl_sysctrl.o \
-hpl/core/hpl_init.o \
-hal/utils/src/utils_list.o \
-hpl/core/hpl_core_m0plus_base.o \
-hal/utils/src/utils_assert.o \
-hpl/dmac/hpl_dmac.o \
-hpl/pm/hpl_pm.o \
-hpl/gclk/hpl_gclk.o \
-hal/src/hal_flash.o \
-hal/src/hal_init.o \
-samd21a/gcc/system_samd21.o \
-hpl/rtc/hpl_rtc.o \
-examples/driver_examples.o \
-driver_init.o \
-hal/src/hal_usart_async.o \
-hpl/sercom/hpl_sercom.o \
-hal/utils/src/utils_ringbuffer.o \
-hal/src/hal_gpio.o \
-hal/utils/src/utils_event.o \
-hal/src/hal_sleep.o \
-atmel_start.o \
-hpl/tc/hpl_tc.o \
-hal/src/hal_atomic.o
+nkstrtod.o
 
-OBJS_AS_ARGS +=  \
-"spiflash_atsam.o" \
-"basic_cmds_atsam.o" \
-"database.o" \
-"nkymodem_cmd.o" \
-"main_atsam.o" \
-"nkprintf_fp.o" \
-"nkrtc_atsam.o" \
-"nkdbase.o" \
-"nkserialize.o" \
-"nkmcuflash.o" \
-"nkspiflash.o" \
-"nkcrclib.o" \
-"nkscan.o" \
-"nksched.o" \
-"nkcli.o" \
-"nkreadline.o" \
-"nkuart_atsam.o" \
-"nkarch_atsam.o" \
-"nkymodem.o" \
-"nkprintf.o" \
-"nkinfile.o" \
-"nkoutfile.o" \
-"nkdectab.o" \
-"nkstring.o" \
-"nkstrtod.o" \
-"hal/src/hal_io.o" \
-"hpl/systick/hpl_systick.o" \
-"hal/src/hal_calendar.o" \
-"samd21a/gcc/gcc/startup_samd21.o" \
-"hal/utils/src/utils_syscalls.o" \
-"hpl/nvmctrl/hpl_nvmctrl.o" \
-"hal/src/hal_spi_m_sync.o" \
-"hal/src/hal_timer.o" \
-"hal/src/hal_delay.o" \
-"hpl/sysctrl/hpl_sysctrl.o" \
-"hpl/core/hpl_init.o" \
-"hal/utils/src/utils_list.o" \
-"hpl/core/hpl_core_m0plus_base.o" \
-"hal/utils/src/utils_assert.o" \
-"hpl/dmac/hpl_dmac.o" \
-"hpl/pm/hpl_pm.o" \
-"hpl/gclk/hpl_gclk.o" \
-"hal/src/hal_flash.o" \
-"hal/src/hal_init.o" \
-"samd21a/gcc/system_samd21.o" \
-"hpl/rtc/hpl_rtc.o" \
-"examples/driver_examples.o" \
-"driver_init.o" \
-"hal/src/hal_usart_async.o" \
-"hpl/sercom/hpl_sercom.o" \
-"hal/utils/src/utils_ringbuffer.o" \
-"hal/src/hal_gpio.o" \
-"hal/utils/src/utils_event.o" \
-"hal/src/hal_sleep.o" \
-"atmel_start.o" \
-"hpl/tc/hpl_tc.o" \
-"hal/src/hal_atomic.o"
+OBJS_AS_ARGS := ${OBJS}
 
 # List the directories containing header files
+# Get them from atmel-start's Makefile, but insert ../atmel_start prefix
+DIR_INCLUDES += $(subst ..,../atmel_start,$(shell make -C ../atmel_start/gcc -p -n | egrep '^DIR_INCLUDES ' | cut -b 15- ))
+
+# Add our include files
 DIR_INCLUDES +=  \
--I"../../../inc" \
--I"../../../config" \
--I"../../../config_atsam" \
--I"../atmel_start/" \
--I"../atmel_start/config" \
--I"../atmel_start/examples" \
--I"../atmel_start/hal/include" \
--I"../atmel_start/hal/utils/include" \
--I"../atmel_start/hpl/core" \
--I"../atmel_start/hpl/dmac" \
--I"../atmel_start/hpl/gclk" \
--I"../atmel_start/hpl/nvmctrl" \
--I"../atmel_start/hpl/pm" \
--I"../atmel_start/hpl/port" \
--I"../atmel_start/hpl/rtc" \
--I"../atmel_start/hpl/sercom" \
--I"../atmel_start/hpl/sysctrl" \
--I"../atmel_start/hpl/systick" \
--I"../atmel_start/hpl/tc" \
--I"../atmel_start/hri" \
--I"../atmel_start/" \
--I"../atmel_start/CMSIS/Core/Include" \
--I"../atmel_start/samd21a/include"
+-I$(NK_INC) \
+-I$(NK_CONFIG) \
+-I$(NK_ARCHCONFIG)
 
 # List the dependency files
 DEPS := $(OBJS:%.o=%.d)
 
-DEPS_AS_ARGS +=  \
-"spiflash_atsam.d" \
-"basic_cmds_atsam.d" \
-"database.d" \
-"nkymodem_cmd.d" \
-"main_atsam.d" \
-"nkprintf_fp.d" \
-"nkrtc_atsam.d" \
-"nkdbase.d" \
-"nkserialize.d" \
-"nkmcuflash.d" \
-"nkspiflash.d" \
-"nkcrclib.d" \
-"nkscan.d" \
-"nksched.d" \
-"nkcli.d" \
-"nkreadline.d" \
-"nkuart_atsam.d" \
-"nkarch_atsam.d" \
-"nkymodem.d" \
-"nkprintf.d" \
-"nkinfile.d" \
-"nkoutfile.d" \
-"nkdectab.d" \
-"nkstring.d" \
-"nkstrtod.d" \
-"samd21a/gcc/gcc/startup_samd21.d" \
-"hal/src/hal_calendar.d" \
-"hal/utils/src/utils_event.d" \
-"hal/src/hal_io.d" \
-"hpl/systick/hpl_systick.d" \
-"hal/utils/src/utils_syscalls.d" \
-"hpl/nvmctrl/hpl_nvmctrl.d" \
-"hal/src/hal_timer.d" \
-"hal/src/hal_spi_m_sync.d" \
-"hpl/core/hpl_core_m0plus_base.d" \
-"hal/utils/src/utils_list.d" \
-"hpl/dmac/hpl_dmac.d" \
-"hal/utils/src/utils_assert.d" \
-"hal/src/hal_delay.d" \
-"hpl/core/hpl_init.d" \
-"hpl/sysctrl/hpl_sysctrl.d" \
-"hal/src/hal_flash.d" \
-"hpl/gclk/hpl_gclk.d" \
-"hal/src/hal_init.d" \
-"driver_init.d" \
-"hal/src/hal_usart_async.d" \
-"samd21a/gcc/system_samd21.d" \
-"examples/driver_examples.d" \
-"hpl/rtc/hpl_rtc.d" \
-"hal/src/hal_sleep.d" \
-"hal/utils/src/utils_ringbuffer.d" \
-"hpl/sercom/hpl_sercom.d" \
-"hal/src/hal_gpio.d" \
-"hal/src/hal_atomic.d" \
-"hpl/tc/hpl_tc.d" \
-"hpl/pm/hpl_pm.d" \
-"atmel_start.d"
+DEPS_AS_ARGS = $(DEPS)
 
 OUTPUT_FILE_NAME :=AtmelStart
 QUOTE := "
 OUTPUT_FILE_PATH +=$(OUTPUT_FILE_NAME).elf
 OUTPUT_FILE_PATH_AS_ARGS +=$(OUTPUT_FILE_NAME).elf
 
-vpath %.c ../../../src/ ../../../app/ ../atmel_start/
-vpath %.s ../../../src/ ../../../app/ ../atmel_start/
-vpath %.S ../../../src/ ../../../app/ ../atmel_start/
+vpath %.c $(NK_SRC) $(NK_APP) ../atmel_start/
+vpath %.s $(NK_SRC) $(NK_APP) ../atmel_start/
+vpath %.S $(NK_SRC) $(NK_APP) ../atmel_start/
 
 # All Target
 all: $(SUB_DIRS) $(OUTPUT_FILE_PATH)
 
 # Rebuild version.o if anything changed
-version.o: $(OBJS) ../../../app/VERSION_MAJOR ../../../app/VERSION_MINOR ../../../app/version.c
+version.o: $(OBJS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MINOR $(NK_APP)/version.c
 
 # Linker target
 
@@ -285,7 +135,7 @@ $(OUTPUT_FILE_PATH): $(OBJS) version.o
 -Wl,-Map="$(OUTPUT_FILE_NAME).map" --specs=nano.specs -Wl,--gc-sections -mcpu=cortex-m0plus \
  \
 -T"samd21j18a_flash.ld" \
--L"../atmel_start/samd21a/gcc/gcc"
+-L"samd21a/gcc/gcc"
 	@echo Finished building target: $@
 
 	"arm-none-eabi-objcopy" -O binary "$(OUTPUT_FILE_NAME).elf" "$(OUTPUT_FILE_NAME).bin"
@@ -304,13 +154,13 @@ $(OUTPUT_FILE_PATH): $(OBJS) version.o
 
 
 
-%.o: %.c
+%.o: %.c $(ATMEL_START_DIR)/gcc/Makefile
 	@echo Building file: $<
 	@echo ARM/GNU C Compiler
 	$(QUOTE)arm-none-eabi-gcc$(QUOTE) -x c -mthumb -DDEBUG -Os -ffunction-sections -mlong-calls -g3 -Wall -c -std=gnu99 \
 -D__SAMD21J18A__ -mcpu=cortex-m0plus  \
 $(DIR_INCLUDES) \
--DNKVERSION_MAJOR=`cat ../../../app/VERSION_MAJOR`  -DNKVERSION_MINOR=`cat ../../../app/VERSION_MINOR` -DNKYEAR=$(YEAR) -DNKMONTH=$(MONTH) -DNKDAY=$(DAY) -DNKHOUR=$(HOUR) -DNKMINUTE=$(MINUTE) \
+-DNK_VERSION_MAJOR=$(NK_VERSION_MAJOR)  -DNK_VERSION_MINOR=$(NK_VERSION_MINOR) -DNK_YEAR=$(NK_YEAR) -DNK_MONTH=$(NK_MONTH) -DNK_DAY=$(NK_DAY) -DNK_HOUR=$(NK_HOUR) -DNK_MINUTE=$(NK_MINUTE) -DNK_GIT_REV=$(NK_GIT_REV) \
 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -o "$@" "$<"
 	@echo Finished building: $<
 
@@ -352,3 +202,14 @@ clean:
 
 flash:
 	(openocd --file atmelice.cfg)
+
+jlink:
+	(cd build; openocd --file jlink.cfg)
+
+# Update files from atmel start
+
+$(ATMEL_START_DIR)/gcc/Makefile: $(ATMEL_START_DIR)/$(ATZIP_DIR)/$(ATZIP)
+	rm -rf $(ATMEL_START_DIR)
+	mkdir $(ATMEL_START_DIR)
+	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
+	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)
