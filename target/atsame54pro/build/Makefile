@@ -19,7 +19,7 @@ NK_MONTH := $(shell expr $(shell echo $(NK_DATE) | cut -b 6-7) + 0)
 NK_DAY := $(shell expr $(shell echo $(NK_DATE) | cut -b 9-10) + 0)
 NK_HOUR := $(shell expr $(shell echo $(NK_DATE) | cut -b 12-13) + 0)
 NK_MINUTE := $(shell expr $(shell echo $(NK_DATE) | cut -b 15-16) + 0)
-NK_GIT_REV := "$(shell git rev-parse HEAD)"
+NK_GIT_REV := "$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)"
 
 ifdef SystemRoot
 	SHELL = cmd.exe
