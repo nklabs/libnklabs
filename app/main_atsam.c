@@ -22,7 +22,6 @@ int main(void)
 {
     atmel_start_init();
 
-#ifdef junk
     // Show we're alive even if uart isn't working
     int x;
     for (x = 0; x != 5;++x)
@@ -32,7 +31,6 @@ int main(void)
         gpio_set_pin_level(USER_LED, true);
         nk_udelay(300000);
     }
-#endif
 
     nk_init_uart();
     nk_init_sched();
