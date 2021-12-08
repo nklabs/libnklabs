@@ -4,7 +4,7 @@ Each directory here includes vendor produced HAL files for their chip on one
 of their development boards.  Their Makefile has been modified to include
 libnklabs and an example application.  To build any of these examples:
 
-Connect USB cable between computer and target board, then:
+Connect USB cable between computer and target development board, then:
 
 	cd target/nucleo-f103rb
 
@@ -12,9 +12,9 @@ Connect USB cable between computer and target board, then:
 
 	make flash
 
-A command line interface is available on the MCU UART that is connected to
-the embedded debugger's USB to serial port adapters.  You can access it with
-picocom:
+These target boards all have embedded debuggers.  A command line interface
+is available on the target MCU's UART that is connected to the embedded
+debugger's USB to serial port adapter.  You can access it with picocom:
 
 	sudo picocom --baud 115200 /dev/ttyACM0
 
@@ -50,17 +50,21 @@ OpenOCD 0.11 or higher (for Microchip/Atmel's ATSAM parts):
 
 [https://sourceforge.net/p/openocd/code/ci/master/tree/](https://sourceforge.net/p/openocd/code/ci/master/tree/)
 
-OpenOCD requires HIDAPI for the CMSIS-DAP interface:
+Before building OpenOCD, install HIDAPI.  It's required for OpenOCD's CMSIS-DAP interface:
 
 [https://github.com/signal11/hidapi](https://github.com/signal11/hidapi)
 
-STM32CubeProgrammer
+STM32CubeProgrammer is used to program ST's development boards through their
+ST-LINK embedded debugger (OpenOCD could also be used for this, but the
+Makefile is set up to use the vendor's own tools if they are available in
+Linux):
 
 [https://www.st.com/en/development-tools/stm32cubeprog.html](https://www.st.com/en/development-tools/stm32cubeprog.html)
 
-Install this in /opt/STM32CubeProgrammer
+Install it in /opt/STM32CubeProgrammer
 
-STM32CubeMX ST's "STM32Cube initialization code generator"
+STM32CubeMX is ST's "STM32Cube initialization code generator".  Install this
+if you want to change project settings:
 
 [https://www.st.com/en/development-tools/stm32cubemx.html](https://www.st.com/en/development-tools/stm32cubemx.html)
 
