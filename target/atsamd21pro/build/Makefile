@@ -4,31 +4,6 @@ ATZIP := atsamd21pro.atzip
 # Where is ATZIP relative to ATMEL_START_DIR?
 ATZIP_DIR := ../
 
-# libnklabs paths
-
-NK_SRC := ../../../src
-NK_APP := ../../../app
-NK_INC := ../../../inc
-NK_CONFIG := ../../../config
-NK_ARCHCONFIG := ../../../config_atsam
-
-# Get application version number
-
-NK_VERSION_MAJOR := $(shell cat $(NK_APP)/VERSION_MAJOR)
-NK_VERSION_MINOR := $(shell cat $(NK_APP)/VERSION_MINOR)
-
-# Get date/time
-
-NK_DATE := $(shell date -u -Iminute)
-NK_YEAR := $(shell expr $(shell echo $(NK_DATE) | cut -b 1-4) + 0)
-NK_MONTH := $(shell expr $(shell echo $(NK_DATE) | cut -b 6-7) + 0)
-NK_DAY := $(shell expr $(shell echo $(NK_DATE) | cut -b 9-10) + 0)
-NK_HOUR := $(shell expr $(shell echo $(NK_DATE) | cut -b 12-13) + 0)
-NK_MINUTE := $(shell expr $(shell echo $(NK_DATE) | cut -b 15-16) + 0)
-# Get git hash as a string
-# It is postfixed with -dirty if there are uncommitted changed; otherwise, it is postfixed with -clean.
-NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)\"
-
 ################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
@@ -60,71 +35,34 @@ endif
 
 # List the subdirectories for creating object files
 # Get them from atmel-start's Makefile
-SUB_DIRS += $(shell make -C ../atmel_start/gcc -p -n | egrep '^SUB_DIRS ' | cut -b 11- )
+SUB_DIRS := $(shell make -C ../atmel_start/gcc -p -n | egrep '^SUB_DIRS ' | cut -b 11- )
 
 # List the object files
 # Get them from atmel-start's Makefile
-OBJS += $(shell make -C ../atmel_start/gcc -p -n | egrep '^OBJS ' | cut -b 7-)
+OBJS := $(shell make -C ../atmel_start/gcc -p -n | egrep '^OBJS ' | cut -b 7-)
 # But we don't want main.o
 OBJS := $(filter-out main.o, $(OBJS))
-OBJS += \
-spiflash_atsam.o \
-basic_cmds_atsam.o \
-database.o \
-nkymodem_cmd.o \
-main_atsam.o \
-nkprintf_fp.o \
-nkrtc_atsam.o \
-nkdbase.o \
-nkserialize.o \
-nkmcuflash.o \
-nkspiflash.o \
-nkcrclib.o \
-nkscan.o \
-nksched.o \
-nkcli.o \
-nkreadline.o \
-nkuart_atsam.o \
-nkarch_atsam.o \
-nkymodem.o \
-nkprintf.o \
-nkinfile.o \
-nkoutfile.o \
-nkdectab.o \
-nkstring.o \
-nkstrtod.o
 
-OBJS_AS_ARGS := ${OBJS}
+
 
 # List the directories containing header files
 # Get them from atmel-start's Makefile, but insert ../atmel_start prefix
-DIR_INCLUDES += $(subst ..,../atmel_start,$(shell make -C ../atmel_start/gcc -p -n | egrep '^DIR_INCLUDES ' | cut -b 15- ))
+DIR_INCLUDES := $(subst ..,../atmel_start,$(shell make -C ../atmel_start/gcc -p -n | egrep '^DIR_INCLUDES ' | cut -b 15- ))
 
-# Add our include files
-DIR_INCLUDES +=  \
--I$(NK_INC) \
--I$(NK_CONFIG) \
--I$(NK_ARCHCONFIG)
-
-# List the dependency files
-DEPS := $(OBJS:%.o=%.d)
-
-DEPS_AS_ARGS = $(DEPS)
 
 OUTPUT_FILE_NAME :=AtmelStart
 QUOTE := "
 OUTPUT_FILE_PATH +=$(OUTPUT_FILE_NAME).elf
 OUTPUT_FILE_PATH_AS_ARGS +=$(OUTPUT_FILE_NAME).elf
 
-vpath %.c $(NK_SRC) $(NK_APP) ../atmel_start/
-vpath %.s $(NK_SRC) $(NK_APP) ../atmel_start/
-vpath %.S $(NK_SRC) $(NK_APP) ../atmel_start/
-
 # All Target
 all: $(SUB_DIRS) $(OUTPUT_FILE_PATH)
 
-# Rebuild version.o if anything changed
-version.o: $(OBJS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MINOR $(NK_APP)/version.c
+include ../../atsam.mk
+
+vpath %.c $(NK_SRC) $(NK_APP) $(ATMEL_START_DIR)
+vpath %.s $(NK_SRC) $(NK_APP) $(ATMEL_START_DIR)
+vpath %.S $(NK_SRC) $(NK_APP) $(ATMEL_START_DIR)
 
 # Linker target
 
@@ -150,9 +88,6 @@ $(OUTPUT_FILE_PATH): $(OBJS) version.o
 	
 
 # Compiler targets
-
-
-
 
 %.o: %.c $(ATMEL_START_DIR)/gcc/Makefile
 	@echo Building file: $<
@@ -199,17 +134,3 @@ clean:
 	rm -f $(OUTPUT_FILE_NAME).a $(OUTPUT_FILE_NAME).hex $(OUTPUT_FILE_NAME).bin \
         $(OUTPUT_FILE_NAME).lss $(OUTPUT_FILE_NAME).eep $(OUTPUT_FILE_NAME).map \
         $(OUTPUT_FILE_NAME).srec
-
-flash:
-	(openocd --file atmelice.cfg)
-
-jlink:
-	(cd build; openocd --file jlink.cfg)
-
-# Update files from atmel start
-
-$(ATMEL_START_DIR)/gcc/Makefile: $(ATMEL_START_DIR)/$(ATZIP_DIR)/$(ATZIP)
-	rm -rf $(ATMEL_START_DIR)
-	mkdir $(ATMEL_START_DIR)
-	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
-	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)

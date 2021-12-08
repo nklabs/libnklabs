@@ -1,0 +1,83 @@
+# libnklabs paths
+
+NK_SRC := ../../../src
+NK_APP := ../../../app
+NK_INC := ../../../inc
+NK_CONFIG := ../../../config
+NK_ARCHCONFIG := ../../../config_atsam
+
+# Get application version number
+
+NK_VERSION_MAJOR := $(shell cat $(NK_APP)/VERSION_MAJOR)
+NK_VERSION_MINOR := $(shell cat $(NK_APP)/VERSION_MINOR)
+
+# Get date/time
+
+NK_DATE := $(shell date -u -Iminute)
+NK_YEAR := $(shell expr $(shell echo $(NK_DATE) | cut -b 1-4) + 0)
+NK_MONTH := $(shell expr $(shell echo $(NK_DATE) | cut -b 6-7) + 0)
+NK_DAY := $(shell expr $(shell echo $(NK_DATE) | cut -b 9-10) + 0)
+NK_HOUR := $(shell expr $(shell echo $(NK_DATE) | cut -b 12-13) + 0)
+NK_MINUTE := $(shell expr $(shell echo $(NK_DATE) | cut -b 15-16) + 0)
+
+# Get git hash as a string
+# It is postfixed with -dirty if there are uncommitted changed; otherwise, it is postfixed with -clean.
+NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HEAD --; then echo clean; else echo dirty; fi)\"
+
+# Add out source files
+OBJS += \
+spiflash_atsam.o \
+basic_cmds_atsam.o \
+database.o \
+nkymodem_cmd.o \
+main_atsam.o \
+nkprintf_fp.o \
+nkrtc_atsam.o \
+nkdbase.o \
+nkserialize.o \
+nkmcuflash.o \
+nkspiflash.o \
+nkcrclib.o \
+nkscan.o \
+nksched.o \
+nkcli.o \
+nkreadline.o \
+nkuart_atsam.o \
+nkarch_atsam.o \
+nkymodem.o \
+nkprintf.o \
+nkinfile.o \
+nkoutfile.o \
+nkdectab.o \
+nkstring.o \
+nkstrtod.o
+
+# Add our include files
+DIR_INCLUDES +=  \
+-I$(NK_INC) \
+-I$(NK_CONFIG) \
+-I$(NK_ARCHCONFIG)
+
+OBJS_AS_ARGS := ${OBJS}
+
+# List the dependency files
+DEPS := $(OBJS:%.o=%.d)
+
+DEPS_AS_ARGS = $(DEPS)
+
+# Rebuild version.o if anything changed
+version.o: $(OBJS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MINOR $(NK_APP)/version.c
+
+flash:
+	(openocd --file atmelice.cfg)
+
+jlink:
+	(cd build; openocd --file jlink.cfg)
+
+# Update files from atmel start
+
+$(ATMEL_START_DIR)/gcc/Makefile: $(ATMEL_START_DIR)/$(ATZIP_DIR)/$(ATZIP)
+	rm -rf $(ATMEL_START_DIR)
+	mkdir $(ATMEL_START_DIR)
+	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
+	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)
