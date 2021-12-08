@@ -12,8 +12,9 @@ Connect USB cable between computer and target board, then:
 
 	make flash
 
-You can then connect to the CLI using the virtual com port on the
-development board's embedded debugger:
+A command line interface is available on the MCU UART that is connected to
+the embedded debugger's USB to serial port adapters.  You can access it with
+picocom:
 
 	sudo picocom --baud 115200 /dev/ttyACM0
 
@@ -63,12 +64,17 @@ STM32CubeMX ST's "STM32Cube initialization code generator"
 
 [https://www.st.com/en/development-tools/stm32cubemx.html](https://www.st.com/en/development-tools/stm32cubemx.html)
 
-Install "Picocom" for 
+Install "picocom" to connect your terminal emulator to a USB serial port:
+
+	sudo apt-get install picocom
+	sudo apt-get install lrzsz
 
 ## Disable Modem Manager
 
-This will prevent the /dev/ttyACM device on the EDBG port from being treated
-as a modem and allow you to use it as console serial ports.
+The USB to serial adapter typically provided on embedded debuggers shows up
+in Linux as a modem.  The Linux modem manager will try to talk to it (you'll
+see ATxx commands being sent to the MCU after you connect with picocom).  To
+prevent this:
 
 Modify the file /lib/systemd/system/ModemManager.service
 
@@ -103,6 +109,15 @@ Then:
 
 ## Atmel ATSAMxx targets
 
+A number of "XPLAINED PRO" evaluation boards are avilable from
+Microchip/Atmel:
+
+[https://www.microchip.com/en-us/development-tool/atsamd21-xpro](https://www.microchip.com/en-us/development-tool/atsamd21-xpro)
+
+[https://www.microchip.com/en-us/development-tool/atsame54-xpro](https://www.microchip.com/en-us/development-tool/atsame54-xpro)
+
+[https://www.microchip.com/en-us/development-tool/ATSAME70-XPLD](https://www.microchip.com/en-us/development-tool/ATSAME70-XPLD)
+
 ### Atmel ASF4 and Atmel Start
 
 Atmel Start is used to configure ASF4 (Atmel's "Advance Software
@@ -115,7 +130,8 @@ using GUI tools.  Atmel Start can be accessed here:
 
 [https://start.atmel.com/](https://start.atmel.com/)
 
-This is the file produced by Atmel Start.  It's a .zip file:
+This is the file produced by Atmel Start.  It's a .zip file, for example for
+the ATSAMD21 XPLAINED PRO target, it's this one:
 
         atsamd21pro/atsamd21pro.atzip
 
