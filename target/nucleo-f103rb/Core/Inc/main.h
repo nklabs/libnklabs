@@ -79,6 +79,29 @@ void Error_Handler(void);
 #define SPI1_CS_L_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
+// Name the devices we use
+
+#define MAIN_CONSOLE_UART huart2
+extern UART_HandleTypeDef huart2;
+
+#define MAIN_SPI hspi1
+extern SPI_HandleTypeDef hspi1;
+
+#define MAIN_I2C hi2c1
+extern I2C_HandleTypeDef hi2c1;
+
+#define MAIN_WDT hiwdg
+extern IWDG_HandleTypeDef hiwdg;
+
+// Demo app functions called by main.h
+
+void user_main(void);
+void note_reset_cause(void);
+
+// Called by stm32f0xx_it.c
+
+void nk_uart_irq_handler(void);
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

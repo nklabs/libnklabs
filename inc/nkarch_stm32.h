@@ -59,21 +59,6 @@ nk_time_t nk_get_time();
 
 void nk_udelay(unsigned long usec);
 
-// Which I2C slave?
-
-//#define i2c_slave_port hi2c1
-//extern I2C_HandleTypeDef i2c_slave_port;
-
-// Which I2C master?
-
-//#define i2c_master_port hi2c2
-//extern I2C_HandleTypeDef i2c_master_port;
-
-// SPI master
-
-#define spi1_port hspi1
-extern SPI_HandleTypeDef hspi1;
-
 typedef enum reset_cause_e
 {
     RESET_CAUSE_UNKNOWN = 0,
@@ -93,10 +78,7 @@ reset_cause_t reset_cause_get(void);
 // Convert reset cause to string
 const char *reset_cause_get_name(reset_cause_t reset_cause);
 
-// Get sector size.  This is the minimum size that nk_flash_erase can erase.
-//uint32_t nk_flash_sector_size();
-#define NK_MCUFLASH_ERASE_SIZE 2048
-
+// MCU flash padding size
 #define NK_MCUFLASH_MIN_SIZE 8
 
 // Reboot MCU

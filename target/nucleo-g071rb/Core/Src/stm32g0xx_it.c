@@ -47,7 +47,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-extern void nk_uart_irq_handler(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -237,6 +237,7 @@ void SPI1_IRQHandler(void)
 void USART3_4_LPUART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_4_LPUART1_IRQn 0 */
+
   nk_uart_irq_handler();
   return ;
 

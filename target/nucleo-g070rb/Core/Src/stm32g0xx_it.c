@@ -47,7 +47,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-extern void nk_uart_irq_handler(void);
 
 /* USER CODE END PFP */
 
@@ -162,6 +161,7 @@ void EXTI4_15_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
+
   nk_uart_irq_handler();
   return ;
 

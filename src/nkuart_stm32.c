@@ -54,29 +54,29 @@ void nk_putc(char ch)
 	if (!tty_mode && ch == '\n') {
 		char cr = '\r';
 #ifdef USART_ISR_TXE_TXFNF
-		while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
-		console_uart.Instance->TDR = (uint8_t)cr;
+		while (!(MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_TXE_TXFNF));
+		MAIN_CONSOLE_UART.Instance->TDR = (uint8_t)cr;
 #else
 #ifdef USART_ISR_TXE
-		while (!(console_uart.Instance->ISR & USART_ISR_TXE));
-		console_uart.Instance->TDR = (uint8_t)cr;
+		while (!(MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_TXE));
+		MAIN_CONSOLE_UART.Instance->TDR = (uint8_t)cr;
 #else
-		while (!(console_uart.Instance->SR & USART_SR_TXE));
-		console_uart.Instance->DR = (uint8_t)cr;
+		while (!(MAIN_CONSOLE_UART.Instance->SR & USART_SR_TXE));
+		MAIN_CONSOLE_UART.Instance->DR = (uint8_t)cr;
 #endif
 #endif
 		
 	}
 #ifdef USART_ISR_TXE_TXFNF
-	while (!(console_uart.Instance->ISR & USART_ISR_TXE_TXFNF));
-	console_uart.Instance->TDR = (uint8_t)ch;
+	while (!(MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_TXE_TXFNF));
+	MAIN_CONSOLE_UART.Instance->TDR = (uint8_t)ch;
 #else
 #ifdef USART_ISR_TXE
-	while (!(console_uart.Instance->ISR & USART_ISR_TXE));
-	console_uart.Instance->TDR = (uint8_t)ch;
+	while (!(MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_TXE));
+	MAIN_CONSOLE_UART.Instance->TDR = (uint8_t)ch;
 #else
-	while (!(console_uart.Instance->SR & USART_SR_TXE));
-	console_uart.Instance->DR = (uint8_t)ch;
+	while (!(MAIN_CONSOLE_UART.Instance->SR & USART_SR_TXE));
+	MAIN_CONSOLE_UART.Instance->DR = (uint8_t)ch;
 #endif
 #endif
 	nk_irq_unlock(&console_lock, irq_flag);
@@ -105,7 +105,7 @@ void nk_uart_write(const char *s, int len)
 		nk_irq_lock(&console_lock, irq_flag);
 		while (len--) {
 			char c = *s++;
-			HAL_UART_Transmit(&console_uart, (unsigned char *)&c, 1, 0xFFFF);
+			HAL_UART_Transmit(&MAIN_CONSOLE_UART, (unsigned char *)&c, 1, 0xFFFF);
 		}
 		nk_irq_unlock(&console_lock, irq_flag);
 	}
@@ -114,22 +114,22 @@ void nk_uart_write(const char *s, int len)
 void nk_uart_irq_handler(void)
 {
 #ifdef USART_ISR_RXNE_RXFNE
-	while (console_uart.Instance->ISR & USART_ISR_RXNE_RXFNE) // Character available?
+	while (MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_RXNE_RXFNE) // Character available?
 #else
 #ifdef USART_ISR_RXNE
-	while (console_uart.Instance->ISR & USART_ISR_RXNE) // Character available?
+	while (MAIN_CONSOLE_UART.Instance->ISR & USART_ISR_RXNE) // Character available?
 #else
-	while (console_uart.Instance->SR & USART_SR_RXNE)
+	while (MAIN_CONSOLE_UART.Instance->SR & USART_SR_RXNE)
 #endif
 #endif
 	{
 #ifdef USART_ISR_RXNE_RXFNE
-		uint8_t ch = console_uart.Instance->RDR; // Read it
+		uint8_t ch = MAIN_CONSOLE_UART.Instance->RDR; // Read it
 #else
 #ifdef USART_ISR_RXNE
-		uint8_t ch = console_uart.Instance->RDR; // Read it
+		uint8_t ch = MAIN_CONSOLE_UART.Instance->RDR; // Read it
 #else
-		uint8_t ch = console_uart.Instance->DR; // Read it
+		uint8_t ch = MAIN_CONSOLE_UART.Instance->DR; // Read it
 #endif
 #endif
 
@@ -198,23 +198,22 @@ int nk_uart_read(char *s, int len, nk_time_t timeout)
 
 void nk_init_uart()
 {
-	//HAL_UART_Receive_IT(&console_uart, &tty_ch, 1);
 	// Only for lpuart
-  	// HAL_UARTEx_EnableStopMode(&console_uart);
-  	CLEAR_BIT(console_uart.Instance->CR1, USART_CR1_UE);
+  	// HAL_UARTEx_EnableStopMode(&MAIN_CONSOLE_UART);
+  	CLEAR_BIT(MAIN_CONSOLE_UART.Instance->CR1, USART_CR1_UE);
   	// Disable overflow checking
   	// UART must be disabled to change this bit
 #ifdef USART_CR3_OVRDIS
-  	SET_BIT(console_uart.Instance->CR3, USART_CR3_OVRDIS);
+  	SET_BIT(MAIN_CONSOLE_UART.Instance->CR3, USART_CR3_OVRDIS);
 #endif
 
-  	SET_BIT(console_uart.Instance->CR1, USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
+  	SET_BIT(MAIN_CONSOLE_UART.Instance->CR1, USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 
   	// Enable Rx interrupts
 #ifdef USART_CR1_RXNEIE_RXFNEIE
 	// FIFO
-  	SET_BIT(console_uart.Instance->CR1, USART_CR1_RXNEIE_RXFNEIE);
+  	SET_BIT(MAIN_CONSOLE_UART.Instance->CR1, USART_CR1_RXNEIE_RXFNEIE);
 #else
-  	SET_BIT(console_uart.Instance->CR1, USART_CR1_RXNEIE);
+  	SET_BIT(MAIN_CONSOLE_UART.Instance->CR1, USART_CR1_RXNEIE);
 #endif
 }

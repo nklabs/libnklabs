@@ -6,6 +6,7 @@
 #include "nkscan.h"
 #include "nkdbase.h"
 #include "nkmcuflash.h"
+#include "nkmcuflash_map.h"
 #include "database.h"
 
 // Test database metadata
@@ -111,17 +112,15 @@ const struct testtop testdb_defaults = {
     .tarray = {
         { .tstring = "Hello", .tfloat = .0625, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
         { .tstring = "Hello", .tfloat = .0626, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
-        { .tstring = "Hello", .tfloat = .0627, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
-        { .tstring = "Hello", .tfloat = .0628, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
 
     },
-    .tvararray_len.len = 3,
+    .tvararray_len.len = 2,
     .tvararray = {
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.126, .tfloat = .0625, .tstring = "Hello" },
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.127, .tfloat = .0625, .tstring = "Hello" },
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.128, .tfloat = .0625, .tstring = "Hello" }
     },
-    .ttable_len.len = 3,
+    .ttable_len.len = 2,
     .ttable = {
         { .tstring = "Hello", .tfloat = .0630, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
         { .tstring = "Hello", .tfloat = .0631, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
@@ -137,15 +136,11 @@ unsigned char xfer_buf[128];
 const struct nk_dbase test_dbase =
 {
     .ty = &tyTESTTOP,
-// On systems with 128K of flash
-//    .bank0 = 65536+32768+0,
-//    .bank1 = 65536+32768+8192,
 
-// Small systems
-    .bank0 = 49152,
-    .bank1 = 57344,
+    .bank0 = NKDBASE_BANK0,
+    .bank1 = NKDBASE_BANK1,
 
-    .bank_size = 8192,
+    .bank_size = NKDBASE_SIZE,
     .buf = xfer_buf,
     .buf_size = sizeof(xfer_buf),
     .flash_read = nk_mcuflash_read,

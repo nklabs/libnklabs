@@ -111,6 +111,14 @@ Then:
 
 ## STM32 targets
 
+### STM32CubeMX
+
+You can't assign names to peripherals, so for example USART2 is named huart2
+in the code.
+
+The device is defined in the Makefile, in the C_DEFS variable.  For example,
+STM32F030R8 is defined as STM32F030x8.
+
 ## Atmel ATSAMxx targets
 
 A number of "XPLAINED PRO" evaluation boards are avilable from

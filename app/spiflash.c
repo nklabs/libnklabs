@@ -39,7 +39,7 @@ const struct flash_device m95m04_bus =
 {
     .cs_port = SPI1_CS_L_GPIO_Port,
     .cs_pin = SPI1_CS_L_Pin,
-    .hspi = &spi1_port
+    .hspi = &MAIN_SPI
 };
 
 const struct nk_spiflash_info m95m04 =
@@ -83,7 +83,7 @@ const struct flash_device m95256_bus =
 {
     .cs_port = SPI1_CS_L_1_GPIO_Port,
     .cs_pin = SPI1_CS_L_1_Pin,
-    .hspi = &spi1_port
+    .hspi = &MAIN_SPI
 };
 
 const struct nk_spiflash_info m95256 =
@@ -127,7 +127,7 @@ const struct flash_device m95040_bus =
 {
     .cs_port = SPI1_CS_L_2_GPIO_Port,
     .cs_pin = SPI1_CS_L_2_Pin,
-    .hspi = &spi1_port
+    .hspi = &MAIN_SPI
 };
 
 const struct nk_spiflash_info m95040 =

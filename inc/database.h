@@ -15,11 +15,11 @@ struct testfwd {
     unsigned short tuint16;
     double tdouble;
     float tfloat;
-    char tstring[20];
+    char tstring[10];
 };
 
 struct testbkwd {
-    char tstring[20];
+    char tstring[10];
     float tfloat;
     double tdouble;
     unsigned short tuint16;
@@ -33,11 +33,11 @@ struct testbkwd {
 
 struct testtop {
     struct testfwd tstruct;
-    struct testbkwd tarray[4];
+    struct testbkwd tarray[2];
     union len tvararray_len;
-    struct testfwd tvararray[8];
+    struct testfwd tvararray[3];
     union len ttable_len;
-    struct testbkwd ttable[7];
+    struct testbkwd ttable[3];
 };
 
 void database_init();

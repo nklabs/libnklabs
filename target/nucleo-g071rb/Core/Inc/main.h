@@ -70,12 +70,28 @@ void   MX_TIM3_Init(void);
 void   MX_TIM15_Init(void);
 /* USER CODE BEGIN Private defines */
 
-// Only dev. board has the "User Button", so use it to determine that we are on the dev. board
-#ifdef USER_LED_GPIO_Port
-#define DEV_BOARD 1
-#else
-#define PROTO_BOARD 1
-#endif
+// Name the devices we use
+
+#define MAIN_CONSOLE_UART hlpuart1
+extern UART_HandleTypeDef hlpuart1;
+
+#define MAIN_SPI hspi1
+extern SPI_HandleTypeDef hspi1;
+
+#define MAIN_I2C hi2c1
+extern I2C_HandleTypeDef hi2c1;
+
+#define MAIN_WDT hiwdg
+extern IWDG_HandleTypeDef hiwdg;
+
+// Demo app functions called by main.h
+
+void user_main(void);
+void note_reset_cause(void);
+
+// Called by stm32f0xx_it.c
+
+void nk_uart_irq_handler(void);
 
 /* USER CODE END Private defines */
 

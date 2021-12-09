@@ -8,11 +8,9 @@ uint8_t i2c_buffer[16];
 
 // Raw I2C bus
 
-extern I2C_HandleTypeDef hi2c1;
-
 static int cmd_i2c(nkinfile_t *args)
 {
-	return nk_i2c_command(&hi2c1, args);
+	return nk_i2c_command(&MAIN_I2C, args);
 }
 
 COMMAND(i2c,
@@ -31,7 +29,7 @@ const struct nk_i2c_eeprom_info m24c02 =
 {
 	.i2c_write = nk_i2c_write,
 	.i2c_read = nk_i2c_read,
-	.i2c_ptr = &hi2c1,
+	.i2c_ptr = &MAIN_I2C,
 
 	.i2c_addr = M24C02_I2C_ADDR,
 
@@ -72,7 +70,7 @@ const struct nk_i2c_eeprom_info m24256 =
 {
 	.i2c_write = nk_i2c_write,
 	.i2c_read = nk_i2c_read,
-	.i2c_ptr = &hi2c1,
+	.i2c_ptr = &MAIN_I2C,
 
 	.i2c_addr = M24256_I2C_ADDR,
 
@@ -113,7 +111,7 @@ const struct nk_i2c_eeprom_info m24m01 =
 {
 	.i2c_write = nk_i2c_write,
 	.i2c_read = nk_i2c_read,
-	.i2c_ptr = &hi2c1,
+	.i2c_ptr = &MAIN_I2C,
 
 	.i2c_addr = M24M01_I2C_ADDR,
 

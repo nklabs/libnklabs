@@ -29,9 +29,9 @@ C_SOURCES += \
 $(NK_APP)/basic_cmds.c \
 $(NK_APP)/database.c \
 $(NK_APP)/i2c.c \
+$(NK_APP)/main_stm32.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/spiflash.c \
-$(NK_APP)/startup.c \
 $(NK_SRC)/nkarch_stm32.c \
 $(NK_SRC)/nkcli.c \
 $(NK_SRC)/nkcrclib.c \

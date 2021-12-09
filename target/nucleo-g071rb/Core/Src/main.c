@@ -23,8 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "startup.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -116,6 +114,7 @@ int main(void)
   MX_IWDG_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
   user_main();
 
   /* USER CODE END 2 */
