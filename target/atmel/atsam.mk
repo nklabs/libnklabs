@@ -1,10 +1,10 @@
 # libnklabs paths
 
-NK_SRC := ../../../src
-NK_APP := ../../../app
-NK_INC := ../../../inc
-NK_CONFIG := ../../../config
-NK_ARCHCONFIG := ../../../config_atsam
+NK_SRC := ../../../../src
+NK_APP := ../../../../app
+NK_INC := ../../../../inc
+NK_CONFIG := ../../../../config
+NK_ARCHCONFIG := ../../../../config_atsam
 
 # Get application version number
 

@@ -1,10 +1,10 @@
 # Paths
 
-NK_SRC = ../../src
-NK_APP = ../../app
-NK_INC = ../../inc
-NK_CONFIG = ../../config
-NK_ARCHCONFIG = ../../config_stm32
+NK_SRC = ../../../src
+NK_APP = ../../../app
+NK_INC = ../../../inc
+NK_CONFIG = ../../../config
+NK_ARCHCONFIG = ../../../config_stm32
 
 # Get application version number
 

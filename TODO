@@ -1,14 +1,21 @@
-P*latform descriptions
-
-nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
-
-Instructions for openocd
-
-Example CLI manual
 
 better abstraction for info command
 
-install git hash of build
+  install git hash of build
+
+More targets:
+  Cortex-M7:
+  ATSAME70
+  STM32F746
+
+Subdirectories for different vendors, continue writing descriptions
+
+Demo CLI manual
+
+
+nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
+
+
 
 abstraction:
   simpler diretory structure?  do we have too many of them?
@@ -17,7 +24,7 @@ abstraction:
 atsamd:
   low power modes?  which is the best clock to use?
   should we be using systick or an atsam timer?
-*
+
 rtc:
   better abtraction
   atsamd clock sometimes doesn't start until you read it.. are missing some initialization step?
@@ -27,18 +34,12 @@ bootloader:
 
   We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
 
-targets:
+Other more targets:
 
   Add RISCV
   Add Xilinx
-  Add some more ST
-  Add some more Atmel
-
+  Add TI
   Some example in an RTOS
-
-testing:
-
-  Need target board with I2C and SPI-flash for this
 
 event driven:
 
