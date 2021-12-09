@@ -22,7 +22,7 @@ if you want to change project settings:
 
 STM32CubeMX is used to generate the HAL and initialization code for each
 target.  STM32CubeMX provides sections in the generated files where you can
-add your own code.  When you makes changes to the project, STM32CubeMX
+add your own code.  When you make changes to the project, STM32CubeMX
 will preserve these additions.
 
 These files in particular are of note, and have a few changes:
@@ -34,7 +34,7 @@ form of #defines.  The names can be set within the STM32CubeMX GUI.  It also
 includes the header files for the entire STM32 HAL.  So this one header file
 is all that you need to include in your own code.
 
-Unfortunately, STM32CubeMX does give us a way to provide user defined names
+Unfortunately, STM32CubeMX does not give us a way to provide user defined names
 for peripherals.  Therefore we modify Core/Inc/main.h to include bindings
 between the periphers we expect to exist and the ones actually used.  The
 following code is thus added to Core/Inc/main.h:
@@ -119,12 +119,16 @@ preserves these changes:
 
 * Add the -Os flag to OPT
 
-	OPT = -Og -Os
+~~~make
+OPT = -Og -Os
+~~~
 
 * Include our our own Makefile
 
-	# Add our files
-	include ../nucleo.mk
+~~~make
+# Add our files
+include ../nucleo.mk
+~~~
 
 This adds the libnklabs and demo application files to the build.  It also
 automatically inserts the build date, git hash and version numbers to an
@@ -139,9 +143,12 @@ It also provides a few phony targets:
 
 * Include the version.o file in the buid.
 
-    $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile $(BUILD_DIR)/version.o
-        $(CC) $(OBJECTS) $(BUILD_DIR)/version.o $(LDFLAGS) -o $@
-            $(SZ) $@
+
+~~~make
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile $(BUILD_DIR)/version.o
+	$(CC) $(OBJECTS) $(BUILD_DIR)/version.o $(LDFLAGS) -o $@
+        $(SZ) $@
+~~~
 
 * C_DEFS
 
