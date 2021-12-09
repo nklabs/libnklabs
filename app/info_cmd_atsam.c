@@ -24,116 +24,6 @@
 #include "nkreadline.h"
 #include "nkcli.h"
 
-// Transmit Ctrl-S to test XON/XOFF
-
-static int cmd_stop(nkinfile_t *args)
-{
-    if (facmode && nk_fscan(args, "")) {
-        nk_putc('S'-'@');
-        
-    } else {
-        nk_printf("Syntax error\n");
-    }
-    return 0;
-}
-
-COMMAND(stop,
-    "stop                      Emit ^S\n",
-    "stop                      Emit ^S\n",
-    ""
-)
- 
-// Control echoing
-
-static int cmd_echo(nkinfile_t *args)
-{
-    if (nk_fscan(args, "on ")) {
-        nk_set_echo(1);
-        nk_printf("Echoing is enabled\n");
-    } else if (nk_fscan(args, "off ")) {
-        nk_set_echo(0);
-        nk_printf("Echoing is disabled\n");
-    } else if (nk_fscan(args, "")) {
-        if (nk_get_echo()) 
-            nk_printf("Echoing is enabled\n");
-        else
-            nk_printf("Echoing is disabled\n");
-    } else {
-        nk_printf("Syntax error\n");
-    }
-    return 0;
-}
-
-COMMAND(echo,
-    "echo                      Control command echoing\n",
-    "echo on                   Enable echoing\n"
-    "echo off                  Disable echoing\n"
-    "echo                      Show current echo mode\n",
-    ""
-)
-
-// Read/Write/hex-dump memory
-
-static uint32_t old_addr;
-
-static int cmd_mem(nkinfile_t *args)
-{
-    uint32_t addr;
-    uint32_t len;
-    uint32_t val;
-    if (facmode && nk_fscan(args, "rd %lx ", &addr)) {
-        nk_printf("[%lx] has %lx\n", addr, *(uint32_t *)addr);
-    } else if (facmode && nk_fscan(args, "wr %lx %x ", &addr, &val)) {
-        *(uint32_t *)addr = val;
-        nk_printf("Wrote %lx to [%lx]\n", val, addr);
-    } else if (facmode && nk_fscan(args, "hd %lx %x ", &old_addr, &len)) {
-	nk_byte_hex_dump((unsigned char *)0, 0, old_addr, len);
-	old_addr += len;
-    } else if (facmode && nk_fscan(args, "hd %lx ", &old_addr)) {
-    	len = 0x100;
-	nk_byte_hex_dump((unsigned char *)0, 0, old_addr, len);
-	old_addr += len;
-    } else if (facmode && nk_fscan(args, "hd ")) {
-    	len = 0x100;
-	nk_byte_hex_dump((unsigned char *)0, 0, old_addr, len);
-	old_addr += len;
-    } else {
-        nk_printf("Syntax error\n");
-    }
-    return 0;
-}
-
-COMMAND(mem,
-    "mem                       Read/write memory\n",
-    "mem rd <addr>             Read 32-bit word from address\n"
-    "mem wr <addr> <data>      Write 32-bit word to address\n"
-    "mem hd <addr> <len>       Hex dump memory\n"
-    "mem hd <addr>             Hex dump 256 bytes\n"
-    "mem hd                    Hex dump next256 bytes\n",
-    ""
-)
-
-// Reboot the system
-
-static int cmd_reboot(nkinfile_t *args)
-{
-        if (nk_fscan(args, "")) {
-            nk_printf("Rebooting...\n");
-            nk_udelay(2000);
-            reboot();
-        } else {
-            nk_printf("Syntax error\n");
-        }
-        return 0;
-}
-
-
-COMMAND(reboot,
-    "reboot                    Reboot system\n",
-    "reboot                    Reboot system\n",
-    ""
-)
-
 // Print information about firmware and system
 
 extern char _sfixed;
@@ -143,11 +33,6 @@ extern char _srelocate;
 extern char _erelocate;
 extern char _sbss;
 extern char _ebss;
-
-
-#if 0
-reset_cause_t reset_cause;
-#endif
 
 static int cmd_info(nkinfile_t *args)
 {

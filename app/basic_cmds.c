@@ -24,11 +24,6 @@
 #include "nkreadline.h"
 #include "nkcli.h"
 
-#if 0
-#include "stm32g0xx_ll_system.h"
-#include "stm32g0xx_ll_utils.h"
-#endif
-
 // Transmit Ctrl-S to test XON/XOFF
 
 static int cmd_stop(nkinfile_t *args)
@@ -136,80 +131,5 @@ static int cmd_reboot(nkinfile_t *args)
 COMMAND(reboot,
     "reboot                    Reboot system\n",
     "reboot                    Reboot system\n",
-    ""
-)
-
-// Print information about firmware and system
-
-extern char _etext;
-extern char _sdata;
-extern char _edata;
-extern char __bss_start__;
-extern char __bss_end__;
-
-reset_cause_t reset_cause;
-
-static int cmd_info(nkinfile_t *args)
-{
-        char lot[8];
-        uint32_t idxy;
-        uint32_t idlow;
-        uint32_t idhigh;
-	if (nk_fscan(args, "")) {
-#ifdef DEV_BOARD
-                nk_printf("Dev. board\n");
-#else
-                nk_printf("Proto board\n");
-#endif
-                // nk_printf("Model %s\n", model.model);
-                // nk_printf("Serial number %s\n", cal.serno);
-                nk_printf("Firmware version %d.%d\n", firmware_major, firmware_minor);
-#ifdef STM32G070xx
-                nk_printf("for STM32G070xx\n");
-#endif
-#ifdef STM32G071xx
-                nk_printf("for STM32G071xx\n");
-#endif
-
-#if 0
-                nk_printf("Build date: %4.4d-%2.2d-%2.2d %2.2d:%2.2d\n", build_year, build_month, build_day, build_hour, build_minute);
-	        nk_printf("CPU frequency = %lu\n", HAL_RCC_GetHCLKFreq());
-	        nk_printf("CPU IDCODE = %lx REV = %lx\n", LL_DBGMCU_GetDeviceID(), LL_DBGMCU_GetRevisionID());
-	        idxy = LL_GetUID_Word0();
-	        // idxy = *(uint32_t *)0x1fff7590;
-	        // idlow = *(uint32_t *)0x1fff7594;
-	        idlow = LL_GetUID_Word1();
-	        // idhigh = *(uint32_t *)0x1fff7598;
-	        idhigh = LL_GetUID_Word2();
-	        memcpy(lot, (char *)&idlow + 1, 3);
-	        memcpy(lot + 3, (char *)&idhigh, 4);
-	        lot[7] = 0;
-	        nk_printf("CPU serial no.: die %lx/%lx wafer %lu lot %s\n",
-	            (0xFFFF & idxy),
-	            (0xFFFF & (idxy >> 16)),
-	            (0xFF & idlow),
-	            lot
-                );
-#endif
-	            
-	        nk_printf("Reset cause = %s\n", reset_cause_get_name(reset_cause));
-	        //nk_printf("Current time = %u\n", reg_wallclock);
-	        nk_printf("Memory footprint:\n");
-		nk_printf("_sdata = %p\n", &_sdata);
-		nk_printf("_edata = %p\n", &_edata);
-		nk_printf("__bss_start__ = %p\n", &__bss_start__);
-		nk_printf("__bss_end__ = %p\n", &__bss_end__);
-		nk_printf("_etext = %p\n", &_etext);
-		nk_printf("an address in current stack = %p\n", &args);
-		nk_printf("an address in current text = %p\n", &cmd_info);
-	} else {
-		nk_printf("Syntax error\n");
-	}
-	return 0;
-}
-
-COMMAND(info,
-    "info                      Display serial number and firmware information\n",
-    "info                      Display serial number and firmware information\n",
     ""
 )

@@ -93,7 +93,6 @@ extern IWDG_HandleTypeDef hiwdg;
 // Demo app functions called by main.h
 
 void user_main(void);
-void note_reset_cause(void);
 
 // Called by stm32f0xx_it.c
 

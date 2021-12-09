@@ -98,8 +98,6 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
-  note_reset_cause();
-
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
