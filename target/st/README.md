@@ -34,6 +34,20 @@ form of #defines.  The names can be set within the STM32CubeMX GUI.  It also
 includes the header files for the entire STM32 HAL.  So this one header file
 is all that you need to include in your own code.
 
+The following pins are expected:
+
+* USER_LED
+* USER_BUTTON
+* MAIN_SPI_MISO
+* MAIN_SPI_MOSI
+* MAIN_SPI_CS_L
+* MAIN_SPI_CS_L_1
+* MAIN_SPI_CS_L_2
+* MAIN_I2C_SCL
+* MAIN_I2C_SDA
+* CONSOLE_TX
+* CONSOLE_RX
+
 Unfortunately, STM32CubeMX does not give us a way to provide user defined names
 for peripherals.  Therefore we modify Core/Inc/main.h to include bindings
 between the periphers we expect to exist and the ones actually used.  The
