@@ -7,11 +7,6 @@
 #include "nkdbase.h"
 #include "database.h"
 
-void note_reset_cause(void)
-{
-    reset_cause = reset_cause_get();
-}
-
 // Watchdog timer
 
 int wdt_tid;
@@ -27,11 +22,22 @@ void wdt_poke(void *data)
 
 void user_main(void)
 {
+    // Record bootup reason
+    reset_cause = reset_cause_get();
+
+    // Initialize
     nk_init_uart();
+
     nk_init_sched();
+
     nk_init_cli();
+
+    // Watchdog timer
     wdt_tid = nk_alloc_tid();
     nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
+
     database_init();
+
+    // Go
     nk_sched_loop();
 }

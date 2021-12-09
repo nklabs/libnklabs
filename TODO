@@ -1,4 +1,3 @@
-
 better abstraction for info command
 
   install git hash of build
@@ -8,7 +7,7 @@ More targets:
   ATSAME70
   STM32F746
 
-Subdirectories for different vendors, continue writing descriptions
+target descriptions
 
 Demo CLI manual
 

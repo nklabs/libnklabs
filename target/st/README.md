@@ -62,7 +62,6 @@ extern IWDG_HandleTypeDef hiwdg;
 // Demo app functions called by main.h
 
 void user_main(void);
-void note_reset_cause(void);
 
 // Called by stm32f0xx_it.c
 
@@ -73,21 +72,8 @@ void nk_uart_irq_handler(void);
 
 * Core/Src/main.c
 
-This file has the main() function that is called after startup.  We make two
-additions to this file;
-
-First we call note_reset_cause().  This records the reason for the reboot,
-and has to be called fairly early in the boot up process
-
-~~~c
-  /* USER CODE BEGIN SysInit */
-
-  note_reset_cause();
-
-  /* USER CODE END SysInit */
-~~~
-
-Second, we call our own main function:
+This file has the main() function that is called after startup.  We make
+just one change to this file:
 
 ~~~c
   /* USER CODE BEGIN 2 */
@@ -96,6 +82,8 @@ Second, we call our own main function:
 
   /* USER CODE END 2 */
 ~~~
+
+Transfer control to the demo application main application.
 
 * Core/Src/stmxxx_it.c
 
