@@ -39,7 +39,11 @@ static int cmd_info(nkinfile_t *args)
 	if (nk_fscan(args, "")) {
                 nk_printf("Firmware version %d.%d\n", firmware_major, firmware_minor);
                 nk_printf("Build date: %4.4d-%2.2d-%2.2d %2.2d:%2.2d\n", build_year, build_month, build_day, build_hour, build_minute);
+                nk_printf("Git hash: %s\n", git_hash);
 	        nk_printf("CPU frequency = %lu\n", HAL_RCC_GetHCLKFreq());
+	        nk_printf("HCLKFreq = %lu\r\n", (unsigned long)HAL_RCC_GetHCLKFreq());
+	        nk_printf("PCLK1Freq = %lu\r\n", (unsigned long)HAL_RCC_GetPCLK1Freq());
+	        //nk_printf("PCLK2Freq = %lu\r\n", (unsigned long)HAL_RCC_GetPCLK2Freq());
 	        nk_printf("Reset cause = %s\n", reset_cause_get_name(reset_cause));
 	        nk_printf("Memory footprint:\n");
 		nk_printf("  _sdata = %p\n", &_sdata);

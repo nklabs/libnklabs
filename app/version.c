@@ -7,4 +7,4 @@ const uint8_t build_month = NK_MONTH;
 const uint8_t build_day = NK_DAY;
 const uint8_t build_hour = NK_HOUR;
 const uint8_t build_minute = NK_MINUTE;
-char git_hash[] = NK_GIT_REV;
+const char git_hash[] = NK_GIT_REV;

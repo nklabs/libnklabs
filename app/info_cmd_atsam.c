@@ -39,6 +39,7 @@ static int cmd_info(nkinfile_t *args)
 	if (nk_fscan(args, "")) {
                 nk_printf("Firmware version %d.%d\n", firmware_major, firmware_minor);
                 nk_printf("Build date: %4.4d-%2.2d-%2.2d %2.2d:%2.2d\n", build_year, build_month, build_day, build_hour, build_minute);
+                nk_printf("Git hash: %s\n", git_hash);
 
 #if 0
 	        nk_printf("CPU frequency = %u\n", CONF_CPU_FREQUENCY);

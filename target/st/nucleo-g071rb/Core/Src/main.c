@@ -516,13 +516,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_L_GPIO_Port, SPI1_CS_L_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MAIN_SPI_CS_L_GPIO_Port, MAIN_SPI_CS_L_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_L_1_GPIO_Port, SPI1_CS_L_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MAIN_SPI_CS_L_1_GPIO_Port, MAIN_SPI_CS_L_1_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_L_2_GPIO_Port, SPI1_CS_L_2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MAIN_SPI_CS_L_2_GPIO_Port, MAIN_SPI_CS_L_2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : USER_BUTTON_Pin */
   GPIO_InitStruct.Pin = USER_BUTTON_Pin;
@@ -530,26 +530,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI1_CS_L_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_L_Pin;
+  /*Configure GPIO pin : MAIN_SPI_CS_L_Pin */
+  GPIO_InitStruct.Pin = MAIN_SPI_CS_L_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(SPI1_CS_L_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(MAIN_SPI_CS_L_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI1_CS_L_1_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_L_1_Pin;
+  /*Configure GPIO pin : MAIN_SPI_CS_L_1_Pin */
+  GPIO_InitStruct.Pin = MAIN_SPI_CS_L_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(SPI1_CS_L_1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(MAIN_SPI_CS_L_1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI1_CS_L_2_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_L_2_Pin;
+  /*Configure GPIO pin : MAIN_SPI_CS_L_2_Pin */
+  GPIO_InitStruct.Pin = MAIN_SPI_CS_L_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(SPI1_CS_L_2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(MAIN_SPI_CS_L_2_GPIO_Port, &GPIO_InitStruct);
 
 }
 

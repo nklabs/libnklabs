@@ -75,6 +75,9 @@ void reboot()
 	NVIC_SystemReset();
 }
 
+#define NK_FLASH_BASE_ADDRESS 0x8000000
+
+
 int nk_init_mcuflash()
 {
 	return 0;
@@ -88,8 +91,9 @@ int flash_erase(uint32_t address)
 	int rtn;
 	uint32_t err = 0;
 
-	address -= 0x08000000;
+	address -= NK_FLASH_BASE_ADDRESS;
 
+#ifdef FLASH_PAGE_SIZE
 	FLASH_EraseInitTypeDef erase;
 
 	erase.TypeErase = FLASH_TYPEERASE_PAGES;
@@ -125,12 +129,38 @@ int flash_erase(uint32_t address)
 	HAL_FLASH_Lock();
 
 	return rtn;
+
+#else
+
+// Sectors on not uniformly sized
+
+// But FLASH_SECTOR_TOTAL indicates how many..
+
+//On STM32F756xx and STM32F74xx devices, a main memory block divided into 4 
+//sectors of 32 Kbytes, 1 sector of 128 Kbytes and 3 sectors of 256 Kbytes   
+
+#if 0
+	FLASH_EraseInitTypeDef erase;
+	memset(&erase, 0, sizeof(erase));
+	erase.TypeErase = FLASH_TYPEERASE_SECTORS;
+	erase.Sector = address / sector-size;
+	erase.NbSectors = 1;
+	erase.VoltageRange = FLASH_VOLTAGE_RANGE_4; // Ugh.. this needs to be a config option
+
+	HAL_FLASH_Unlock();
+	rtn = (HAL_FLASHEx_Erase(&erase, &err) != HAL_OK);
+	HAL_FLASH_Lock();
+#endif
+
+	return -1;
+#endif
 }
 
 // Erase a range of space, all pages that touch the space are erased
 
 int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 {
+#ifdef FLASH_PAGE_SIZE
 	int rtn = 0;
 	// As long as we're not done..
 	while (byte_count) {
@@ -153,6 +183,9 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 		return -1;
 	}
 	return 0;
+#else
+	return -1;
+#endif
 }
 
 // Program 8 bytes
@@ -173,6 +206,8 @@ int flash_write(uint32_t address, uint64_t data)
 int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 {
 	int rtn = 0; // Assume success
+
+	address += NK_FLASH_BASE_ADDRESS;
 
 	uint32_t page_size = 8; // Write size
 
@@ -207,7 +242,7 @@ int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 {
 	// Flash is memory mapped
-	memcpy((void *)data, (void *)address, byte_count);
+	memcpy((void *)data, (void *)(address + NK_FLASH_BASE_ADDRESS), byte_count);
 	return 0;
 }
 

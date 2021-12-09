@@ -73,10 +73,14 @@ static int cmd_mcuflash(nkinfile_t *args)
         nk_mcuflash_erase(addr, len);
         nk_printf("done.\n");
     } else if (facmode && nk_fscan(args, "erase %lx ", &addr)) {
+#ifdef FLASH_PAGE_SIZE
     	len = FLASH_PAGE_SIZE;
     	nk_printf("Erasing %lu bytes...\n", len);
         nk_mcuflash_erase(addr, len);
         nk_printf("done.\n");
+#else
+        nk_printf("Ooops.\n");
+#endif
     } else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len)) {
     	uint8_t buf[16];
     	uint8_t x = 0x10;

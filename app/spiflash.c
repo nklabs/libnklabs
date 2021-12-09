@@ -37,8 +37,8 @@ uint8_t spi_buffer[132];
 
 const struct flash_device m95m04_bus =
 {
-    .cs_port = SPI1_CS_L_GPIO_Port,
-    .cs_pin = SPI1_CS_L_Pin,
+    .cs_port = MAIN_SPI_CS_L_GPIO_Port,
+    .cs_pin = MAIN_SPI_CS_L_Pin,
     .hspi = &MAIN_SPI
 };
 
@@ -81,8 +81,8 @@ COMMAND(m95m04,
 
 const struct flash_device m95256_bus =
 {
-    .cs_port = SPI1_CS_L_1_GPIO_Port,
-    .cs_pin = SPI1_CS_L_1_Pin,
+    .cs_port = MAIN_SPI_CS_L_1_GPIO_Port,
+    .cs_pin = MAIN_SPI_CS_L_1_Pin,
     .hspi = &MAIN_SPI
 };
 
@@ -125,8 +125,8 @@ COMMAND(m95256,
 
 const struct flash_device m95040_bus =
 {
-    .cs_port = SPI1_CS_L_2_GPIO_Port,
-    .cs_pin = SPI1_CS_L_2_Pin,
+    .cs_port = MAIN_SPI_CS_L_2_GPIO_Port,
+    .cs_pin = MAIN_SPI_CS_L_2_Pin,
     .hspi = &MAIN_SPI
 };
 

@@ -60,20 +60,30 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define MCO_Pin GPIO_PIN_0
 #define MCO_GPIO_Port GPIOA
-#define VCP_TX_Pin GPIO_PIN_2
-#define VCP_TX_GPIO_Port GPIOA
-#define SPI1_CS_L_1_Pin GPIO_PIN_8
-#define SPI1_CS_L_1_GPIO_Port GPIOA
-#define SPI1_CS_L_Pin GPIO_PIN_11
-#define SPI1_CS_L_GPIO_Port GPIOA
-#define SPI1_CS_L_2_Pin GPIO_PIN_12
-#define SPI1_CS_L_2_GPIO_Port GPIOA
+#define CONSOLE_TX_Pin GPIO_PIN_2
+#define CONSOLE_TX_GPIO_Port GPIOA
+#define MAIN_SPI_CS_L_1_Pin GPIO_PIN_8
+#define MAIN_SPI_CS_L_1_GPIO_Port GPIOA
+#define MAIN_SPI_CS_L_Pin GPIO_PIN_11
+#define MAIN_SPI_CS_L_GPIO_Port GPIOA
+#define MAIN_SPI_CS_L_2_Pin GPIO_PIN_12
+#define MAIN_SPI_CS_L_2_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define VCP_RX_Pin GPIO_PIN_15
-#define VCP_RX_GPIO_Port GPIOA
+#define CONSOLE_RX_Pin GPIO_PIN_15
+#define CONSOLE_RX_GPIO_Port GPIOA
+#define USER_LED_Pin GPIO_PIN_3
+#define USER_LED_GPIO_Port GPIOB
+#define MAIN_SPI_MISO_Pin GPIO_PIN_4
+#define MAIN_SPI_MISO_GPIO_Port GPIOB
+#define MAIN_SPI_MOSI_Pin GPIO_PIN_5
+#define MAIN_SPI_MOSI_GPIO_Port GPIOB
+#define MAIN_I2C_SCL_Pin GPIO_PIN_6
+#define MAIN_I2C_SCL_GPIO_Port GPIOB
+#define MAIN_I2C_SDA_Pin GPIO_PIN_7
+#define MAIN_I2C_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 // Name the devices we use

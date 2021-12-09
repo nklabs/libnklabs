@@ -384,10 +384,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SPI1_CS_L_1_Pin|SPI1_CS_L_Pin|SPI1_CS_L_2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, MAIN_SPI_CS_L_1_Pin|MAIN_SPI_CS_L_Pin|MAIN_SPI_CS_L_2_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : SPI1_CS_L_1_Pin SPI1_CS_L_Pin SPI1_CS_L_2_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_L_1_Pin|SPI1_CS_L_Pin|SPI1_CS_L_2_Pin;
+  /*Configure GPIO pins : MAIN_SPI_CS_L_1_Pin MAIN_SPI_CS_L_Pin MAIN_SPI_CS_L_2_Pin */
+  GPIO_InitStruct.Pin = MAIN_SPI_CS_L_1_Pin|MAIN_SPI_CS_L_Pin|MAIN_SPI_CS_L_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;

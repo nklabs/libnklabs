@@ -9,17 +9,17 @@ CDefines=USE_HAL_DRIVER;STM32G071xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Inc/stm32g0xx_it.h
-HeaderFiles#1=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Inc/stm32g0xx_hal_conf.h
-HeaderFiles#2=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Inc/main.h
+HeaderFiles#0=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Inc/stm32g0xx_it.h
+HeaderFiles#1=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Inc/stm32g0xx_hal_conf.h
+HeaderFiles#2=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Inc
+HeaderPath#0=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Src/stm32g0xx_it.c
-SourceFiles#1=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Src/stm32g0xx_hal_msp.c
-SourceFiles#2=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Src/main.c
+SourceFiles#0=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Src/stm32g0xx_it.c
+SourceFiles#1=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Src/stm32g0xx_hal_msp.c
+SourceFiles#2=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=/home/jallen/git1/libnklabs/target/nucleo-g071rb/Core/Src
+SourcePath#0=/home/jallen/git1/libnklabs/target/st/nucleo-g071rb/Core/Src
 SourceFiles=;
 
