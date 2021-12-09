@@ -50,6 +50,7 @@ int nk_fscan_escape(nkinfile_t *f)
 	int d;
 	if (c == '\\') {
 		c = nk_fnext_fast(f);
+		d  = 0;
 		if (c != -1)
 			d = nk_fnext_fast(f);
 		if (c == 'a') {

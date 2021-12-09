@@ -308,7 +308,7 @@ void nk_ysend_file(
     int (*tgetc)(void *f),
     int (tsize)(void *f)
 ) {
-    int sta;
+    int sta = YMODEM_SEND_STATUS_MORE;
     void *file = topen(name, "r");
     
     if (!file)
