@@ -12,7 +12,7 @@ int wdt_tid;
 void wdt_poke(void *data)
 {
     (void)data;
-    //HAL_IWDG_Refresh(&hiwdg);
+    wdt_feed(&MAIN_WDT);
     nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
 }
 

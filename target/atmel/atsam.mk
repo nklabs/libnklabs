@@ -27,7 +27,8 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 # Add out source files
 OBJS += \
 spiflash_atsam.o \
-basic_cmds_atsam.o \
+basic_cmds.o \
+info_cmd_atsam.o \
 database.o \
 nkymodem_cmd.o \
 main_atsam.o \
@@ -76,7 +77,7 @@ jlink:
 
 # Update files from atmel start
 
-$(ATMEL_START_DIR)/gcc/Makefile: $(ATMEL_START_DIR)/$(ATZIP_DIR)/$(ATZIP)
+$(ATMEL_START_DIR)/gcc/Makefile: $(ATZIP_DIR)/$(ATZIP)
 	rm -rf $(ATMEL_START_DIR)
 	mkdir $(ATMEL_START_DIR)
 	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))

@@ -1,0 +1,2 @@
+fake:
+	make -C build

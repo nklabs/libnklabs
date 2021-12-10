@@ -68,15 +68,17 @@ int nk_set_uart_mode(int new_mode)
 void nk_putc(char ch)
 {
 	struct io_descriptor *io_descr;
-	usart_async_get_io_descriptor(&USART_0, &io_descr);
+	usart_async_get_io_descriptor(&MAIN_CONSOLE_UART, &io_descr);
 	struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
 	if (!tty_mode && ch == '\n') {
 		_usart_async_write_byte(&descr->device, '\r');
-                while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+//                while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+		while (!hri_usart_get_US_CSR_TXRDY_bit(descr->device.hw));
 	}
 	_usart_async_write_byte(&descr->device, ch);
-	while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+//	while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+	while (!hri_usart_get_US_CSR_TXRDY_bit(descr->device.hw));
 }
 
 
@@ -97,7 +99,7 @@ void nk_uart_write(const char *s, int len)
 int nk_getc()
 {
         struct io_descriptor *io_descr;
-	usart_async_get_io_descriptor(&USART_0, &io_descr);
+	usart_async_get_io_descriptor(&MAIN_CONSOLE_UART, &io_descr);
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
         if (ringbuffer_num(&descr->rx) < 1) {
@@ -112,7 +114,7 @@ int nk_getc()
 int nk_kbhit()
 {
         struct io_descriptor *io_descr;
-	usart_async_get_io_descriptor(&USART_0, &io_descr);
+	usart_async_get_io_descriptor(&MAIN_CONSOLE_UART, &io_descr);
 
         struct usart_async_descriptor *descr = CONTAINER_OF(io_descr, struct usart_async_descriptor, io);
 
@@ -159,11 +161,11 @@ static void rx_cb(const struct usart_async_descriptor *const io_descr)
 void nk_init_uart()
 {
 	struct io_descriptor *io;
-	//usart_async_set_baud_rate(&USART_0, 115200);
-        usart_async_register_callback(&USART_0, USART_ASYNC_RXC_CB, rx_cb);
+	//usart_async_set_baud_rate(&MAIN_CONSOLE_UART, 115200);
+        usart_async_register_callback(&MAIN_CONSOLE_UART, USART_ASYNC_RXC_CB, rx_cb);
 
-	usart_async_enable(&USART_0);
-	usart_async_get_io_descriptor(&USART_0, &io);
+	usart_async_enable(&MAIN_CONSOLE_UART);
+	usart_async_get_io_descriptor(&MAIN_CONSOLE_UART, &io);
 
         // First startup line
         nk_putc('\n');

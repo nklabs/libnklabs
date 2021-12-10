@@ -68,8 +68,8 @@ void nk_start_sched_timer(uint32_t delay)
 	sched_timer_task.interval = timeout;
 	sched_timer_task.cb = timer_callback;
 	sched_timer_task.mode = TIMER_TASK_ONE_SHOT;
-	timer_add_task(&TIMER_0, &sched_timer_task);
-	timer_start(&TIMER_0);
+	timer_add_task(&MAIN_SCHED_TIMER, &sched_timer_task);
+	timer_start(&MAIN_SCHED_TIMER);
 }
 
 // Get current time

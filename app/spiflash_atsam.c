@@ -44,8 +44,8 @@ uint8_t spi_buffer[132];
 
 const struct flash_device at25df081_bus =
 {
-    .cs_pin = SPI_CS_L,
-    .hspi = &SPI_0
+    .cs_pin = MAIN_SPI_CS_L,
+    .hspi = &MAIN_SPI
 };
 
 const struct nk_spiflash_info at25df081 =
@@ -91,5 +91,5 @@ COMMAND(at25df081,
 void spiflash_init()
 {
     startup("SPI-Flash\n");
-    spi_m_sync_enable(&SPI_0);
+    spi_m_sync_enable(&MAIN_SPI);
 }

@@ -1,11 +1,12 @@
-better abstraction for info command
+Bugs:
+  "syntax error" on boot up?
 
-  install git hash of build
+Atmel: named peripherals in atsame54 ad atsamd21
 
-More targets:
-  Cortex-M7:
-  ATSAME70
-  STM32F746
+Add i2c to atmel
+Add spi to atmel- try arduino connectors
+
+How do we handle STM32F746 flash memory? Sector sizes are not uniform..
 
 target descriptions
 
