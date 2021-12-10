@@ -73,12 +73,18 @@ void nk_putc(char ch)
 
 	if (!tty_mode && ch == '\n') {
 		_usart_async_write_byte(&descr->device, '\r');
-//                while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+#ifdef US_IMR_TXRDY
 		while (!hri_usart_get_US_CSR_TXRDY_bit(descr->device.hw));
+#else
+                while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+#endif
 	}
 	_usart_async_write_byte(&descr->device, ch);
-//	while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+#ifdef US_IMR_TXRDY
 	while (!hri_usart_get_US_CSR_TXRDY_bit(descr->device.hw));
+#else
+	while (!hri_sercomusart_get_interrupt_DRE_bit(descr->device.hw));
+#endif
 }
 
 

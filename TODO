@@ -1,29 +1,30 @@
-Bugs:
+
+Atmel:
+
+  Add i2c command to atmel
+
+  EXT2 connector for i2c/spi? atsame70 has arduino..
+
+  Auto unzip does not work well, need to type "make" twice.
+
   "syntax error" on boot up?
 
-Atmel: named peripherals in atsame54 ad atsamd21
+  dbase save only works on atsamd21 board
 
-Add i2c to atmel
-Add spi to atmel- try arduino connectors
+  low power modes?  which is the best clock to use?
 
-How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+  should we be using systick or an atsam timer?
 
-target descriptions
+STM32:
+
+  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+
+
+complete target descriptions
 
 Demo CLI manual
 
-
 nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
-
-
-
-abstraction:
-  simpler diretory structure?  do we have too many of them?
-  maybe have an arch/ directory..
-
-atsamd:
-  low power modes?  which is the best clock to use?
-  should we be using systick or an atsam timer?
 
 rtc:
   better abtraction
