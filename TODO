@@ -1,7 +1,5 @@
 High:
 
-  Atmel:  dbase save only works on atsamd21 board.. actually just erase is broken
-
   STM32:  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
 
 Med:

@@ -81,6 +81,9 @@ const char *reset_cause_get_name(reset_cause_t reset_cause);
 // MCU flash padding size
 #define NK_MCUFLASH_MIN_SIZE 8
 
+// Start address of flash
+#define NK_FLASH_BASE_ADDRESS 0x8000000
+
 // Reboot MCU
 void reboot(void);
 

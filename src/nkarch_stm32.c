@@ -75,7 +75,6 @@ void reboot()
 	NVIC_SystemReset();
 }
 
-#define NK_FLASH_BASE_ADDRESS 0x8000000
 
 
 int nk_init_mcuflash()
@@ -160,6 +159,8 @@ int flash_erase(uint32_t address)
 
 int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 {
+	address += NK_FLASH_BASE_ADDRESS;
+
 #ifdef FLASH_PAGE_SIZE
 	int rtn = 0;
 	// As long as we're not done..

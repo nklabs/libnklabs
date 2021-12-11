@@ -57,6 +57,7 @@ static int cmd_info(nkinfile_t *args)
 		nk_printf("_efixed = %p\n", &_efixed);
 		nk_printf("an address in current stack = %p\n", &args);
 		nk_printf("an address in current text = %p\n", &cmd_info);
+		nk_printf("Flash size = %d\n", NK_MCUFLASH_SIZE);
 
 #if 0
                 // ATSAME70 only?

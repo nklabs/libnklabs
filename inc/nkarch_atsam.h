@@ -71,14 +71,57 @@ nk_time_t nk_get_time();
 
 void nk_udelay(unsigned long usec);
 
-// This is the minimum MCU flash erase size
-#define NK_MCUFLASH_ERASE_SIZE 256
+#ifdef IFLASH_ADDR
+
+// atsame70
+#include <hpl_efc_config.h>
+
+#define NK_MCUFLASH_BASE (IFLASH_ADDR)
+#define NK_MCUFLASH_PAGE_SIZE (CONF_FLASH_PAGE_SIZE)
+#define NK_MCUFLASH_ERASE_SIZE (CONF_FLASH_ERASING_BLK_SIZE)
+#define NK_MCUFLASH_MIN_SIZE 1
+#define NK_MCUFLASH_SIZE (IFLASH_SIZE)
+
+#else
+
+// This is the base address of the flash memory
+// atsamd21, atsame54
+#define NK_MCUFLASH_BASE 0x00000000
 
 // This is the page size
-#define NK_MCUFLASH_PAGE_SIZE 64
+// atsamd21, atsame54
+#define NK_MCUFLASH_PAGE_SIZE (NVMCTRL_PAGE_SIZE)
+
+// This is the erase granularity
+#ifdef NVMCTRL_ROW_PAGES
+
+// atsamd21
+#define NK_MCUFLASH_ERASE_SIZE (NK_MCUFLASH_PAGE_SIZE * NVMCTRL_ROW_PAGES)
+
+#else
+
+// atsame54
+#define NK_MCUFLASH_ERASE_SIZE NVMCTRL_BLOCK_SIZE
+
+#endif
 
 // This is the minimum write size
 #define NK_MCUFLASH_MIN_SIZE 1
+
+// Size of flash memory
+#ifdef FLASH_NB_OF_PAGES
+
+// atsamd21
+#define NK_MCUFLASH_SIZE (NK_MCUFLASH_PAGE_SIZE * FLASH_NB_OF_PAGES)
+
+#else
+
+// atsame54 - lame, not available at compile time
+#define NK_MCUFLASH_SIZE (NK_MCUFLASH_PAGE_SIZE * (uint32_t)hri_nvmctrl_read_PARAM_NVMP_bf(FLASH_0.hw))
+
+#endif
+
+#endif
 
 void reboot(void);
 

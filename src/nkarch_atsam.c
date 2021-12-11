@@ -112,11 +112,12 @@ int nk_init_mcuflash()
 int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 {
 	int rtn = 0;
+
 	// As long as we're not done..
 	while (byte_count) {
 		// Try to use largest erase that works..
 		if ((address & (NK_MCUFLASH_ERASE_SIZE - 1)) == 0 && byte_count >= NK_MCUFLASH_ERASE_SIZE) {
-			rtn = flash_erase(&FLASH_0, address, 1);
+			rtn = flash_erase(&FLASH_0, address, NK_MCUFLASH_ERASE_SIZE / NK_MCUFLASH_PAGE_SIZE);
 			if (rtn) break;
 			address += NK_MCUFLASH_ERASE_SIZE;
 			byte_count -= NK_MCUFLASH_ERASE_SIZE;
@@ -179,7 +180,7 @@ int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 		if (byte_count < page_len)
 			page_len = byte_count;
 
-		rtn = flash_read(&FLASH_0, address, data, page_len);
+		rtn = flash_read(&FLASH_0, address, data, page_len); // flash_read expect 0 for first flash address
 		if (rtn)
 			break;
 
