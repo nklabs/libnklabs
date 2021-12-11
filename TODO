@@ -1,35 +1,47 @@
+High:
 
-Atmel:
+  Atmel:  "syntax error" on boot up?
+
+  Atmel:  dbase save only works on atsamd21 board
+
+  STM32:  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+
+Med:
+
+  documentation: complete target descriptions
+
+  Demo CLI manual
 
   Add i2c command to atmel
+  EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
 
-  EXT2 connector for i2c/spi? atsame70 has arduino..
+  nkymodem
 
-  Auto unzip does not work well, need to type "make" twice.
+    actual file download test
 
-  "syntax error" on boot up?
+    write documentation
 
-  dbase save only works on atsamd21 board
+  Button and LED application
+
+- - - - -
+
+Atmel:
 
   low power modes?  which is the best clock to use?
 
   should we be using systick or an atsam timer?
 
-STM32:
+mcuflash:
 
-  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
-
-
-complete target descriptions
-
-Demo CLI manual
-
-nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
+  nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
 
 rtc:
+
   better abtraction
+
   atsamd clock sometimes doesn't start until you read it.. are missing some initialization step?
 
+  external rtc
 
 bootloader:
 
@@ -40,19 +52,16 @@ Other more targets:
   Add RISCV
   Add Xilinx
   Add TI
+  PIC32
   Some example in an RTOS
 
 event driven:
 
   multi-line gets for dbase
+
   nkymodem- pause cli input until communication is done
 
   maybe call sched recursively?
-
-nkymodem
-
-  actual file download test
-  write documentation
 
 nkdbase:
 

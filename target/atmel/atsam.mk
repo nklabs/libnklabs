@@ -78,7 +78,14 @@ jlink:
 # Update files from atmel start
 
 $(ATMEL_START_DIR)/gcc/Makefile: $(ATZIP_DIR)/$(ATZIP)
+	@echo Updating atmel_start...
 	rm -rf $(ATMEL_START_DIR)
 	mkdir $(ATMEL_START_DIR)
 	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
 	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)
+	@echo
+	@echo Updated $(ATMEL_START_DIR) from $(ATZIP)
+	@echo
+	@echo Please type \'make\' again
+	@echo
+	exit 1
