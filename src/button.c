@@ -36,14 +36,14 @@ void button_poll()
     }
     else
     {
-        // ext_irq_enable(PIO_PA11_IDX);
+        ext_irq_enable(USER_BUTTON);
     }
 }
 
 void button_int(void)
 {
     // Turn off interrupts to prevent interrupt storm from contact noise
-    //ext_irq_disable(PIO_PA11_IDX);
+    ext_irq_disable(USER_BUTTON);
 
     // They will be re-enabled after (BUTTON_DEBOUNCE_COUNT * BUTTON_POLL_DELAY) ms
     button_debounce_count = BUTTON_DEBOUNCE_COUNT;
@@ -58,5 +58,5 @@ void nk_init_button()
     button_tid = nk_alloc_tid();
     nk_sched(button_tid, button_poll, NULL, BUTTON_POLL_DELAY, "Button poller");
     button_debounce_count = BUTTON_DEBOUNCE_COUNT;
-    //ext_irq_register(PIO_PA11_IDX, button_int);
+    ext_irq_register(USER_BUTTON, button_int);
 } 
