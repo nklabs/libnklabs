@@ -67,10 +67,15 @@ DEPS := $(OBJS:%.o=%.d)
 DEPS_AS_ARGS = $(DEPS)
 
 # Rebuild version.o if anything changed
+
 version.o: $(OBJS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MINOR $(NK_APP)/version.c
+
+# Program using AtmelICE using and OpenOCD
 
 flash:
 	(openocd --file atmelice.cfg)
+
+# Program using JLINK using and OpenOCD
 
 jlink:
 	(cd build; openocd --file jlink.cfg)
