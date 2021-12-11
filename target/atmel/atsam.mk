@@ -26,6 +26,7 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 
 # Add out source files
 OBJS += \
+button.o \
 spiflash_atsam.o \
 basic_cmds.o \
 info_cmd_atsam.o \
@@ -72,12 +73,12 @@ version.o: $(OBJS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MINOR $(NK_APP)/ver
 
 # Program using AtmelICE using and OpenOCD
 
-flash:
+flash: $(OUTPUT_FILE_PATH)
 	(openocd --file atmelice.cfg)
 
 # Program using JLINK using and OpenOCD
 
-jlink:
+jlink: $(OUTPUT_FILE_PATH)
 	(cd build; openocd --file jlink.cfg)
 
 # Update files from atmel start
@@ -88,6 +89,10 @@ $(ATMEL_START_DIR)/gcc/Makefile: $(ATZIP_DIR)/$(ATZIP)
 	mkdir $(ATMEL_START_DIR)
 	(cd $(ATMEL_START_DIR); unzip $(ATZIP_DIR)/$(ATZIP))
 	(cd $(ATMEL_START_DIR); find . -type f -exec touch {} +)
+	@echo
+	@echo Apply patches
+	@echo
+	PATCHES=../../patches TARGET=`pwd`/$(ATMEL_START_DIR) ../../patches/apply
 	@echo
 	@echo Updated $(ATMEL_START_DIR) from $(ATZIP)
 	@echo

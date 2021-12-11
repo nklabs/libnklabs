@@ -64,6 +64,8 @@ static struct timer_task sched_timer_task;
 // delay in timer ticks
 void nk_start_sched_timer(uint32_t delay)
 {
+	timer_stop(&MAIN_SCHED_TIMER);
+	timer_remove_task(&MAIN_SCHED_TIMER, &sched_timer_task);
 	timeout = delay;
 	sched_timer_task.interval = timeout;
 	sched_timer_task.cb = timer_callback;

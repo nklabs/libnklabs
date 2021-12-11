@@ -50,7 +50,7 @@ The following pins are expected:
 
 Unfortunately, STM32CubeMX does not give us a way to provide user defined names
 for peripherals.  Therefore we modify Core/Inc/main.h to include bindings
-between the periphers we expect to exist and the ones actually used.  The
+between the peripherals we expect to exist and the ones actually used.  The
 following code is thus added to Core/Inc/main.h:
 
 (also a few declarations are included for functions that we have the
