@@ -1,8 +1,6 @@
 High:
 
-  Atmel:  "syntax error" on boot up?
-
-  Atmel:  dbase save only works on atsamd21 board
+  Atmel:  dbase save only works on atsamd21 board.. actually just erase is broken
 
   STM32:  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
 
@@ -24,6 +22,8 @@ Med:
   Button and LED application
 
 - - - - -
+
+startup(), error(), .. these need nk_ prefix
 
 Atmel:
 
@@ -47,13 +47,17 @@ bootloader:
 
   We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
 
-Other more targets:
+Add more targets:
 
   Add RISCV
   Add Xilinx
   Add TI
   PIC32
   Some example in an RTOS
+
+Add more peripherals:
+
+  CAN, ADC, DAC, GPIO, etc..
 
 event driven:
 

@@ -139,7 +139,7 @@ static void cmd_next(char *s)
 static void cli_first(void *p)
 {
 	(void)p;
-	cmd_next(0);
+	cmd_next("");
 }
 
 void nk_init_cli()
