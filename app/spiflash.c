@@ -1,6 +1,7 @@
 #include <string.h>
 #include "nkarch.h"
 #include "nkcli.h"
+#include "led.h"
 #include "nkspiflash.h"
 
 #include "main.h" // For pin definitions
@@ -20,11 +21,15 @@ static int flashio(void *spi_ptr, uint8_t *data, uint32_t len)
 {
         struct flash_device *info = (struct flash_device *)spi_ptr;
 
+        shared_gpio_setup_for_spi(); // For STM32 boards...
+
         HAL_GPIO_WritePin(info->cs_port, info->cs_pin, 0); // CS_L
 
 	HAL_SPI_TransmitReceive(info->hspi, data, data, len, 1000);
 
         HAL_GPIO_WritePin(info->cs_port, info->cs_pin, 1); // CS_L
+
+        shared_gpio_setup_for_led(); // For STM32 boards...
 
         return 0;
 }

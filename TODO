@@ -1,23 +1,26 @@
 High:
 
-  STM32:  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+  STM32:
+    How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+
+    Reading SPI flash is not working.. probably from shared SPI_CLK line
 
 Med:
+
+  make sure dbase works on every platform
 
   documentation: complete target descriptions
 
   Demo CLI manual
 
   Add i2c command to atmel
-  EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
+    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
 
   nkymodem
 
     actual file download test
 
     write documentation
-
-  Button and LED application
 
 - - - - -
 

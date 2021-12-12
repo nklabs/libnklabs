@@ -6,33 +6,10 @@
 #include "nkdbase.h"
 #include "database.h"
 #include "button.h"
+#include "led.h"
 #include "startup.h"
 
 int test_tid;
-
-// Poke watchdog timer, blink USER_LED
-
-#define BLINK_DELAY 500
-
-int wdt_tid;
-int led_blink;
-
-void wdt_poke(void *data)
-{
-    (void)data;
-    wdt_feed(&MAIN_WDT);
-    if (led_blink)
-    {
-        gpio_set_pin_level(USER_LED, true);
-        led_blink = 0;
-    }
-    else
-    {
-        gpio_set_pin_level(USER_LED, false);
-        led_blink = 1;
-    }
-    nk_sched(wdt_tid, wdt_poke, NULL, BLINK_DELAY, "Watchdog timer poker");
-}
 
 extern void spiflash_init(void);
 
@@ -56,11 +33,11 @@ int main(void)
     nk_init_sched();
     nk_rtc_init();
     nk_init_cli();
-    wdt_tid = nk_alloc_tid();
-    nk_sched(wdt_tid, wdt_poke, NULL, BLINK_DELAY, "Watchdog timer poker");
     database_init();
     spiflash_init();
+    nk_init_led();
     nk_init_button();
+    nk_init_wdt();
     test_tid = nk_alloc_tid();
     nk_sched_loop();
 }

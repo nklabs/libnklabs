@@ -6,17 +6,9 @@
 #include "nkcli.h"
 #include "nkdbase.h"
 #include "database.h"
-
-// Watchdog timer
-
-int wdt_tid;
-
-void wdt_poke(void *data)
-{
-    (void)data;
-    HAL_IWDG_Refresh(&MAIN_WDT);
-    nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
-}
+#include "button.h"
+#include "led.h"
+#include "wdt.h"
 
 // Main for application
 
@@ -27,16 +19,12 @@ void user_main(void)
 
     // Initialize
     nk_init_uart();
-
     nk_init_sched();
-
     nk_init_cli();
-
-    // Watchdog timer
-    wdt_tid = nk_alloc_tid();
-    nk_sched(wdt_tid, wdt_poke, NULL, 5000, "Watchdog timer poker");
-
     database_init();
+    nk_init_led();
+    nk_init_button();
+    nk_init_wdt();
 
     // Go
     nk_sched_loop();

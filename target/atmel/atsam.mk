@@ -27,6 +27,8 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 # Add out source files
 OBJS += \
 button.o \
+led.o \
+wdt.o \
 spiflash_atsam.o \
 basic_cmds.o \
 info_cmd_atsam.o \
