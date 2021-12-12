@@ -50,7 +50,7 @@ $(NK_SRC)/nkoutfile.c \
 $(NK_SRC)/nkprintf.c \
 $(NK_SRC)/nkprintf_fp.c \
 $(NK_SRC)/nkreadline.c \
-$(NK_SRC)/nkrtc.c \
+$(NK_SRC)/nkmcurtc.c \
 $(NK_SRC)/nkscan.c \
 $(NK_SRC)/nksched.c \
 $(NK_SRC)/nkserialize.c \

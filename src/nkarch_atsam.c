@@ -135,9 +135,10 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 		nk_printf("ERROR: flash_erase returned %d\n", rtn);
 	} else if (byte_count) {
 		nk_printf("ERROR: Invalid erase size\n");
-		return -1;
+		rtn = -1;
 	}
-	return 0;
+
+	return rtn;
 }
 
 int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
@@ -198,4 +199,47 @@ int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 	}
 
 	return rtn;
+}
+
+int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int sec)
+{
+    // ATSAM
+    struct calendar_date_time tim;
+    int rtn;
+
+    tim.time.sec = sec;
+    tim.time.min = min;
+    tim.time.hour = hour;
+    tim.date.day = day;
+    tim.date.month = month;
+    tim.date.year = year;
+
+    rtn = calendar_set_date(&CALENDAR_0, &tim.date);
+    rtn = calendar_set_time(&CALENDAR_0, &tim.time);
+
+    return rtn;
+}
+
+int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min, int *sec)
+{
+    // ATSAM
+    struct calendar_date_time tim;
+    int rtn;
+
+    rtn = calendar_get_date_time(&CALENDAR_0, &tim);
+
+    *sec = tim.time.sec;
+    *min = tim.time.min;
+    *hour = tim.time.hour;
+    *day = tim.date.day;
+    *month = tim.date.month;
+    *year = tim.date.year;
+
+    return rtn;
+}
+
+void nk_mcu_rtc_init()
+{
+    startup("MCU Real Time Clock\n");
+    calendar_enable(&CALENDAR_0);
 }

@@ -31,8 +31,6 @@ Atmel:
 
   low power modes?  which is the best clock to use?
 
-  should we be using systick or an atsam timer?
-
 mcuflash:
 
   nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes

@@ -2,12 +2,13 @@
 #include "nkuart.h"
 #include "nksched.h"
 #include "nkcli.h"
-#include "nkrtc.h"
+#include "nkmcurtc.h"
 #include "nkdbase.h"
 #include "database.h"
 #include "button.h"
 #include "led.h"
 #include "startup.h"
+#include "wdt.h"
 
 int test_tid;
 
@@ -31,7 +32,7 @@ int main(void)
 
     nk_init_uart();
     nk_init_sched();
-    nk_rtc_init();
+    nk_mcu_rtc_init();
     nk_init_cli();
     database_init();
     spiflash_init();

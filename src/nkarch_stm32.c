@@ -347,3 +347,66 @@ const char *reset_cause_get_name(reset_cause_t reset_cause)
 
     return reset_cause_name;
 }
+
+// STM32 built-in RTC
+
+extern RTC_HandleTypeDef hrtc;
+
+int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min, int *sec)
+{
+    RTC_TimeTypeDef sTime;
+    RTC_DateTypeDef sDate;
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+    *year = sDate.Year + 2000;
+    *month = sDate.Month;
+    *day = sDate.Date;
+    // *weekday = sDate.WeekDay;
+
+    *hour = sTime.Hours;
+    *min = sTime.Minutes;
+    *sec = sTime.Seconds;
+
+    return 0;
+}
+
+int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int sec)
+{
+    RTC_TimeTypeDef sTime;
+    RTC_DateTypeDef sDate;
+
+    memset(&sTime, 0, sizeof(sTime));
+    memset(&sDate, 0, sizeof(sDate));
+
+    if (year < 2000 || year > 2099)
+        return -1;
+
+    if (day < 1 || day > 31)
+        return -1;
+
+    if (month < 1 || month > 12)	
+        return -1;
+
+    if (hour < 0 || hour > 23)
+        return -1;
+    
+    if (min < 0 || min > 59)
+        return -1;
+    
+    if (sec < 0 || sec > 59)
+        return -1;
+
+    sDate.Year = year - 2000; // 0..99
+    sDate.Month = month; // BCD?
+    sDate.Date = day; // 1..31
+    sDate.WeekDay = 1; // Invalid for now
+
+    sTime.Hours = hour;
+    sTime.Minutes = min;
+    sTime.Seconds = sec;
+
+    HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    return 0;
+}

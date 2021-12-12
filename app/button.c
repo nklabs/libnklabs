@@ -34,7 +34,7 @@
 #include "stm32f7xx_ll_exti.h"
 #endif
 
-#define BUTTON_POLL_DELAY 1000 // Polling interval
+#define BUTTON_POLL_DELAY 100 // Polling interval
 #define BUTTON_DEBOUNCE_COUNT 1 // How many intervals to leave interrupts off for debouncing
 
 int button_tid; // Task ID for button
@@ -117,7 +117,7 @@ void gpio_exti_irq_handler(uint16_t gpio_pin)
         // Wake up poller
         nk_sched(button_tid, button_poll, NULL, 0, "Button poller");
 
-        nk_printf("IRQ! %d\n", gpio_pin);
+        //nk_printf("IRQ! %d\n", gpio_pin);
     }
 }
 

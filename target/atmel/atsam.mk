@@ -36,7 +36,7 @@ database.o \
 nkymodem_cmd.o \
 main_atsam.o \
 nkprintf_fp.o \
-nkrtc_atsam.o \
+nkmcurtc.o \
 nkdbase.o \
 nkserialize.o \
 nkmcuflash.o \
