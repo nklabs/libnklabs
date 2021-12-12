@@ -23,8 +23,6 @@
 #include "nkprintf.h"
 #include "nkarch_atsam.h"
 
-#define SCHED_TIMER_HZ 1000
-
 static volatile uint32_t current_time; // The current time in ticks
 static volatile uint32_t timeout; // Amount of delay from timer in ticks
 
@@ -38,40 +36,42 @@ uint32_t nk_get_sched_timeout(void)
 	return timeout;
 }
 
-// Number of milliseconds per tick
-
 // Convert delay in milliseconds to number of scheduler timer ticks
+
 uint32_t nk_convert_delay(uint32_t delay)
 {
-	return delay * SCHED_TIMER_HZ / 1000;
+	uint32_t secs = delay / 1000;
+	uint32_t ms = delay - (secs * 1000);
+	uint32_t ticks = (secs * NK_TIME_COUNTS_PER_SECOND) + ((ms * NK_TIME_COUNTS_PER_SECOND) / 1000);
+	return ticks;
 }
 
 // Timer callback: execution context for this is timer service task
 
 static void timer_callback(const struct timer_task *const timer_task)
 {
-	current_time += timeout;
-	timeout = 0;
-}
-
-void nk_init_sched_timer()
-{
-	current_time = 0;
+	++current_time;
+	if (timeout)
+		--timeout;
 }
 
 static struct timer_task sched_timer_task;
 
-// delay in timer ticks
-void nk_start_sched_timer(uint32_t delay)
+void nk_init_sched_timer()
 {
-	timer_stop(&MAIN_SCHED_TIMER);
-	timer_remove_task(&MAIN_SCHED_TIMER, &sched_timer_task);
-	timeout = delay;
-	sched_timer_task.interval = timeout;
+	current_time = 0;
+	sched_timer_task.interval = 1;
 	sched_timer_task.cb = timer_callback;
-	sched_timer_task.mode = TIMER_TASK_ONE_SHOT;
+	sched_timer_task.mode = TIMER_TASK_REPEAT;
 	timer_add_task(&MAIN_SCHED_TIMER, &sched_timer_task);
 	timer_start(&MAIN_SCHED_TIMER);
+}
+
+// delay in timer ticks
+
+void nk_start_sched_timer(uint32_t delay)
+{
+	timeout = delay;
 }
 
 // Get current time
@@ -82,22 +82,24 @@ nk_time_t nk_get_time()
 }
 
 // Busy loop delay
-// Also use sched timer...
 
 void nk_udelay(unsigned long usec)
 {
 	unsigned long ms = usec / 1000;
 	unsigned long us = usec - (ms * 1000);
-	// Atmel
+
+	// Atmel has 16-bit arguments
+	while (ms > 30000)
+	{
+		delay_ms(30000);
+		ms -= 30000;
+	}
+
 	if (ms)
 		delay_ms(ms);
+
 	if (us)
 		delay_us(us);
-
-	// Generic implementation
-	//nk_time_t old = nk_get_time();
-	//nk_time_t clocks = usec * (NK_TIME_COUNTS_PER_SECOND / 1000000);
-	//while ((nk_get_time() - old) < clocks);
 }
 
 void reboot(void)

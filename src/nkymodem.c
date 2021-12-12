@@ -742,24 +742,24 @@ int nk_yrecv()
         int len;
         if (sta == YMODEM_RECV_PURGE) {
             // Purging- read as much as we can
-            len = nk_uart_read((char *)packet_buf + last_idx, sizeof(packet_buf), NK_TIME_COUNTS_PER_SECOND*1000);
+            len = nk_uart_read((char *)packet_buf + last_idx, sizeof(packet_buf), 1000);
         } else {
             // Read one byte.  If we got SOH read 132 more.  If we got STX read 1028 more
-            len = nk_uart_read((char *)packet_buf + last_idx, 1, NK_TIME_COUNTS_PER_SECOND*1000);
+            len = nk_uart_read((char *)packet_buf + last_idx, 1, 1000);
             if (len) {
                 if (packet_buf[last_idx] == NK_YM_SOH) {
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, NK_YM_SHORT_PACKET_LEN-1-ymodem_nocrc, NK_TIME_COUNTS_PER_SECOND*1000);
+                    len = nk_uart_read((char *)packet_buf + last_idx + 1, NK_YM_SHORT_PACKET_LEN-1-ymodem_nocrc, 1000);
                     ++len;
 #ifdef ALLOWLONG
                 } else if (packet_buf[last_idx] == NK_YM_STX) {
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1-ymodem_nocrc, NK_TIME_COUNTS_PER_SECOND*1000);
+                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1-ymodem_nocrc, 1000);
                     ++len;
 #endif
                 } else if (packet_buf[last_idx] == NK_YM_CAN || packet_buf[last_idx] == NK_YM_CAN) {
                     // Return single character
                 } else {
                     // Junk
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1, NK_TIME_COUNTS_PER_SECOND*1000);
+                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1, 1000);
                     ++len;
                 }
             }

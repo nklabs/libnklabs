@@ -5,6 +5,7 @@ High:
 
     Reading SPI flash is not working.. probably from shared SPI_CLK line
 
+
 Med:
 
   make sure dbase works on every platform
@@ -134,3 +135,17 @@ Notes:
 
           But this then means that print depends on nkinfile...
           Likewise: Save output to an nkoutfile, not just to a C-string
+
+  sched bug:
+            in some implementations, we only update current_time at
+		timeouts, but time still passes...  This means if we
+            schedule something in the futre we are using the wrong time to
+            do it.  Ideally, current_time is based on the actual timer
+            value.
+
+            Even so, system works not too bad as it is: interrupts usually
+            schedule things for now, and that works.  It's only when we
+            schedule things for the future that it breaks.
+
+            this comes up when we try to do a tickless implementation on low
+	    power CPUs.  Also the zynq one is probably wrong..

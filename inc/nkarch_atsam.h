@@ -65,7 +65,6 @@ nk_time_t nk_get_time();
 
 // Units for wall time
 #define NK_TIME_COUNTS_PER_SECOND 1000
-#define NK_TIME_COUNTS_PER_USECOND 1
 
 // Microsecond delay
 

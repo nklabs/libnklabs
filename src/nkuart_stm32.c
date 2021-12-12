@@ -177,8 +177,7 @@ int nk_uart_read(char *s, int len, nk_time_t timeout)
 	int l = 0;
 	int need_time = 1;
 	nk_time_t old_time;
-	timeout = (timeout / 1000); // Convert to milliseconds
-	nk_time_t clocks = timeout * NK_TIME_COUNTS_PER_SECOND / 1000;
+	nk_time_t clocks = nk_convert_delay(timeout);
 	while (l != len) {
 		int c = nk_getc();
 		if (c != -1) {

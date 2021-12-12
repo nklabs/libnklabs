@@ -42,7 +42,7 @@ void ZIFlush(ZModem *info)
     unsigned char buf[80];
     unsigned len;
     do {
-        len = nk_uart_read((char *)buf, sizeof(buf), 100000);
+        len = nk_uart_read((char *)buf, sizeof(buf), 100);
     } while (len > 0);
 }
 
@@ -233,7 +233,7 @@ void nk_zsend_file(
         int sta = 0;
         int to = 0; // Timeout counter
         do {
-            unsigned len = nk_uart_read((char *)inbuf, sizeof(inbuf), 10000);
+            unsigned len = nk_uart_read((char *)inbuf, sizeof(inbuf), 10);
             if (len > 0) {
                 sta = ZmodemRcv(inbuf, len, zinfo); // Call whenever we have some data...
                 to = 0;
@@ -314,7 +314,7 @@ int cmd_zmodem(nkinfile_t *args)
         ZmodemRInit(zinfo);
 
         do {
-            unsigned len = nk_uart_read((char *)inbuf, sizeof(inbuf), 100000);
+            unsigned len = nk_uart_read((char *)inbuf, sizeof(inbuf), 100);
             if (len > 0) {
                 sta = ZmodemRcv(inbuf, len, zinfo); // Call whenever we have some data...
                 to = 0;
