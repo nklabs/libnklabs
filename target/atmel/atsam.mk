@@ -32,6 +32,10 @@ OBJS += \
 button.o \
 led.o \
 wdt.o \
+nki2c_atsam.o \
+nki2c.o \
+nki2c_eeprom.o \
+i2c.o \
 spiflash_atsam.o \
 basic_cmds.o \
 test_cmds.o \

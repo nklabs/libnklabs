@@ -228,12 +228,33 @@ int nk_i2c_command(void *port, nkinfile_t *args)
 		//   4 - 7 = high speed master code
 		//   78 - 7B = 10-bit slave addressing
 		//   7C - 7F = reserved for future purposes
+
+#ifdef __SAME70Q21__
+
+		// atsame70 at least does not support 0 length (address only) writes, so trying reading one byte from
+		// each possible slave instead
+
+		for (addr = 8; addr != 0x78; ++addr) {
+			// atsame70 at least does not support 0 length (address only) writes
+			int status;
+			nk_printf("try %x\n", addr);
+			write_array[0] = 0;
+			status = nk_i2c_write_nostop(port, addr, 1, write_array);
+			nk_printf("write status = %x\n", status);
+			status  = nk_i2c_read(port, addr, 1, read_array);
+			nk_printf("read status = %x\n", status);
+			if (!status) {
+				nk_printf("Found device %x\n", addr);
+			}
+		}
+#else
 		for (addr = 8; addr != 0x78; ++addr) {
 			int status  = nk_i2c_write(port, addr, 0, write_array);
 			if (!status) {
 				nk_printf("Found device %x\n", addr);
 			}
 		}
+#endif
 		return 0;
 	}
 

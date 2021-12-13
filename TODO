@@ -8,9 +8,9 @@
     Missing flash size
 
   Atmel:
-    Add i2c command to atmel
+    i2c not working well on atsame70 (crash during i2c scan), but ok on others
 
-    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
+    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others? [board on order]
 
   make sure dbase works on every platform
 
@@ -56,7 +56,7 @@ Add more peripherals:
 
   fat filesystem + sdio?
 
-  External rtc: I2C at least, SPI optional
+  External rtc: I2C at least, SPI optional [board on order]
 
 event driven:
 
