@@ -1,29 +1,6 @@
-// Copyright 2020 NK Labs, LLC
+// Interface to SPI RTC DS1391U-33+
 
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-// OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-// THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-#include <string.h>
-#include "nkcli.h"
-
-int ext_rtc_set_time(int year, int month, int day, int hour, int min, int sec)
+int nk_ext_rtc_set_time(int year, int month, int day, int hour, int min, int sec)
 {
     uint8_t buf[9];
 
@@ -44,7 +21,7 @@ int ext_rtc_set_time(int year, int month, int day, int hour, int min, int sec)
     return 0;
 }
 
-void ext_rtc_get_time(int *year, int *month, int *day, int *hour, int *min, int *sec)
+int  nk_ext_rtc_get_time(int *year, int *month, int *day, int *hour, int *min, int *sec)
 {
     uint8_t buf[17];
 
@@ -109,7 +86,7 @@ int set_from_hwclock()
 {
     int year, month, day, hour, min, sec;
     int now;
-    nk_startup_message("Set time from external RTC\n");
+    nk_startup_message("Set time from external RTC");
     ext_rtc_get_time(&year, &month, &day, &hour, &min, &sec);
     now = datetime_to_unix(year, month, day, hour, min, sec);
     if (now != -1) {
@@ -144,14 +121,14 @@ int set_to_hwclock()
 
 void rtc_init()
 {
-    nk_startup_message("Real time clock\n");
+    nk_startup_message("Real time clock");
     set_from_hwclock();
 }
 
 int cmd_hwclock(nkinfile_t *args)
 {
     int year, month, day, hour, min, sec;
-    if (facmode && nk_fscan(args, "-w %e")) {
+    if (facmode && nk_fscan(args, "-w")) {
         set_to_hwclock();
     } else if (facmode && nk_fscan(args, "")) {
         ext_rtc_get_time(&year, &month, &day, &hour, &min, &sec);
@@ -160,40 +137,4 @@ int cmd_hwclock(nkinfile_t *args)
         nk_printf("Syntax error\n");
     }
     return 0;
-}
-
-int cmd_date(nkinfile_t *args)
-{
-    int year, month, day, hour, min, sec;
-    int now;
-    if (nk_fscan(args, "%d-%d-%d %d:%d:%d ", &year, &month, &day, &hour, &min, &sec)) {
-        now = datetime_to_unix(year, month, day, hour, min, sec);
-        if (now < 0) {
-            nk_printf("Error converting UTC to UNIX Epoc time\n");
-        } else {
-            Seconds_set(now);
-            nk_printf("Time set\n");
-            set_to_hwclock();
-        }
-    } else if (nk_fscan(args, "")) {
-        now = Seconds_get();
-        if (unix_to_datetime(now, &year, &month, &day, &hour, &min, &sec)) {
-            nk_printf("Error converting UNIX Epoch time to UTC\n");
-        }
-        nk_printf("%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d UTC\n", year, month, day, hour, min, sec);
-    } else {
-        nk_printf("Syntax error\n");
-    }
-    return 0;
-}
-
-void date_string(char *buf)
-{
-    int year, month, day, hour, min, sec;
-    int now;
-    now = Seconds_get();
-    if (unix_to_datetime(now, &year, &month, &day, &hour, &min, &sec)) {
-        nk_printf("Error converting UNIX Epoch time to UTC\n");
-    }
-    nk_snprintf(buf, 30, "%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d ", year, month, day, hour, min, sec);
 }

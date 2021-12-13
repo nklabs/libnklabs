@@ -245,19 +245,23 @@ static void cur_right()
 static void typech(char c)
 {
 	size_t n;
-	if (tty_cur != tty_len) {
-		memmove(tty_buf + tty_cur + 1, tty_buf + tty_cur, tty_len - tty_cur);
+	if (tty_len != NKREADLINE_LINE_SIZE - 1) {
+		if (tty_cur != tty_len) {
+			memmove(tty_buf + tty_cur + 1, tty_buf + tty_cur, tty_len - tty_cur);
+		}
+		++tty_len;
+		tty_buf[tty_cur] = c;
+		for (n = tty_cur; n != tty_len; ++n)
+			console_putchar(tty_buf[n]);
+		tty_cur++;
+		while (n != tty_cur) {
+			console_putchar(8);
+			--n;
+		}
+		changed = 1;
+	} else {
+		console_putchar(7); // Beep!
 	}
-	++tty_len;
-	tty_buf[tty_cur] = c;
-	for (n = tty_cur; n != tty_len; ++n)
-		console_putchar(tty_buf[n]);
-	tty_cur++;
-	while (n != tty_cur) {
-		console_putchar(8);
-		--n;
-	}
-	changed = 1;
 }
 
 static void delch()

@@ -240,6 +240,6 @@ int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min
 
 void nk_mcu_rtc_init()
 {
-    startup("MCU Real Time Clock\n");
+    nk_startup_message("MCU Real Time Clock\n");
     calendar_enable(&CALENDAR_0);
 }

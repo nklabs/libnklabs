@@ -1,12 +1,16 @@
-High:
+- - - - -
 
   STM32:
     How do we handle STM32F746 flash memory? Sector sizes are not uniform..
 
     Reading SPI flash is not working.. probably from shared SPI_CLK line
 
+    Missing flash size
 
-Med:
+  Atmel:
+    Add i2c command to atmel
+
+    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
 
   make sure dbase works on every platform
 
@@ -14,18 +18,17 @@ Med:
 
   Demo CLI manual
 
-  Add i2c command to atmel
-    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others?
-
   nkymodem
 
     actual file download test
 
     write documentation
 
-- - - - -
+  modem manager is not disabled only for atsamd21pro board??
 
-startup(), error(), .. these need nk_ prefix
+  output freezes on ST
+
+- - - - -
 
 Atmel:
 
@@ -33,15 +36,7 @@ Atmel:
 
 mcuflash:
 
-  nkmcuflash rd and wr.. do 32-bit works, but on stm32 min. size is 8 bytes
-
-rtc:
-
-  better abtraction
-
-  atsamd clock sometimes doesn't start until you read it.. are missing some initialization step?
-
-  external rtc
+  nkmcuflash rd and wr do 32-bit works, but on stm32 min. size is 8 bytes- add read / modify / write?
 
 bootloader:
 
@@ -57,7 +52,11 @@ Add more targets:
 
 Add more peripherals:
 
-  CAN, ADC, DAC, GPIO, etc..
+  CAN, ADC, DAC, GPIO, etc.. all arduino GPIOs?
+
+  fat filesystem + sdio?
+
+  External rtc: I2C at least, SPI optional
 
 event driven:
 

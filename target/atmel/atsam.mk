@@ -6,6 +6,9 @@ NK_INC := ../../../../inc
 NK_CONFIG := ../../../../config
 NK_ARCHCONFIG := ../../../../config_atsam
 
+# A define for the platform
+NK_PLATFORM := NK_PLATFORM_ATSAM
+
 # Get application version number
 
 NK_VERSION_MAJOR := $(shell cat $(NK_APP)/VERSION_MAJOR)
@@ -31,10 +34,11 @@ led.o \
 wdt.o \
 spiflash_atsam.o \
 basic_cmds.o \
-info_cmd_atsam.o \
+test_cmds.o \
+info_cmd.o \
 database.o \
 nkymodem_cmd.o \
-main_atsam.o \
+app_main.o \
 nkprintf_fp.o \
 nkmcurtc.o \
 nkdbase.o \

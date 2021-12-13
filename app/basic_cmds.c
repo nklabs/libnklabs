@@ -20,28 +20,8 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
-#include "version.h"
 #include "nkreadline.h"
 #include "nkcli.h"
-
-// Transmit Ctrl-S to test XON/XOFF
-
-static int cmd_stop(nkinfile_t *args)
-{
-    if (facmode && nk_fscan(args, "")) {
-        nk_putc('S'-'@');
-        
-    } else {
-        nk_printf("Syntax error\n");
-    }
-    return 0;
-}
-
-COMMAND(stop,
-    "stop                      Emit ^S\n",
-    "stop                      Emit ^S\n",
-    ""
-)
  
 // Control echoing
 
@@ -109,7 +89,7 @@ COMMAND(mem,
     "mem wr <addr> <data>      Write 32-bit word to address\n"
     "mem hd <addr> <len>       Hex dump memory\n"
     "mem hd <addr>             Hex dump 256 bytes\n"
-    "mem hd                    Hex dump next256 bytes\n",
+    "mem hd                    Hex dump next 256 bytes\n",
     ""
 )
 

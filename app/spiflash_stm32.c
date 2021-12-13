@@ -169,3 +169,8 @@ COMMAND(m95040,
     "                          Fill memory with constant\n",
     ""
 )
+
+void spiflash_init()
+{
+    // Nothing to do for STM32
+}

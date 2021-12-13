@@ -132,7 +132,7 @@ int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, con
 		enque(q, item);
 	} else {
 		// Not enough work queue entries!
-		error("Too many work queue entries, task could not be submitted!\n");
+		nk_error_message("Too many work queue entries, task could not be submitted!\n");
 	}
 	nk_irq_unlock(&sched_lock, irq_flag);
 	return rtn;
@@ -222,7 +222,7 @@ int nk_check(int tid)
 void nk_init_sched()
 {
 	int i;
-	startup("Work queue\n");
+	nk_startup_message("Work queue\n");
 	queue->next = queue;
 	queue->prev = queue;
 	freelist = 0;
@@ -314,7 +314,7 @@ void nk_sched_loop()
 {
 	unsigned long irq_flag;
 
-	startup("Begin main loop\n");
+	nk_startup_message("Begin main loop\n");
 
 	for (;;) {
 		nk_irq_lock(&sched_lock, irq_flag);

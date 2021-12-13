@@ -1,3 +1,5 @@
+// Demo application startup code
+
 #include "nkarch.h"
 #include "nkuart.h"
 #include "nksched.h"
@@ -10,13 +12,15 @@
 #include "startup.h"
 #include "wdt.h"
 
-int test_tid;
-
 extern void spiflash_init(void);
 
-int main(void)
+
+void user_main(void)
 {
-    atmel_start_init();
+#ifdef NK_PLATFORM_STM32
+    // Record bootup reason
+    reset_cause = reset_cause_get();
+#endif
 
 #if 0
     // Show we're alive even if uart isn't working
@@ -39,23 +43,17 @@ int main(void)
     nk_init_led();
     nk_init_button();
     nk_init_wdt();
-    test_tid = nk_alloc_tid();
+
+    // Go
     nk_sched_loop();
 }
 
-void test_event(void *data)
+#ifdef NK_PLATFORM_ATSAM
+
+int main(void)
 {
-    nk_printf("Ping!\n");
+    atmel_start_init();
+    user_main();
 }
 
-static int cmd_test(nkinfile_t *args)
-{
-    nk_sched(test_tid, test_event, NULL, 100, "Test");
-    return 0;
-}
-
-COMMAND(test,
-    "test                      Test event\n",
-    "test                      Test event\n",
-    ""
-)
+#endif

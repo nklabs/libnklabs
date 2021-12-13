@@ -166,7 +166,7 @@ void button_int(void)
 
 void nk_init_button()
 {
-    startup("Button\n");
+    nk_startup_message("Button\n");
 
     // Start poller
     button_tid = nk_alloc_tid();

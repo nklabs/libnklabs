@@ -6,6 +6,9 @@ NK_INC = ../../../inc
 NK_CONFIG = ../../../config
 NK_ARCHCONFIG = ../../../config_stm32
 
+# A define for the platform
+NK_PLATFORM := NK_PLATFORM_STM32
+
 # Get application version number
 
 NK_VERSION_MAJOR := $(shell cat $(NK_APP)/VERSION_MAJOR)
@@ -30,11 +33,12 @@ $(NK_APP)/basic_cmds.c \
 $(NK_APP)/button.c \
 $(NK_APP)/database.c \
 $(NK_APP)/i2c.c \
-$(NK_APP)/info_cmd_stm32.c \
+$(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
-$(NK_APP)/main_stm32.c \
+$(NK_APP)/app_main.c \
 $(NK_APP)/nkymodem_cmd.c \
-$(NK_APP)/spiflash.c \
+$(NK_APP)/spiflash_stm32.c \
+$(NK_APP)/test_cmds.c \
 $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
 $(NK_SRC)/nkcli.c \
@@ -66,7 +70,7 @@ C_INCLUDES += \
 -I$(NK_CONFIG) \
 -I$(NK_INC) \
 
-CFLAGS += -DNK_VERSION_MAJOR=$(NK_VERSION_MAJOR)  -DNK_VERSION_MINOR=$(NK_VERSION_MINOR) -DNK_YEAR=$(NK_YEAR) -DNK_MONTH=$(NK_MONTH) -DNK_DAY=$(NK_DAY) -DNK_HOUR=$(NK_HOUR) -DNK_MINUTE=$(NK_MINUTE) -DNK_GIT_REV=$(NK_GIT_REV)
+CFLAGS += -D$(NK_PLATFORM) -DNK_PLATFORM=\"$(NK_PLATFORM)\" -DNK_VERSION_MAJOR=$(NK_VERSION_MAJOR)  -DNK_VERSION_MINOR=$(NK_VERSION_MINOR) -DNK_YEAR=$(NK_YEAR) -DNK_MONTH=$(NK_MONTH) -DNK_DAY=$(NK_DAY) -DNK_HOUR=$(NK_HOUR) -DNK_MINUTE=$(NK_MINUTE) -DNK_GIT_REV=$(NK_GIT_REV)
 
 # Rebuild version.o if anything changed
 

@@ -12,10 +12,10 @@ int wdt_tid;
 void wdt_poke(void *data)
 {
     (void)data;
-#ifdef USER_BUTTON
+#ifdef NK_PLATFORM_ATSAM
     wdt_feed(&MAIN_WDT);
 #endif
-#ifdef USER_BUTTON_Pin
+#ifdef NK_PLATFORM_STM32
     HAL_IWDG_Refresh(&MAIN_WDT);
 #endif
     nk_sched(wdt_tid, wdt_poke, NULL, WDT_DELAY, "Watchdog timer poker");
@@ -23,7 +23,10 @@ void wdt_poke(void *data)
 
 void nk_init_wdt(void)
 {
-    startup("WDT\n");
+    nk_startup_message("WDT\n");
+#ifdef NK_PLATFORM_ATSAM
+    wdt_enable(&MAIN_WDT);
+#endif
     wdt_tid = nk_alloc_tid();
     nk_sched(wdt_tid, wdt_poke, NULL, 1, "Watchdog timer poker");
 }

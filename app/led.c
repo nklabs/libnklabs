@@ -74,7 +74,7 @@ void shared_gpio_setup_for_spi()
 
 void nk_init_led()
 {
-    startup("LED\n");
+    nk_startup_message("LED\n");
     shared_gpio_setup_for_led();
     led_tid = nk_alloc_tid();
     nk_sched(led_tid, led_blinker, NULL, BLINK_DELAY, "LED blinker");

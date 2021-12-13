@@ -87,8 +87,7 @@ int nk_init_mcuflash()
 
 int flash_erase(uint32_t address)
 {
-	int rtn;
-	uint32_t err = 0;
+	int rtn = 0;
 
 	address -= NK_FLASH_BASE_ADDRESS;
 
@@ -127,8 +126,6 @@ int flash_erase(uint32_t address)
 
 	HAL_FLASH_Lock();
 
-	return rtn;
-
 #else
 
 // Sectors on not uniformly sized
@@ -151,8 +148,10 @@ int flash_erase(uint32_t address)
 	HAL_FLASH_Lock();
 #endif
 
-	return -1;
+        rtn = -1;
 #endif
+
+        return rtn;
 }
 
 // Erase a range of space, all pages that touch the space are erased
@@ -409,4 +408,9 @@ int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int
     HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
     HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
     return 0;
+}
+
+void nk_mcu_rtc_init()
+{
+    // Nothing to do for STM32
 }

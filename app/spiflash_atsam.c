@@ -90,6 +90,6 @@ COMMAND(at25df081,
 
 void spiflash_init()
 {
-    startup("SPI-Flash\n");
+    nk_startup_message("SPI-Flash\n");
     spi_m_sync_enable(&MAIN_SPI);
 }

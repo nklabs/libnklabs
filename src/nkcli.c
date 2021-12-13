@@ -144,7 +144,7 @@ static void cli_first(void *p)
 
 void nk_init_cli()
 {
-	startup("Command Line Interface\n");
+	nk_startup_message("Command Line Interface\n");
 	cli_tid = nk_alloc_tid();
 	nk_sched(cli_tid, cli_first, NULL, 0, "CLI start");
 }

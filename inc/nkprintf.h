@@ -83,13 +83,13 @@ extern nkoutfile_t *nkstdnull;
 
 /* debug_printf */
 
-#define debug(fmt, ...) nk_printf(__FILE__ ":" nk_tostring(__LINE__) ": " fmt, ##__VA_ARGS__)
+#define nk_debug_message(fmt, ...) nk_printf(__FILE__ ":" nk_tostring(__LINE__) ": " fmt, ##__VA_ARGS__)
 
-#define error(fmt, ...) nk_printf(__FILE__ ":" nk_tostring(__LINE__) ": Error: " fmt, ##__VA_ARGS__)
+#define nk_error_message(fmt, ...) nk_printf(__FILE__ ":" nk_tostring(__LINE__) ": Error: " fmt, ##__VA_ARGS__)
 
-#define startup(fmt, ...) nk_printf("[Initialize] " fmt, ##__VA_ARGS__)
+#define nk_startup_message(fmt, ...) nk_printf("[Initialize] " fmt, ##__VA_ARGS__)
 
-#define fatal(fmt, ...) do { \
+#define nk_fatal_message(fmt, ...) do { \
 	nk_printf(__FILE__ ":" nk_tostring(__LINE__) ": Fatal Error: " fmt, ##__VA_ARGS__); \
 	for (;;) ; \
 	} while (0);

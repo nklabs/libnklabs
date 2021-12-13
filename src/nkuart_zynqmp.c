@@ -227,5 +227,5 @@ void nk_init_uart()
 
         // First startup line
         nk_putc('\n');
-        startup("Console UART\n");
+        nk_startup_message("Console UART\n");
 }
