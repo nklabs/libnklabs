@@ -13,6 +13,7 @@
 #include "wdt.h"
 
 extern void spiflash_init(void);
+extern void extrtc_init(void);
 
 
 void user_main(void)
@@ -42,6 +43,7 @@ void user_main(void)
     spiflash_init();
     nk_init_led();
     nk_init_button();
+    extrtc_init();
     nk_init_wdt();
 
     // Go

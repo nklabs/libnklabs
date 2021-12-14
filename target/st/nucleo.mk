@@ -32,6 +32,7 @@ C_SOURCES += \
 $(NK_APP)/basic_cmds.c \
 $(NK_APP)/button.c \
 $(NK_APP)/database.c \
+$(NK_APP)/extrtc.c \
 $(NK_APP)/i2c.c \
 $(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
@@ -45,7 +46,9 @@ $(NK_SRC)/nkcli.c \
 $(NK_SRC)/nkcrclib.c \
 $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
+$(NK_SRC)/nkextrtc.c \
 $(NK_SRC)/nki2c.c \
+$(NK_SRC)/nki2crtc_ds3231.c \
 $(NK_SRC)/nki2c_eeprom.c \
 $(NK_SRC)/nki2c_stm.c \
 $(NK_SRC)/nkinfile.c \

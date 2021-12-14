@@ -122,6 +122,7 @@ int flash_erase(uint32_t address)
 #endif
 	);
 
+	uint32_t err = 0;
 	rtn = (HAL_FLASHEx_Erase(&erase, &err) != HAL_OK);
 
 	HAL_FLASH_Lock();
@@ -144,6 +145,7 @@ int flash_erase(uint32_t address)
 	erase.VoltageRange = FLASH_VOLTAGE_RANGE_4; // Ugh.. this needs to be a config option
 
 	HAL_FLASH_Unlock();
+	uint32_t err = 0;
 	rtn = (HAL_FLASHEx_Erase(&erase, &err) != HAL_OK);
 	HAL_FLASH_Lock();
 #endif

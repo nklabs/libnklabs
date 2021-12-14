@@ -47,6 +47,9 @@ int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 
 int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
+        return nk_i2c_write(port, addr, len, buf);
+
+#if 0
         struct i2c_m_sync_desc *i2c = (struct i2c_m_sync_desc *)port;
 
         struct _i2c_m_msg msg;
@@ -61,6 +64,7 @@ int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf
         int rtn = i2c_m_sync_transfer(i2c, &msg);
 
         return rtn;
+#endif
 }
 
 
