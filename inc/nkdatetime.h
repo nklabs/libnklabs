@@ -37,4 +37,13 @@ int nk_mcu_get_minute_of_week(const nkdatetime_t *datetime);
 
 int nk_datetime_sanity(nkdatetime_t *datetime);
 
+// Convert to and from UNIX time
+// These return -1 for errors
+
+// These are to be used for localtime- there is no concept of timezone
+
+long long nk_datetime_to_unix(const nkdatetime_t *datetime);
+
+int nk_unix_to_datetime(long long unixtime, nkdatetime_t *datetime);
+
 #endif
