@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include "nkprintf.h"
+#include "nkmcurtc.h"
 #include "nkarch_atsam.h"
 
 static volatile uint32_t current_time; // The current time in ticks
@@ -201,18 +202,18 @@ int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 	return rtn;
 }
 
-int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int sec)
+int nk_mcu_rtc_set_datetime(const nkdatetime_t *datetime)
 {
     // ATSAM
     struct calendar_date_time tim;
     int rtn;
 
-    tim.time.sec = sec;
-    tim.time.min = min;
-    tim.time.hour = hour;
-    tim.date.day = day;
-    tim.date.month = month;
-    tim.date.year = year;
+    tim.time.sec = datetime->sec;
+    tim.time.min = datetime->min;
+    tim.time.hour = datetime->hour;
+    tim.date.day = datetime->day + 1;
+    tim.date.month = datetime->month + 1;
+    tim.date.year = datetime->year;
 
     rtn = calendar_set_date(&CALENDAR_0, &tim.date);
     rtn = calendar_set_time(&CALENDAR_0, &tim.time);
@@ -220,7 +221,7 @@ int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int
     return rtn;
 }
 
-int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min, int *sec)
+int nk_mcu_rtc_get_datetime(nkdatetime_t *datetime)
 {
     // ATSAM
     struct calendar_date_time tim;
@@ -228,18 +229,19 @@ int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min
 
     rtn = calendar_get_date_time(&CALENDAR_0, &tim);
 
-    *sec = tim.time.sec;
-    *min = tim.time.min;
-    *hour = tim.time.hour;
-    *day = tim.date.day;
-    *month = tim.date.month;
-    *year = tim.date.year;
+    datetime->sec = tim.time.sec;
+    datetime->min = tim.time.min;
+    datetime->hour = tim.time.hour;
+    datetime->day = tim.date.day - 1;
+    datetime->month = tim.date.month - 1;
+    datetime->year = tim.date.year;
 
-    return rtn;
+    return nk_datetime_sanity(datetime);
 }
 
-void nk_mcu_rtc_init()
+int nk_mcu_rtc_init(void)
 {
     nk_startup_message("MCU Real Time Clock\n");
     calendar_enable(&CALENDAR_0);
+    return 0;
 }

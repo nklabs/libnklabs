@@ -156,23 +156,23 @@
 
 
 
-int nk_ext_rtc_set_datetime(void *port, int year, int month, int day, int hour, int min, int sec)
+int nk_ext_rtc_set_datetime(void *port, const nkdatetime_t *datetime)
 {
     uint8_t buf[8];
 
     buf[0] = 0; // Starting write address
-    buf[1 + DS3231_REG_SECONDS] = ((sec / 10) << 4) + (sec % 10);
-    buf[1 + DS3231_REG_MINUTES] = ((min / 10) << 4) + (min % 10);
-    buf[1 + DS3231_REG_HOURS] = ((hour / 10) << 4) + (hour % 10); // 24 hour mode: bit 6 is 0
-    buf[1 + DS3231_REG_DAY] = 0x01; // Day of week
-    buf[1 + DS3231_REG_DATE] = ((day / 10) << 4) + (day % 10);
-    buf[1 + DS3231_REG_MONTH] = ((month / 10) << 4) + (month % 10); // Bit 7 is century on some of them
-    buf[1 + DS3231_REG_YEAR] = (((year - 2000) / 10) << 4) + ((year - 2000) % 10);
+    buf[1 + DS3231_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10);
+    buf[1 + DS3231_REG_MINUTES] = ((datetime->min / 10) << 4) + (datetime->min % 10);
+    buf[1 + DS3231_REG_HOURS] = ((datetime->hour / 10) << 4) + (datetime->hour % 10); // 24 hour mode: bit 6 is 0
+    buf[1 + DS3231_REG_DAY] = datetime->weekday + 1; // Day of week
+    buf[1 + DS3231_REG_DATE] = (((datetime->day + 1) / 10) << 4) + ((datetime->day + 1) % 10);
+    buf[1 + DS3231_REG_MONTH] = (((datetime->month + 1) / 10) << 4) + ((datetime->month + 1) % 10); // Bit 7 is century on some of them
+    buf[1 + DS3231_REG_YEAR] = (((datetime->year - 2000) / 10) << 4) + ((datetime->year - 2000) % 10);
 
     return nk_i2c_write(port, DS3231_I2C_ADDR, sizeof(buf), buf);
 }
 
-int nk_ext_rtc_get_datetime(void *port, int *year, int *month, int *day, int *hour, int *min, int *sec)
+int nk_ext_rtc_get_datetime(void *port, nkdatetime_t *datetime)
 {
     uint8_t buf[8];
     int rtn;
@@ -191,14 +191,16 @@ int nk_ext_rtc_get_datetime(void *port, int *year, int *month, int *day, int *ho
     if (rtn)
         return rtn;
 
-    *sec = (0x0F & buf[DS3231_REG_SECONDS]) + ((0x7 & (buf[DS3231_REG_SECONDS] >> 4)) * 10);
-    *min = (0x0F & buf[DS3231_REG_MINUTES]) + ((0x07 & (buf[DS3231_REG_MINUTES] >> 4)) * 10);
-    *hour = (0x0F & buf[DS3231_REG_HOURS]) + ((0x3 & (buf[DS3231_REG_HOURS] >> 4)) * 10);
-    *day = (0x0F & buf[DS3231_REG_DATE]) + ((0x03 & (buf[DS3231_REG_DATE] >> 4)) * 10);
-    *month = (0x0F & buf[DS3231_REG_MONTH]) + ((0x1 & (buf[DS3231_REG_MONTH] >> 4)) * 10);
-    *year = (0x0F & buf[DS3231_REG_YEAR]) + ((buf[DS3231_REG_YEAR] >> 4) * 10) + 2000;
+    datetime->sec = (0x0F & buf[DS3231_REG_SECONDS]) + ((0x7 & (buf[DS3231_REG_SECONDS] >> 4)) * 10);
+    datetime->min = (0x0F & buf[DS3231_REG_MINUTES]) + ((0x07 & (buf[DS3231_REG_MINUTES] >> 4)) * 10);
+    datetime->hour = (0x0F & buf[DS3231_REG_HOURS]) + ((0x3 & (buf[DS3231_REG_HOURS] >> 4)) * 10);
+    datetime->weekday = (0x07 & buf[DS3231_REG_DAY]) - 1;
+    datetime->day = (0x0F & buf[DS3231_REG_DATE]) + ((0x03 & (buf[DS3231_REG_DATE] >> 4)) * 10) - 1;
+    datetime->month = (0x0F & buf[DS3231_REG_MONTH]) + ((0x1 & (buf[DS3231_REG_MONTH] >> 4)) * 10) - 1;
+    datetime->year = (0x0F & buf[DS3231_REG_YEAR]) + ((buf[DS3231_REG_YEAR] >> 4) * 10) + 2000;
 
-    return rtn;
+    // Sanity check the date- so we don't crash
+    return nk_datetime_sanity(datetime);
 }
 
 int nk_ext_rtc_init(void *port)

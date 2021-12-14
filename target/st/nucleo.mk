@@ -44,6 +44,7 @@ $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
 $(NK_SRC)/nkcli.c \
 $(NK_SRC)/nkcrclib.c \
+$(NK_SRC)/nkdatetime.c \
 $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkextrtc.c \

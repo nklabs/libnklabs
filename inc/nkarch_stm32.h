@@ -87,9 +87,4 @@ const char *reset_cause_get_name(reset_cause_t reset_cause);
 // Reboot MCU
 void reboot(void);
 
-// Interface to on-die MCU RTC
-void nk_mcu_rtc_init();
-int nk_mcu_rtc_set_datetime(int year, int month, int day, int hour, int min, int sec);
-int nk_mcu_rtc_get_datetime(int *year, int *month, int *day, int *hour, int *min, int *sec);
-
 #endif

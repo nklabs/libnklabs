@@ -43,6 +43,10 @@ info_cmd.o \
 database.o \
 nkymodem_cmd.o \
 app_main.o \
+nkdatetime.o \
+nki2crtc_ds3231.o \
+extrtc.o \
+nkextrtc.o \
 nkprintf_fp.o \
 nkmcurtc.o \
 nkdbase.o \
