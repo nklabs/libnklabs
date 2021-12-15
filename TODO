@@ -24,8 +24,6 @@
 
     write documentation
 
-  modem manager is not disabled only for atsamd21pro board??
-
   output freezes on ST
 
 - - - - -
@@ -55,8 +53,6 @@ Add more peripherals:
   CAN, ADC, DAC, GPIO, etc.. all arduino GPIOs?
 
   fat filesystem + sdio?
-
-  External rtc: I2C at least, SPI optional [board on order]
 
 event driven:
 

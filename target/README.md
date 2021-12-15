@@ -67,7 +67,11 @@ in Linux as a modem.  The Linux modem manager will try to talk to it (you'll
 see ATxx commands being sent to the MCU after you connect with picocom).  To
 prevent this:
 
-Modify the file /lib/systemd/system/ModemManager.service
+	sudo systemctl disable ModemManager.service
+
+Alternatively, you can try this (if you need the modem manager): It did not
+work on the ATSAMD21 Xplained Pro board, but did on the others.  Modify the
+file /lib/systemd/system/ModemManager.service
 
         [Unit]
         Description=Modem Manager
