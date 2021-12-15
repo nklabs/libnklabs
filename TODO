@@ -3,8 +3,6 @@
   STM32:
     How do we handle STM32F746 flash memory? Sector sizes are not uniform..
 
-    Reading SPI flash is not working.. probably from shared SPI_CLK line
-
     Missing flash size
 
   Atmel:
@@ -24,9 +22,9 @@
 
     write documentation
 
-  output freezes on ST
-
 - - - - -
+
+output freezes on ST- fixed by reboot linux
 
 Atmel:
 

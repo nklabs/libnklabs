@@ -21,7 +21,7 @@ TARGET = f030r8
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og -Os
+OPT = -Og -Os -flto
  
 
 #######################################

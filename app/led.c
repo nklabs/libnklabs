@@ -62,13 +62,8 @@ void shared_gpio_setup_for_led()
 void shared_gpio_setup_for_spi()
 {
 #ifdef USER_LED_Pin
-    // On most STM32 dev. board, the MAIN_SPI_CLK line is shared with USER_LED
-    // Set it up for SPI mode
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = USER_LED_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(USER_LED_GPIO_Port, &GPIO_InitStruct);
+    // Reconfigure GPIOs for SPI
+    HAL_SPI_MspInit(&MAIN_SPI);
 #endif
 }
 
