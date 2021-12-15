@@ -226,17 +226,22 @@ int nk_mcu_rtc_get_datetime(nkdatetime_t *datetime)
     // ATSAM
     struct calendar_date_time tim;
     int rtn;
+    int rtn1;
 
     rtn = calendar_get_date_time(&CALENDAR_0, &tim);
 
     datetime->sec = tim.time.sec;
     datetime->min = tim.time.min;
     datetime->hour = tim.time.hour;
+    datetime->weekday = 1;
     datetime->day = tim.date.day - 1;
     datetime->month = tim.date.month - 1;
     datetime->year = tim.date.year;
 
-    return nk_datetime_sanity(datetime);
+    rtn1 = nk_datetime_sanity(datetime);
+
+    // Return a valid datetime even if we fail
+    return rtn ? rtn : rtn1;
 }
 
 int nk_mcu_rtc_init(void)

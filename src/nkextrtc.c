@@ -46,7 +46,7 @@ int nk_ext_rtc_command(void *port, nkinfile_t *args)
                 nk_printf("Time and date set.\n");
             }
         }
-    } else if (nk_fscan(args, "%e")) {
+    } else if (nk_fscan(args, "")) {
         int rtn = nk_ext_rtc_get_datetime(port, &datetime);
         if (rtn) {
             nk_printf("Error getting date/time %d\n", rtn);

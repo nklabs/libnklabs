@@ -27,7 +27,7 @@ int cmd_mcurtc(nkinfile_t *args)
                 nk_printf("Time and date set.\n");
             }
         }
-    } else if (nk_fscan(args, "%e")) {
+    } else if (nk_fscan(args, "")) {
         int rtn = nk_mcu_rtc_get_datetime(&datetime);
         if (rtn) {
             nk_printf("Error getting date/time %d\n", rtn);

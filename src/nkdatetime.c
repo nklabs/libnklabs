@@ -82,7 +82,13 @@ int nk_datetime_sanity(nkdatetime_t *datetime)
         datetime->month = 0;
         rtn = -1;
     }
-    if (datetime->year > 2199 || datetime->year < 2000)
+    if (datetime->year < 2000)
+    {
+        // Some MCU RTCs default to 1970
+        // But for external RTC, we probably want minimum year to be 2000
+        datetime->year = 2000;
+    }
+    if (datetime->year > 2199)
     {
         datetime->year = 2000;
         rtn = -1;
