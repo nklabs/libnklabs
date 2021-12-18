@@ -12,9 +12,10 @@
 #include "startup.h"
 #include "wdt.h"
 
-extern void spiflash_init(void);
 extern void extrtc_init(void);
 
+// SPI transfer buffer
+uint8_t spi_buffer[132];
 
 void user_main(void)
 {
@@ -40,7 +41,10 @@ void user_main(void)
     nk_mcu_rtc_init();
     nk_init_cli();
     database_init();
-    spiflash_init();
+#ifdef NK_PLATFORM_ATSAM
+    spi_m_sync_enable(&ARD_SPI);
+    spi_m_sync_enable(&ALT_SPI);
+#endif
     nk_init_led();
     nk_init_button();
     extrtc_init();

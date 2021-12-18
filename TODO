@@ -8,9 +8,7 @@
   Atmel:
     i2c not working well on atsame70 (crash during i2c scan), but ok on others
 
-    EXT2 connector for i2c/spi? atsame70 has Arduino..  Assume arduino adapter for the others? [board on order]
-
-  make sure dbase works on every platform
+  make sure dbase works on every platform (maybe not with mcuflash...)
 
   documentation: complete target descriptions
 
@@ -23,6 +21,12 @@
     write documentation
 
 - - - - -
+
+arduino:
+  digitalRead, digitalWrite, pinMode
+  attachInterrupt, detachInterrupt
+  analogRead, analogReference,
+  analogWrite
 
 output freezes on ST- fixed by reboot linux
 

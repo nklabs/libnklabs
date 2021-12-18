@@ -129,4 +129,11 @@ void nk_udelay(unsigned long usec);
 
 void reboot(void);
 
+// Bitbang I2C port definition
+typedef struct
+{
+    uint8_t sda_pin;
+    uint8_t scl_pin;
+} nk_i2c_bitbang_port_t;
+
 #endif

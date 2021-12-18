@@ -35,8 +35,12 @@ wdt.o \
 nki2c_atsam.o \
 nki2c.o \
 nki2c_eeprom.o \
+nkspi.o \
 i2c.o \
-spiflash_atsam.o \
+at25df081.o \
+m95040.o \
+m95256.o \
+m95m04.o \
 basic_cmds.o \
 test_cmds.o \
 info_cmd.o \
