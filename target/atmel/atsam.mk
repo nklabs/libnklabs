@@ -41,6 +41,9 @@ at25df081.o \
 m95040.o \
 m95256.o \
 m95m04.o \
+m24m01.o \
+m24c02.o \
+m24256.o \
 basic_cmds.o \
 test_cmds.o \
 info_cmd.o \

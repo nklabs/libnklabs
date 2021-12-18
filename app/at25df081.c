@@ -1,56 +1,24 @@
 #include <string.h>
 #include "nkarch.h"
 #include "nkcli.h"
+#include "nkspi.h"
 #include "nkspiflash.h"
 
-// How to access a particular SPI-flash device
+extern uint8_t spi_buffer[];
 
-struct flash_device
+// AT25DF081A SPI-flash
+
+const nkspi_device_t at25df081_bus =
 {
-    uint8_t cs_pin; // Pin of CS_L line
-    struct spi_m_sync_descriptor *hspi; // SPI device handle
-};
-
-
-// SPI-transfer
-
-static int flashio(void *spi_ptr, uint8_t *data, uint32_t len)
-{
-    int rtn;
-    struct spi_xfer xfer =
-    {
-        .txbuf = data,
-        .rxbuf = data,
-        .size = len
-    };
-    struct flash_device *info = (struct flash_device *)spi_ptr;
-
-    gpio_set_pin_level(info->cs_pin, false);
-
-    rtn = spi_m_sync_transfer(info->hspi, &xfer);
-
-    gpio_set_pin_level(info->cs_pin, true);
-
-    nk_printf("transfer returned %d\n", rtn);
-
-    return 0;
-}
-
-// Transfer buffer
-
-uint8_t spi_buffer[132];
-
-// AT25DF081A SPI-flash on X-NUCLEO-EEPRMA2 board
-
-const struct flash_device at25df081_bus =
-{
-    .cs_pin = MAIN_SPI_CS_L,
-    .hspi = &MAIN_SPI
+#ifdef NK_PLATFORM_ATSAM
+    .cs_pin = ALT_SPI_CS_L,
+    .hspi = &ALT_SPI
+#endif
 };
 
 const struct nk_spiflash_info at25df081 =
 {
-    .spi_transfer = flashio,
+    .spi_transfer = nk_spi_transfer,
     .spi_ptr = (void *)&at25df081_bus,
     .buffer = spi_buffer,
     .page_size = 128,
@@ -87,9 +55,3 @@ COMMAND(at25df081,
     "                          Fill memory with constant\n",
     ""
 )
-
-void spiflash_init()
-{
-    nk_startup_message("SPI-Flash\n");
-    spi_m_sync_enable(&MAIN_SPI);
-}
