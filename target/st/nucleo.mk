@@ -37,8 +37,13 @@ $(NK_APP)/i2c.c \
 $(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
 $(NK_APP)/app_main.c \
+$(NK_APP)/m24256.c \
+$(NK_APP)/m24c02.c \
+$(NK_APP)/m24m01.c \
+$(NK_APP)/m95040.c \
+$(NK_APP)/m95256.c \
+$(NK_APP)/m95m04.c \
 $(NK_APP)/nkymodem_cmd.c \
-$(NK_APP)/spiflash_stm32.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
@@ -49,7 +54,7 @@ $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkextrtc.c \
 $(NK_SRC)/nki2c.c \
-$(NK_SRC)/nki2crtc_ds3231.c \
+$(NK_SRC)/nki2crtc_pcf8523.c \
 $(NK_SRC)/nki2c_eeprom.c \
 $(NK_SRC)/nki2c_stm.c \
 $(NK_SRC)/nkinfile.c \
@@ -58,6 +63,7 @@ $(NK_SRC)/nkoutfile.c \
 $(NK_SRC)/nkprintf.c \
 $(NK_SRC)/nkprintf_fp.c \
 $(NK_SRC)/nkreadline.c \
+$(NK_SRC)/nkspi.c \
 $(NK_SRC)/nkmcurtc.c \
 $(NK_SRC)/nkscan.c \
 $(NK_SRC)/nksched.c \

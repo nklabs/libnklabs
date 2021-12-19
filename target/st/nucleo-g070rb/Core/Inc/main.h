@@ -94,10 +94,10 @@ void Error_Handler(void);
 #define MAIN_CONSOLE_UART huart2
 extern UART_HandleTypeDef huart2;
 
-#define MAIN_SPI hspi1
+#define ARD_SPI hspi1
 extern SPI_HandleTypeDef hspi1;
 
-#define MAIN_I2C hi2c1
+#define ARD_I2C hi2c1
 extern I2C_HandleTypeDef hi2c1;
 
 #define MAIN_WDT hiwdg

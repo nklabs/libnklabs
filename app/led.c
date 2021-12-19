@@ -21,9 +21,9 @@ void led_blinker(void *data)
         // ATSAM
         gpio_set_pin_level(USER_LED, true);
 #endif
-#ifdef USER_LED_Pin
+#ifdef ARD_D13_Pin
         // STM32
-        HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(ARD_D13_GPIO_Port, ARD_D13_Pin, GPIO_PIN_SET);
 #endif
         led_blink = 0;
     }
@@ -33,9 +33,9 @@ void led_blinker(void *data)
         // ATSAM
         gpio_set_pin_level(USER_LED, false);
 #endif
-#ifdef USER_LED_Pin
+#ifdef ARD_D13_Pin
         // STM32
-        HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(ARD_D13_GPIO_Port, ARD_D13_Pin, GPIO_PIN_RESET);
 #endif
         led_blink = 1;
     }
@@ -44,26 +44,26 @@ void led_blinker(void *data)
 
 void shared_gpio_setup_for_led()
 {
-#ifdef USER_LED_Pin
-    // On most STM32 dev. board, the MAIN_SPI_CLK line is shared with USER_LED
+#ifdef ARD_D13_Pin
+    // On most STM32 dev. board, the ARD_SPI_CLK line is shared with USER_LED
     // Set it up for LED mode
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = USER_LED_Pin;
+    GPIO_InitStruct.Pin = ARD_D13_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-    HAL_GPIO_Init(USER_LED_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(ARD_D13_GPIO_Port, &GPIO_InitStruct);
 
-    HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ARD_D13_GPIO_Port, ARD_D13_Pin, GPIO_PIN_SET);
     led_blink = 0;
 #endif
 }
 
 void shared_gpio_setup_for_spi()
 {
-#ifdef USER_LED_Pin
+#ifdef ARD_D13_Pin
     // Reconfigure GPIOs for SPI
-    HAL_SPI_MspInit(&MAIN_SPI);
+    HAL_SPI_MspInit(&ARD_SPI);
 #endif
 }
 
