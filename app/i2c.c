@@ -10,7 +10,7 @@ uint8_t i2c_buffer[16];
 
 static int cmd_i2c(nkinfile_t *args)
 {
-	return nk_i2c_command(&MAIN_I2C, args);
+	return nk_i2c_command(&ARD_I2C, args);
 }
 
 COMMAND(i2c,

@@ -43,7 +43,9 @@ void user_main(void)
     database_init();
 #ifdef NK_PLATFORM_ATSAM
     spi_m_sync_enable(&ARD_SPI);
+#ifdef ALT_SPI
     spi_m_sync_enable(&ALT_SPI);
+#endif
 #endif
     nk_init_led();
     nk_init_button();

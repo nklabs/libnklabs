@@ -8,12 +8,12 @@ extern uint8_t spi_buffer[];
 
 // AT25DF081A SPI-flash
 
+#ifdef ALT_SPI
+
 const nkspi_device_t at25df081_bus =
 {
-#ifdef NK_PLATFORM_ATSAM
     .cs_pin = ALT_SPI_CS_L,
     .hspi = &ALT_SPI
-#endif
 };
 
 const struct nk_spiflash_info at25df081 =
@@ -55,3 +55,5 @@ COMMAND(at25df081,
     "                          Fill memory with constant\n",
     ""
 )
+
+#endif

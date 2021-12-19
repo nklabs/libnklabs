@@ -14,7 +14,7 @@ const struct nk_i2c_eeprom_info m24c02 =
 {
 	.i2c_write = nk_i2c_write,
 	.i2c_read = nk_i2c_read,
-	.i2c_ptr = &MAIN_I2C,
+	.i2c_ptr = &ARD_I2C,
 
 	.i2c_addr = M24C02_I2C_ADDR,
 
