@@ -1,8 +1,14 @@
 # Example targets
 
 Each directory here includes vendor produced HAL files for their chip on one
-of their development boards.  Their Makefile has been modified to include
-libnklabs and an example application.  To build any of these examples:
+of their development boards.
+
+[atmel/](atmel/)
+
+[st/](st/)
+
+Their Makefile has been modified to include libnklabs and an example
+application.  To build any of these examples:
 
 Connect USB cable between computer and target development board, then:
 
@@ -53,7 +59,6 @@ OpenOCD 0.11 or higher (for Microchip/Atmel's ATSAM parts):
 Before building OpenOCD, install HIDAPI.  It's required for OpenOCD's CMSIS-DAP interface:
 
 [https://github.com/signal11/hidapi](https://github.com/signal11/hidapi)
-
 
 Install "picocom" to connect your terminal emulator to a USB serial port:
 
