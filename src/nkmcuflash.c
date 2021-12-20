@@ -128,17 +128,16 @@ static int cmd_mcuflash(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(mcuflash,
-    "mcuflash                  Read/write flash memory\n",
-    "mcuflash rd <addr>        Read word\n"
-    "mcuflash wr <addr> <val>  Write word\n"
-    "mcuflash hd <addr> <len>  Hex dump flash memory\n"
-    "mcuflash crc <addr> <len> Calculate CRC of flash memory\n"
-    "mcuflash erase <addr> <len>\n"
-    "                          Erase flash memory\n"
-    "mcuflash fill <addr> <len>\n"
-    "                          Fill flash memory with pattern\n"
-    "mcuflash fill <addr> <len> <val>\n"
-    "                          Fill flash memory with byte\n",
-    ""
+COMMAND(cmd_mcuflash,
+    ">mcuflash                  Read/write flash memory\n"
+    "-mcuflash rd <addr>        Read word\n"
+    "-mcuflash wr <addr> <val>  Write word\n"
+    "-mcuflash hd <addr> <len>  Hex dump flash memory\n"
+    "-mcuflash crc <addr> <len> Calculate CRC of flash memory\n"
+    "-mcuflash erase <addr> <len>\n"
+    "-                          Erase flash memory\n"
+    "-mcuflash fill <addr> <len>\n"
+    "-                          Fill flash memory with pattern\n"
+    "-mcuflash fill <addr> <len> <val>\n"
+    "-                          Fill flash memory with byte\n"
 )

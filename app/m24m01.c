@@ -32,17 +32,16 @@ static int cmd_m24m01(nkinfile_t *args)
     return nk_i2c_eeprom_command(&m24m01, args, &m24m01_old_addr);
 }
 
-COMMAND(m24m01,
-    "m24m01                    Read/write memory\n",
-    "m24m01   rd <addr>        Read word\n"
-    "m24m01   wr <addr> <val>  Write word\n"
-    "m24m01   hd <addr> <len>  Hex dump memory\n"
-    "m24m01   hd <addr>        Hex dump 256 bytes\n"
-    "m24m01   hd               Hex dump next 256 bytes\n"
-    "m24m01   crc <addr> <len> Calculate CRC of memory\n"
-    "m24m01   fill <addr> <len>\n"
-    "                          Fill memory with pattern\n"
-    "m24m01   fill <addr> <len> <val>\n"
-    "                          Fill memory with constant\n",
-    ""
+COMMAND(cmd_m24m01,
+    ">m24m01                    Read/write memory\n"
+    "-m24m01   rd <addr>        Read word\n"
+    "-m24m01   wr <addr> <val>  Write word\n"
+    "-m24m01   hd <addr> <len>  Hex dump memory\n"
+    "-m24m01   hd <addr>        Hex dump 256 bytes\n"
+    "-m24m01   hd               Hex dump next 256 bytes\n"
+    "-m24m01   crc <addr> <len> Calculate CRC of memory\n"
+    "-m24m01   fill <addr> <len>\n"
+    "-                          Fill memory with pattern\n"
+    "-m24m01   fill <addr> <len> <val>\n"
+    "-                          Fill memory with constant\n"
 )

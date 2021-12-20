@@ -41,19 +41,18 @@ static int cmd_m95m04(nkinfile_t *args)
     return nk_spiflash_command(&m95m04, args, &m95m04_old_addr);
 }
 
-COMMAND(m95m04,
-    "m95m04                    Read/write memory\n",
-    "m95m04   rd <addr>        Read word\n"
-    "m95m04   wr <addr> <val>  Write word\n"
-    "m95m04   hd <addr> <len>  Hex dump memory\n"
-    "m95m04   hd <addr>        Hex dump 256 bytes\n"
-    "m95m04   hd               Hex dump next 256 bytes\n"
-    "m95m04   crc <addr> <len> Calculate CRC of memory\n"
-    "m95m04   erase <addr> <len>\n"
-    "                          Erase memory\n"
-    "m95m04   fill <addr> <len>\n"
-    "                          Fill memory with pattern\n"
-    "m95m04   fill <addr> <len> <val>\n"
-    "                          Fill memory with constant\n",
-    ""
+COMMAND(cmd_m95m04,
+    ">m95m04                    Read/write memory\n"
+    "-m95m04   rd <addr>        Read word\n"
+    "-m95m04   wr <addr> <val>  Write word\n"
+    "-m95m04   hd <addr> <len>  Hex dump memory\n"
+    "-m95m04   hd <addr>        Hex dump 256 bytes\n"
+    "-m95m04   hd               Hex dump next 256 bytes\n"
+    "-m95m04   crc <addr> <len> Calculate CRC of memory\n"
+    "-m95m04   erase <addr> <len>\n"
+    "-                          Erase memory\n"
+    "-m95m04   fill <addr> <len>\n"
+    "-                          Fill memory with pattern\n"
+    "-m95m04   fill <addr> <len> <val>\n"
+    "-                          Fill memory with constant\n"
 )

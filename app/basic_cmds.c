@@ -44,12 +44,11 @@ static int cmd_echo(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(echo,
-    "echo                      Control command echoing\n",
-    "echo on                   Enable echoing\n"
-    "echo off                  Disable echoing\n"
-    "echo                      Show current echo mode\n",
-    ""
+COMMAND(cmd_echo,
+    ">echo                      Control command echoing\n"
+    "-echo on                   Enable echoing\n"
+    "-echo off                  Disable echoing\n"
+    "-echo                      Show current echo mode\n"
 )
 
 // Read/Write/hex-dump memory
@@ -83,14 +82,13 @@ static int cmd_mem(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(mem,
-    "mem                       Read/write memory\n",
-    "mem rd <addr>             Read 32-bit word from address\n"
-    "mem wr <addr> <data>      Write 32-bit word to address\n"
-    "mem hd <addr> <len>       Hex dump memory\n"
-    "mem hd <addr>             Hex dump 256 bytes\n"
-    "mem hd                    Hex dump next 256 bytes\n",
-    ""
+COMMAND(cmd_mem,
+    ">mem                       Read/write memory\n"
+    "-mem rd <addr>             Read 32-bit word from address\n"
+    "-mem wr <addr> <data>      Write 32-bit word to address\n"
+    "-mem hd <addr> <len>       Hex dump memory\n"
+    "-mem hd <addr>             Hex dump 256 bytes\n"
+    "-mem hd                    Hex dump next 256 bytes\n"
 )
 
 // Reboot the system
@@ -108,8 +106,7 @@ static int cmd_reboot(nkinfile_t *args)
 }
 
 
-COMMAND(reboot,
-    "reboot                    Reboot system\n",
-    "reboot                    Reboot system\n",
-    ""
+COMMAND(cmd_reboot,
+    ">reboot                    Reboot system\n"
+    "-reboot                    Reboot system\n"
 )

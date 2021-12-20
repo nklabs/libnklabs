@@ -39,21 +39,20 @@ static int cmd_at25df081(nkinfile_t *args)
     return nk_spiflash_command(&at25df081, args, &at25df081_old_addr);
 }
 
-COMMAND(at25df081,
-    "at25df081                  Read/write memory\n",
-    "at25df081 rd <addr>        Read word\n"
-    "at25df081 wr <addr> <val>  Write word\n"
-    "at25df081 hd <addr> <len>  Hex dump memory\n"
-    "at25df081 hd <addr>        Hex dump 256 bytes\n"
-    "at25df081 hd               Hex dump next 256 bytes\n"
-    "at25df081 crc <addr> <len> Calculate CRC of memory\n"
-    "at25df081 erase <addr> <len>\n"
-    "                           Erase memory\n"
-    "at25df081 fill <addr> <len>\n"
-    "                           Fill memory with pattern\n"
-    "at25df081 fill <addr> <len> <val>\n"
-    "                          Fill memory with constant\n",
-    ""
+COMMAND(cmd_at25df081,
+    ">at25df081                  Read/write memory\n"
+    "-at25df081 rd <addr>        Read word\n"
+    "-at25df081 wr <addr> <val>  Write word\n"
+    "-at25df081 hd <addr> <len>  Hex dump memory\n"
+    "-at25df081 hd <addr>        Hex dump 256 bytes\n"
+    "-at25df081 hd               Hex dump next 256 bytes\n"
+    "-at25df081 crc <addr> <len> Calculate CRC of memory\n"
+    "-at25df081 erase <addr> <len>\n"
+    "-                           Erase memory\n"
+    "-at25df081 fill <addr> <len>\n"
+    "-                           Fill memory with pattern\n"
+    "-at25df081 fill <addr> <len> <val>\n"
+    "-                          Fill memory with constant\n"
 )
 
 #endif

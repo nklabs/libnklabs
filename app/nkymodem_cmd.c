@@ -173,9 +173,8 @@ int cmd_ymodem(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(ymodem,
-    "ymodem                    Transfer files over serial\n",
-    "ymodem                    Receive a file\n"
-    "ymodem send               Send a file\n",
-    ""
+COMMAND(cmd_ymodem,
+    ">ymodem                    Transfer files over serial\n"
+    "-ymodem                    Receive a file\n"
+    "-ymodem send               Send a file\n"
 )

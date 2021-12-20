@@ -30,16 +30,35 @@ int facmode = 1; // Set if we are in factory mode
 
 static int cmd_help(nkinfile_t *args);
 
-COMMAND(help,
-    "help                      Help command\n",
-    "help <name>               Print help for a command\n"
-    "help                      List available commands\n"
-    "help all                  Print help for all commands\n",
-    ""
+COMMAND(cmd_help,
+    ">help                      Help command\n"
+    "-help <name>               Print help for a command\n"
+    "-help                      List available commands\n"
+    "-help all                  Print help for all commands\n"
 )
 
 extern unsigned char __start_COMMAND_TABLE;
 extern unsigned char __stop_COMMAND_TABLE;
+
+static int name_match(const char *table, const char *cmd, int partial, int allow_hidden)
+{
+    if (table[0] == '>' || allow_hidden)
+    {
+        int x;
+        ++table;
+        for (x = 0; partial > 0 && table[x] && table[x] != ' ' && cmd[x]; ++x)
+        {
+            if (table[x] != cmd[x])
+                break;
+            --partial;
+        }
+        if (!partial)
+            return 1;
+        if (table[x] == ' ' && cmd[x] == 0)
+            return 1;
+    }
+    return 0;
+}
 
 // Find a command in the command table: return index to it or -1 if not found
 
@@ -47,9 +66,8 @@ static struct console_cmd *find_cmd(char *s)
 {
     struct console_cmd *x;
     for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
-        if ((facmode || !(x->flags & CMD_FLAG_HIDDEN)) && !strcmp(x->name, s)) {
+        if (name_match(x->text, s, 100, facmode))
             return x;
-        }
     }
     return 0;
 }
@@ -65,15 +83,20 @@ int nk_complete(const char *s, int list_flag)
     size_t len = strlen(s);
     
     for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
-        if ((facmode || !(x->flags & CMD_FLAG_HIDDEN)) && !strncmp(x->name, s, len)) {
+        if (name_match(x->text, s, len, facmode)) {
             match = x;
             ++match_count;
             if (list_flag)
-                nk_printf("%s\n", x->name);
+            {
+                int y;
+                for (y = 1; x->text[y] && x->text[y] != ' '; ++y)
+                    nk_putc(x->text[y]);
+                nk_putc('\n');
+            }
         }
     }
     if (match_count == 1) {
-        return match->name[len];
+        return match->text[1 + len];
     } else if (match_count == 0) {
         return -1;
     } else {
@@ -81,13 +104,42 @@ int nk_complete(const char *s, int list_flag)
     }
 }
 
+static const char *print_help(const char *s)
+{
+    ++s;
+    while (*s && (*s != '\n'))
+        nk_putc(*s++);
+    if (*s)
+        nk_putc(*s++);
+    return s;
+}
+
+static const char *skip_help(const char *s)
+{
+    ++s;
+    while (*s && (*s != '\n'))
+        s++;
+    if (*s)
+        s++;
+    return s;
+}
+
 // Print detailed help for a specific command by index
 
-static void specific_help(struct console_cmd *x)
+static void specific_help(const char *t)
 {
-    nk_puts(x->main_help);
-    if (facmode && x->hidden_help)
-        nk_puts(x->hidden_help);
+    while (*t) {
+        if (*t == '-' || (*t == '!' && facmode))
+        {
+            // We found a help line, print it
+            t = print_help(t);
+        }
+        else
+        {
+            // Some other kind of line, skip it
+            t = skip_help(t);
+        }
+    }
 }
 
 // Help command
@@ -99,18 +151,17 @@ static int cmd_help(nkinfile_t *args)
     if (nk_fscan(args, "all ")) {
         int first = 0;
         for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
-            if (facmode || !(x->flags & CMD_FLAG_HIDDEN)) {
+            if (facmode || x->text[0] == '>') {
                 if (first)
                     nk_putc('\n');
-                nk_puts(x->short_help);
-                specific_help(x);
+                specific_help(print_help(x->text));
                 first = 1;
             }
         }
     } else if (nk_fscan(args, "%w ", buf, sizeof(buf))) {
         x = find_cmd(buf);
         if (x) {
-            specific_help(x);
+            specific_help(x->text);
         } else
             nk_puts("Unknown command\n");
     } else if (nk_fscan(args, "")) {
@@ -118,8 +169,10 @@ static int cmd_help(nkinfile_t *args)
         nk_printf("Available commands:\n\n");
         for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
             // One line of help per command
-            if (facmode || !(x->flags & CMD_FLAG_HIDDEN))
-                nk_puts(x->short_help);
+            if (facmode || x->text[0] == '>')
+            {
+                print_help(x->text);
+            }
         }
     } else {
         nk_puts("Syntax error\n");
@@ -145,7 +198,7 @@ static void process_cmd(char *pCmd)
             nk_printf("Syntax error\n");
             return;
         } else if (nk_fscan(f, "help ")) {
-            specific_help(x);
+            specific_help(x->text);
         } else {
             rtn = x->func(f);
             if (rtn) {
@@ -169,9 +222,44 @@ static void cli_first(void *p)
 	cmd_next("");
 }
 
+int cmd_compare(const void *a, const void *b)
+{
+    const struct console_cmd *x = (struct console_cmd *)a;
+    const struct console_cmd *y = (struct console_cmd *)b;
+    return strcmp(x->text, y->text);
+}
+
 void nk_init_cli()
 {
 	nk_startup_message("Command Line Interface\n");
+
+	// In theory this could be done by modifying the .elf file after
+	// compiling- then command table would not use RAM.  But then we
+	// have to write a special tool..
+#if 0
+	// Sort command table
+        qsort(
+            &__start_COMMAND_TABLE,
+            (&__stop_COMMAND_TABLE - &__start_COMMAND_TABLE) / sizeof(struct console_cmd),
+            sizeof(struct console_cmd),
+            cmd_compare
+        );
+#else
+        // Use bubble sort to save space
+        int work;
+        do {
+            struct console_cmd *x;
+            work = 0;
+            for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x + 1 < (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
+                if (strcmp(x->text, (x + 1)->text) > 0) {
+                    struct console_cmd tmp = *x;
+                    *x = *(x + 1);
+                    *(x + 1) = tmp;
+                    work = 1;
+                }
+            }
+        } while (work);
+#endif
 	cli_tid = nk_alloc_tid();
 	nk_sched(cli_tid, cli_first, NULL, 0, "CLI start");
 }

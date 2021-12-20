@@ -13,10 +13,9 @@ static int cmd_i2c(nkinfile_t *args)
 	return nk_i2c_command(&ARD_I2C, args);
 }
 
-COMMAND(i2c,
-	"i2c                       I2C access\n",
-	"i2c scan                  Scan I2C bus\n"
-	"i2c [w AA DD ...] [r AA NN]\n"
-	"                          Raw I2C transaction\n",
-	""
+COMMAND(cmd_i2c,
+	">i2c                       I2C access\n"
+	"-i2c scan                  Scan I2C bus\n"
+	"-i2c [w AA DD ...] [r AA NN]\n"
+	"-                          Raw I2C transaction\n"
 )

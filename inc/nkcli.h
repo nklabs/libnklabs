@@ -29,17 +29,8 @@
 #define CMD_FLAG_HIDDEN 1 // Command is hidden unless in "factory service mode"
 
 struct console_cmd {
-    int flags;
-    const char *name; // Command name for lookup
+    const char *text; // Command name and help
     int (*func)(nkinfile_t *args); // Command function
-    // 's' has arguments (beginning with first non-whitespace after command)
-    // Return value:
-    //    0 = command is done, issue next prompt
-    //    1 = command is not done, do not issue next prompt.  Instead cmd_init should be called
-    //        when CLI should be resumed.
-    const char *short_help; // Concise command description
-    const char *main_help; // Main multi-line help
-    const char *hidden_help; // Help hidden unless in "factory service mode"
 };
 
 // Macros to help declare commands
@@ -49,13 +40,9 @@ struct console_cmd {
 // __attribute__((used)) prevents compiler from optimizing unreferenced data out
 // __attribute__((unused)) prevents compiler from complaining about unused variables
 
-#define COMMAND(name, short_help, main_help, hidden_help) \
-static const struct console_cmd cmd_entry_ ## name __attribute__ ((section (".COMMAND_TABLE"))) __attribute__((unused)) __attribute__((used)) = \
-  { 0, nk_tostring(name), cmd_ ## name, (short_help), (main_help), (hidden_help) };
-
-#define HIDDEN_COMMAND(name, short_help, main_help, hidden_help) \
-static const struct console_cmd cmd_entry_ ## name __attribute__ ((section (".COMMAND_TABLE"))) __attribute__((unused)) __attribute__((used)) = \
-  { CMD_FLAG_HIDDEN, nk_tostring(name), cmd_ ## name, (short_help), (main_help), (hidden_help) }; 
+#define COMMAND(func, text) \
+static struct console_cmd cmd_entry_ ## func __attribute__ ((section (".COMMAND_TABLE"))) __attribute__((unused)) __attribute__((used)) = \
+  { (text), (func) };
 
 // Start up CLI, print first prompt
 // (this submits a task, so prompt is issued on next return to sched)

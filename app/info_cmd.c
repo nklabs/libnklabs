@@ -152,8 +152,7 @@ static int cmd_info(nkinfile_t *args)
 	return 0;
 }
 
-COMMAND(info,
-    "info                      Display serial number and firmware information\n",
-    "info                      Display serial number and firmware information\n",
-    ""
+COMMAND(cmd_info,
+    ">info                      Display serial number and firmware information\n"
+    "-info                      Display serial number and firmware information\n"
 )

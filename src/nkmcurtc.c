@@ -40,10 +40,9 @@ int cmd_mcurtc(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(mcurtc,
-	"mcurtc                    RTC access\n",
-        "mcurtc                    Show date/time\n"
-        "mcurtc YYYY-MM-DD HH:MM:SS\n"
-        "                          Set date/time\n",
-        ""
+COMMAND(cmd_mcurtc,
+	">mcurtc                    RTC access\n"
+        "-mcurtc                    Show date/time\n"
+        "-mcurtc YYYY-MM-DD HH:MM:SS\n"
+        "-                          Set date/time\n"
 )

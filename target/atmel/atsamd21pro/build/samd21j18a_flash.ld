@@ -55,12 +55,6 @@ SECTIONS
         *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-	/* Command table */
-        . = ALIGN(4);
-        __start_COMMAND_TABLE = .;
-        KEEP(*(.COMMAND_TABLE));
-        __stop_COMMAND_TABLE = .;
-
         /* Support C constructors, and C destructors in both user code
            and the C library. This also provides support for C++ code. */
         . = ALIGN(4);
@@ -117,6 +111,12 @@ SECTIONS
         _srelocate = .;
         *(.ramfunc .ramfunc.*);
         *(.data .data.*);
+	/* Command table */
+        . = ALIGN(4);
+        __start_COMMAND_TABLE = .;
+        KEEP(*(.COMMAND_TABLE));
+        __stop_COMMAND_TABLE = .;
+
         . = ALIGN(4);
         _erelocate = .;
     } > ram

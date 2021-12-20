@@ -269,10 +269,9 @@ static int cmd_work(nkinfile_t *args)
 	return 0;
 }
 
-COMMAND(work,
-	"work                      Show work queue\n",
-	"work                      Show work queue\n",
-	""
+COMMAND(cmd_work,
+	">work                      Show work queue\n"
+	"-work                      Show work queue\n"
 )
 
 static int deepness = 0;
@@ -303,11 +302,10 @@ static int cmd_power(nkinfile_t *args)
 	return 0;
 }
 
-COMMAND(power,
-	"power                     Show/control power mode\n",
-	"power                     Show power mode\n"
-	"power <n>                 Set power mode (0, 1 or 2)\n",
-	""
+COMMAND(cmd_power,
+	">power                     Show/control power mode\n"
+	"-power                     Show power mode\n"
+	"-power <n>                 Set power mode (0, 1 or 2)\n"
 )
 
 void nk_sched_loop()

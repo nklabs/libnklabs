@@ -100,10 +100,6 @@ SECTIONS
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(8);
-    __start_COMMAND_TABLE = .;
-    KEEP(*(.COMMAND_TABLE));
-    __stop_COMMAND_TABLE = .;
-    . = ALIGN(8);
   } >FLASH
 
   .ARM.extab   : 
@@ -159,6 +155,10 @@ SECTIONS
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
+    . = ALIGN(8);
+    __start_COMMAND_TABLE = .;
+    KEEP(*(.COMMAND_TABLE));
+    __stop_COMMAND_TABLE = .;
     . = ALIGN(8);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH

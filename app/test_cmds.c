@@ -35,11 +35,10 @@ static int cmd_test(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(test,
-    "test                      Test commands\n",
-    "test stop                 Emit ^S\n"
-    "test wdt                  Infinite loop to test WDT\n"
-    "test sched                Test scheduler event\n"
-    "test sched nn             Test scheduler in nn ms\n",
-    ""
+COMMAND(cmd_test,
+    ">test                      Test commands\n"
+    "-test stop                 Emit ^S\n"
+    "-test wdt                  Infinite loop to test WDT\n"
+    "-test sched                Test scheduler event\n"
+    "-test sched nn             Test scheduler in nn ms\n"
 )

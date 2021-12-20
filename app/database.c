@@ -243,16 +243,15 @@ int cmd_dbase(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(dbase,
-    "dbase                     Database store\n",
-    "dbase clear               Clear database store\n"
-    "dbase show                Show entire database\n"
-    "dbase load                Load database from flash\n"
-    "dbase flush               Save database to flash\n"
-    "dbase replace             Replace database: prompts for multi-line value\n"
-    "dbase get <key>           Get value assigned to key\n"
-    "dbase set <key> <value>\n"
-    "                          Assign value to a key\n"
-    "dbase set <key>           Assign value to a key: Prompts for multi-line value\n",
-    ""
+COMMAND(cmd_dbase,
+    ">dbase                     Database store\n"
+    "-dbase clear               Clear database store\n"
+    "-dbase show                Show entire database\n"
+    "-dbase load                Load database from flash\n"
+    "-dbase flush               Save database to flash\n"
+    "-dbase replace             Replace database: prompts for multi-line value\n"
+    "-dbase get <key>           Get value assigned to key\n"
+    "-dbase set <key> <value>\n"
+    "-                          Assign value to a key\n"
+    "-dbase set <key>           Assign value to a key: Prompts for multi-line value\n"
 )
