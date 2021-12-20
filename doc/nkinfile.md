@@ -112,18 +112,18 @@ __nk_fseek_abs__ is like __nk_fpeek__ except that it reads the byte at byte
 offset __pos__.
 
 __nk_fnext__ advances the byte offset by 1, and returns the byte at that
-location.  It returns -1 if the new byte offset is at the end of the file.  Note
-that if the byte offset was already at the end, __nk_fnext__ does not change
-the offset and it returns -1.  __nk_fnext_fast__ may be used if it is known
-that the byte offset is not already at the end of the file (via a call
-to __nk_feof__ or __nk_fpeek__).  __nk_fnext__ and __nk_fnext_fast__ are
-implemented as macros.
+location.  It returns -1 if the new byte offset is at the end of the file. 
+Note that if the byte offset was already at the end, __nk_fnext__ does not
+change the offset and it returns -1.  __nk_fnext_fast__ may be used if it is
+known that the byte offset is not already at the end of the file (via a
+previous call to __nk_feof__ or __nk_fpeek__).  __nk_fnext__ and
+__nk_fnext_fast__ are implemented as macros.
 
 __nk_fgetc__ reads the byte at the current byte offset, and then advances
 the offset by 1.  Note that if the offset was at the end of the file,
 __nk_fgetc__ returns -1 and does not change the offset.  __nk_fgetc_fast__
 may be used if it is known that the byte offset is not already at the end
-(via a call to __nk_feof__ or __nk_fpeek__).  __nk_fgetc__ and
+(via a previous call to __nk_feof__ or __nk_fpeek__).  __nk_fgetc__ and
 __nk_fgetc_fast__ are implemented as macros.
 
 __nk_fcopy__ copies the remainder of the nkinfile_t to the specified
