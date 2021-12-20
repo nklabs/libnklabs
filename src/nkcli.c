@@ -114,17 +114,17 @@ static const char *print_help(const char *s)
     ++s;
     while (*s && (*s != '\n'))
         nk_putc(*s++);
-    if (*s)
-        nk_putc(*s++);
+    nk_putc('\n');
+    if (*s == '\n')
+        s++;
     return s;
 }
 
 static const char *skip_help(const char *s)
 {
-    ++s;
     while (*s && (*s != '\n'))
         s++;
-    if (*s)
+    if (*s == '\n')
         s++;
     return s;
 }
@@ -134,14 +134,14 @@ static const char *skip_help(const char *s)
 static void specific_help(const char *t)
 {
     while (*t) {
-        if (*t == '-' || (*t == '!' && facmode))
+        if (facmode || *t != '!')
         {
             // We found a help line, print it
             t = print_help(t);
         }
         else
         {
-            // Some other kind of line, skip it
+            // Hidden
             t = skip_help(t);
         }
     }
@@ -156,7 +156,7 @@ static int cmd_help(nkinfile_t *args)
     if (nk_fscan(args, "all ")) {
         int first = 0;
         for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
-            if (facmode || x->text[0] == '>') {
+            if (facmode || x->text[0] != '!') {
                 if (first)
                     nk_putc('\n');
                 specific_help(print_help(x->text));
@@ -166,7 +166,7 @@ static int cmd_help(nkinfile_t *args)
     } else if (nk_fscan(args, "%w ", buf, sizeof(buf))) {
         x = find_cmd(buf);
         if (x) {
-            specific_help(x->text);
+            specific_help(skip_help(x->text));
         } else
             nk_puts("Unknown command\n");
     } else if (nk_fscan(args, "")) {
@@ -174,7 +174,7 @@ static int cmd_help(nkinfile_t *args)
         nk_printf("Available commands:\n\n");
         for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
             // One line of help per command
-            if (facmode || x->text[0] == '>')
+            if (facmode || x->text[0] != '!')
             {
                 print_help(x->text);
             }
@@ -203,7 +203,7 @@ static void process_cmd(char *pCmd)
             nk_printf("Syntax error\n");
             return;
         } else if (nk_fscan(f, "help ")) {
-            specific_help(x->text);
+            specific_help(skip_help(x->text));
         } else {
             rtn = x->func(f);
             if (rtn) {

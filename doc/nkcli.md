@@ -9,21 +9,36 @@ void nk_init_cli();
 Start command line interface, print first prompt.  This schedules a task, so
 prompt is issued on next return to the scheduler loop.
 
-## COMMAND(), HIDDEN_COMMAND()
+## COMMAND()
 
 ```c
-COMMAND(name,
-  "short help text\n",
-  "main help text first line\n"
-  "main help text second line\n"
-  "main help text third line\n"
-  "etc.\n",
-  "hidden help test\n"
+COMMAND(function-name,
+  "-command      short help text\n"
+  "-command arg  main help text first line\n"
+  "-command arg  main help text second line\n"
+  "-command      main help text third line\n"
+  "!command      hidden help text (factory mode only)\n"
 )
-```
 
-Register a CLI command function and provide help for it.  The function must
-be named cmd_\<name>, where \<name> is provided to the COMMAND macro.
+COMMAND(function-name,
+  "!command      short help text for hidden command\n"
+  "!command      main help text first line\n"
+  "!command      main help text second line\n"
+  "!command arg  main help text third line\n"
+)```
+
+Register a CLI command function and provide help text for it.  The first
+help line has the command as it is parsed- it's the first word, "command"
+above.  It also provides short help, which is shown when the user types
+"help" and all available commands are listed.
+
+If the first line begins with '!' it's a hidden command, accessible only
+when the system is in "factory service mode".  If it begins with any other
+character, the command is customer visible.
+
+Successive lines provide detailed help which is printed when the user types
+"help command".  Help lines that are prefixed with '!' are only shown in
+factory service mode.
 
 An example of a typical CLI command is as follows:
 
@@ -40,11 +55,10 @@ int cmd_test(nkinfile_t *args)
 	return 0;
 }
 
-COMMAND(test,
-    "test        Test command\n",
-    "test        Test with no arguments\n"
-    "test foo    Try the foo argument\n",
-    ""
+COMMAND(cmd_test,
+    ">test        Test command\n"
+    "-test        Test with no arguments\n"
+    "-test foo    Try the foo argument\n"
 )
 ```
 
@@ -68,23 +82,11 @@ COMMAND uses linker tricks to build the command table in a distributed
 fashion.  A dedicated linker section is provided for this command table. 
 COMMAND appends "struct nk_cli" structures to this section.
 
+The commands are sorted so that help and completions are shown in
+alphabetical order.
+
 The command function should always return 0.  The return value is a future
 provision for command status.
-
-## HIDDEN_COMMAND()
-
-```c
-COMMAND(test,
-    "test        Test command\n",
-    "test        Test with no arguments\n"
-    "test foo    Try the foo argument\n",
-    ""
-)
-```
-
-This is just like the COMMAND macro above, except the command is marked as
-hidden.  This means that the command will only operate and show in the help
-if the "factory mode" flag is set.
 
 ## nk_cli_set_facmode(), nk_cli_get_facmode()
 
