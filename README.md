@@ -10,14 +10,15 @@ development.  In particular:
 
 * STM32CubeMX allows you to instantiate peripherals, define the pinouts, set up clocking and generate startup code for ST Mirco's MCUs.
 
-* Atmel Start is a web tool that does the same Microchip/Atmel's ATSAM ARM microcontrollers.
+* Atmel Start is a web tool that does the same for Microchip/Atmel's ATSAM ARM microcontrollers.
 
 These tools do have a learning curve that we believe is worth overcoming. 
 The example application provided here can be a good starting point for this.
 
 It is important to note that these tools are not IDEs.  They can target
-IDEs, but they also can generate a command line build process using Make and
-Gcc.  We prefer this since it facilites automated testing and building.
+IDEs, but they also can generate code that can be built from the command
+line using Make and Gcc.  We prefer this since it facilites automated
+testing and building.
 
 Second, very importantly, if you want technical support you must use the
 vendor tools.
@@ -28,7 +29,7 @@ Back to our library: it provides these features:
 
 In this case, a UART-based command line interface (CLI) with history,
 editing and tab-completion.  Commands are defined near the code they intend
-to use- there is no need to edit a central command table, or call any
+to use- there is no need to edit a central command table or call any
 registration functions.  This makes it easy to casually add commands for
 debugging or bring-up.
 
@@ -38,10 +39,10 @@ some kind of "factory service mode".
 
 Even if you do not need or want a customer facing CLI, having a CLI almost
 always saves time.  It provides a way for team members to use the product
-before it is finished.  For example, an Electrical Engineer might have to
-focus on a specific peripheral for qualification.  Commands can be easily
-provided to allow him or her to be independent, not needing a firmware
-engineer to be help for every action.
+before it is finished.  For example, a test engineer might have to focus on
+a specific peripheral for qualification.  Commands can be easily provided to
+allow him or her to be independent, and not require a firmware engineer to
+be present for every action.
 
 ### Firmware updates
 
