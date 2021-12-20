@@ -32,4 +32,6 @@ void nk_readline(int tid, void (*f)(char *line), const char *prompt_text);
 int nk_set_echo(int mode);
 int nk_get_echo();
 
+int nk_complete(const char *s, int list_flag);
+
 #endif    /* _NKREADLINE_H   */

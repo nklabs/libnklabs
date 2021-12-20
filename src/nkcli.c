@@ -54,6 +54,33 @@ static struct console_cmd *find_cmd(char *s)
     return 0;
 }
 
+// list_flag = 0: find next character to complete command, 0 if command already complete or -1 if there are none or multiple matches
+// list_flag = 1: show all possible completions
+
+int nk_complete(const char *s, int list_flag)
+{
+    int match_count = 0;
+    struct console_cmd *match = 0;
+    struct console_cmd *x;
+    size_t len = strlen(s);
+    
+    for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
+        if ((facmode || !(x->flags & CMD_FLAG_HIDDEN)) && !strncmp(x->name, s, len)) {
+            match = x;
+            ++match_count;
+            if (list_flag)
+                nk_printf("%s\n", x->name);
+        }
+    }
+    if (match_count == 1) {
+        return match->name[len];
+    } else if (match_count == 0) {
+        return -1;
+    } else {
+        return -2;
+    }
+}
+
 // Print detailed help for a specific command by index
 
 static void specific_help(struct console_cmd *x)

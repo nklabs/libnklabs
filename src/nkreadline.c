@@ -33,7 +33,7 @@ const char *console_prompt;
 static char tty_buf[NKREADLINE_LINE_SIZE];
 static size_t tty_len;
 static size_t tty_cur;
-static int changed; // Set if buffer has been edited
+static uint8_t changed; // Set if buffer has been edited
 
 // History buffer
 
@@ -41,7 +41,10 @@ static char histbuf[NKREADLINE_HIST_SIZE]; // NUL terminated lines
 static size_t hist_end; // Number of bytes in history buffer
 static size_t hist_idx; // Index to start of current history line
 
-static int echo_mode = 1;
+static uint8_t echo_mode = 1;
+
+static uint8_t mode;
+static uint8_t tab_count;
 
 int nk_set_echo(int mode)
 {
@@ -157,6 +160,14 @@ static void erase()
 	}
 	tty_cur = 0;
 	tty_len = 0;
+}
+
+// Redraw line, put cursor at end
+static void redraw()
+{
+	tty_cur = 0;
+	console_puts(console_prompt);
+	to_end();
 }
 
 // Type screen line
@@ -282,8 +293,6 @@ static void delch()
 	}
 }
 
-static int mode;
-
 void prompt_task(void *data)
 {
 	int ch;
@@ -296,9 +305,36 @@ void prompt_task(void *data)
 			nk_set_uart_callback(console_tid, prompt_task, NULL);
 			break;
 		}
+		if (tab_count)
+			--tab_count;
 		if (mode == 0) {
 			if (ch >= 32 && ch <= 126) {
 				typech((char)ch);
+			} else if (ch == 9) { // TAB completion
+				for (;;) {
+					tty_buf[tty_len] = 0;
+					if (tab_count) {
+						console_putchar('\n');
+					}
+					ch = nk_complete(tty_buf, tab_count);
+					if (tab_count) {
+						redraw();
+					}
+					if (ch == 0) {
+						typech(' ');
+						break;
+					} else if (ch == -1) { // No matches
+						console_putchar(7);
+						break;
+					} else if (ch == -2) { // Multiple matches
+						if (!tab_count)
+							console_putchar(7);
+						tab_count = 2;
+						break;
+					} else {
+						typech((char)ch);
+					}
+				}
 			} else if ((ch == 8 || ch == 127)) { // ^H, DEL
 				if (tty_cur) {
 					cur_left();

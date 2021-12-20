@@ -22,6 +22,11 @@
 
 - - - - -
 
+extrtc:
+  set MCU clock from it?
+  report if clock was lost.
+  move rtc specific drive to app?
+
 arduino:
   digitalRead, digitalWrite, pinMode
   attachInterrupt, detachInterrupt
