@@ -17,7 +17,7 @@ The example application provided here can be a good starting point for this.
 
 It is important to note that these tools are not IDEs.  They can target
 IDEs, but they also can generate code that can be built from the command
-line using Make and Gcc.  We prefer this since it facilites automated
+line using Make and Gcc.  We prefer this since it facilitates automated
 testing and building.
 
 Second, very importantly, if you want technical support you must use the
@@ -46,12 +46,12 @@ be present for every action.
 
 ### Firmware updates
 
-Almost every product needs some kind of remote firmware update capabilty. 
+Almost every product needs some kind of remote firmware update capability. 
 This library provides one way to do it which can be extended to match your
 needs:
 
 First, you can download a firmware update file into local flash memory using
-the Y-MODEM protocol over the CLI.  Y-MODEM is an old standard protocol for
+the YMODEM protocol over the CLI.  YMODEM is an old standard protocol for
 transferring files over a serial port that is built into most terminal /
 modem programs, such as TeraTerm and PuTTY.  This is nice, since no
 host-side software has to be developed.
@@ -97,8 +97,8 @@ Some foundational libraries are also provided:
 
 * A low memory footprint version of printf that supports floating point (it is smaller than newlib's printf).
 * A unified parsing system: it's used for parsing command line arguments and deserializing databases.
-* An instream / outsream library allowing redirecting input and output from the above formatting print and parsing functions to block devices or strings.
-* A work-queue schedular, replaces an RTOS in cases where you don't need preemption and your code is event driven.
+* An instream / outstream library that redirects input and output from the above formatting and parsing functions to block devices or strings.
+* A work-queue scheduler, replaces an RTOS in cases where you don't need preemption and your code is event driven.
 
 ### Other characteristics
 
