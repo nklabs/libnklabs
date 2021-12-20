@@ -47,9 +47,9 @@ engineer to be help for every action.
 
 * Firmware updates
 
-Almost every product needs some kind of remote firmware update capabilty
-these days.  This library provides one way to do it which can be extended to
-match your needs:
+Almost every product needs some kind of remote firmware update capabilty. 
+This library provides one way to do it which can be extended to match your
+needs:
 
 First, you can download a firmware update file into local flash memory using
 the Y-MODEM protocol over the CLI.  Y-MODEM is an old standard protocol for
@@ -58,14 +58,35 @@ modem programs, such as TeraTerm and PuTTY.  This is nice, since no
 host-side software has to be developed.
 
 Second, after reboot, a bootloader copies the firmware from the local flash
-memory to the main MCU flash memory to complete the update.
+memory (after doing a final integrity check) to the main MCU flash memory to
+complete the update.
 
 This local flash memory could be unused space in the MCU flash memory, or it
 could be an external device such as a SPI-flash chip.
 
 * Embedded database
 
+Many products need some kind of non-volatile storage for calibration and
+configuration settings.  We provide a schema-defined database with schema
+change / migration support for this.  The idea is to save the serialized
+version of a memory structure into non-volatile memory such as SPI-flash. 
+On boot up, the database is deserialized back into RAM.  Fields can be added
+or deleted as the product evolves.  New fields will be loaded with a default
+value, and date for deleted fields will be ignored.
+
+The serialized format of a database can also be transferred over the CLI. 
+This allows you to save the database on a host computer.
+
+The CLI provides an automatic interface to set or get individual fields from
+the database.
+
 * Common drivers
+
+Some basic drivers for common devices are included:
+
+* Flash memory
+* EEPROM
+* Real Time Clock
 
 This library provides functionality useful for embedded applications on
 small microcontrollers:
