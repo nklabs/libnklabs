@@ -384,10 +384,24 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, MAIN_SPI_CS_L_1_Pin|MAIN_SPI_CS_L_Pin|MAIN_SPI_CS_L_2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, ARD_D9_Pin|ARD_D10_Pin|ARD_D2_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : MAIN_SPI_CS_L_1_Pin MAIN_SPI_CS_L_Pin MAIN_SPI_CS_L_2_Pin */
-  GPIO_InitStruct.Pin = MAIN_SPI_CS_L_1_Pin|MAIN_SPI_CS_L_Pin|MAIN_SPI_CS_L_2_Pin;
+  /*Configure GPIO pins : ARD_A1_Pin ARD_A2_Pin ARD_A3_Pin ARD_A6_Pin
+                           ARD_D1_Pin ARD_D0_Pin */
+  GPIO_InitStruct.Pin = ARD_A1_Pin|ARD_A2_Pin|ARD_A3_Pin|ARD_A6_Pin
+                          |ARD_D1_Pin|ARD_D0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ARD_D3_Pin ARD_D6_Pin */
+  GPIO_InitStruct.Pin = ARD_D3_Pin|ARD_D6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ARD_D9_Pin ARD_D10_Pin ARD_D2_Pin */
+  GPIO_InitStruct.Pin = ARD_D9_Pin|ARD_D10_Pin|ARD_D2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;

@@ -9,17 +9,17 @@ CDefines=USE_HAL_DRIVER;STM32F746xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Inc/stm32f7xx_it.h
-HeaderFiles#1=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Inc/stm32f7xx_hal_conf.h
-HeaderFiles#2=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Inc/main.h
+HeaderFiles#0=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Inc/stm32f7xx_it.h
+HeaderFiles#1=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Inc/stm32f7xx_hal_conf.h
+HeaderFiles#2=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Inc
+HeaderPath#0=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Src/stm32f7xx_it.c
-SourceFiles#1=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Src/stm32f7xx_hal_msp.c
-SourceFiles#2=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Src/main.c
+SourceFiles#0=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Src/stm32f7xx_it.c
+SourceFiles#1=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Src/stm32f7xx_hal_msp.c
+SourceFiles#2=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=/home/jallen/git1/libnklabs/target/st/stm32f746g-disco/Core/Src
+SourcePath#0=/home/jallen/git1/libnklabs/target/st/disco-f746g/Core/Src
 SourceFiles=;
 

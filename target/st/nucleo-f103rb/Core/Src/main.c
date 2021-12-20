@@ -470,6 +470,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(ARD_D2_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : ARD_D3_Pin */
+  GPIO_InitStruct.Pin = ARD_D3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ARD_D3_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : ARD_D10_Pin */
   GPIO_InitStruct.Pin = ARD_D10_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

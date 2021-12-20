@@ -212,19 +212,26 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     PB14     ------> SPI2_MISO
     PB15     ------> SPI2_MOSI
     */
-    GPIO_InitStruct.Pin = USER_LED_Pin;
+    GPIO_InitStruct.Pin = ARD_D13_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
-    HAL_GPIO_Init(USER_LED_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(ARD_D13_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = MAIN_SPI_MISO_Pin|MAIN_SPI_MOSI_Pin;
+    GPIO_InitStruct.Pin = ARD_D12_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+    HAL_GPIO_Init(ARD_D12_GPIO_Port, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = ARD_D11_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(ARD_D11_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN SPI2_MspInit 1 */
 
@@ -254,9 +261,9 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
     PB14     ------> SPI2_MISO
     PB15     ------> SPI2_MOSI
     */
-    HAL_GPIO_DeInit(USER_LED_GPIO_Port, USER_LED_Pin);
+    HAL_GPIO_DeInit(ARD_D13_GPIO_Port, ARD_D13_Pin);
 
-    HAL_GPIO_DeInit(GPIOB, MAIN_SPI_MISO_Pin|MAIN_SPI_MOSI_Pin);
+    HAL_GPIO_DeInit(GPIOB, ARD_D12_Pin|ARD_D11_Pin);
 
   /* USER CODE BEGIN SPI2_MspDeInit 1 */
 
