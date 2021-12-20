@@ -2,6 +2,71 @@
 
 ## C-language Software library
 
+This is our library for very quickly making products based on common
+microcontrollers.  It is a layer added on top of the vendor libraries that
+provides features required for almost every product.
+
+It is important to work with and not replace the vendor tools and libraries
+in commercial products.  First, some vendor tools facilitate rapid
+development.  In particular:
+
+* STM32CubeMX allows you to instantiate peripherals, define the pinouts, set up clocking and generate startup code for ST Mirco's MCUs.
+
+* Atmel Start is a web tool that does the same Microchip/Atmel's ATSAM ARM microcontrollers.
+
+These tools do have a learning curve that we believe is worth overcoming. 
+The example application provided here can be a good starting point for this.
+
+It is important to note that these tools are not IDEs.  They can target
+IDEs, but they also can generate a command line build process using Make and
+Gcc.  We prefer this since it facilites automated testing and building.
+
+Second, very importantly, if you want technical support you must use the
+vendor tools.
+
+Back to our library: it provides these features:
+
+* User interface
+
+In this case, a UART-based command line interface (CLI) with history,
+editing and tab-completion.  Commands are defined near the code they intend
+to use- there is no need to edit a central command table, or call any
+registration functions.  This makes it easy to casually add commands for
+debugging or bring-up.
+
+The CLI is powerful enough to be customer facing.  There is on-line help and
+commands can be marked to be disabled and hidden unless your product is in
+some kind of "factory service mode".
+
+Even if you do not need or want a customer facing CLI, having a CLI almost
+always saves time.  It provides a way for team members to use the product
+before it is finished.  For example, an Electrical Engineer might have to
+focus on a specific peripheral for qualification.  Commands can be easily
+provided to allow him or her to be independent, not needing a firmware
+engineer to be help for every action.
+
+* Firmware updates
+
+Almost every product needs some kind of remote firmware update capabilty
+these days.  This library provides one way to do it which can be extended to
+match your needs:
+
+First, you can download a firmware update file into local flash memory using
+the Y-MODEM protocol over the CLI.  Y-MODEM is an old standard protocol for
+transferring files over a serial port that is built into most terminal /
+modem programs, such as TeraTerm and PuTTY.  This is nice, since no
+host-side software has to be developed.
+
+Second, after reboot, a bootloader copies the firmware from the local flash
+memory to the main MCU flash memory to complete the update.
+
+This local flash memory could be unused space in the MCU flash memory, or it
+could be an external device such as a SPI-flash chip.
+
+* Embedded database
+
+* Common drivers
+
 This library provides functionality useful for embedded applications on
 small microcontrollers:
 
