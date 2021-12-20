@@ -1,7 +1,5 @@
 # NK Labs common library
 
-## C-language Software library
-
 This is our library for very quickly making products based on common
 microcontrollers.  It is a layer added on top of the vendor libraries that
 provides features required for almost every product.
@@ -26,7 +24,7 @@ vendor tools.
 
 Back to our library: it provides these features:
 
-* User interface
+### User interface
 
 In this case, a UART-based command line interface (CLI) with history,
 editing and tab-completion.  Commands are defined near the code they intend
@@ -45,7 +43,7 @@ focus on a specific peripheral for qualification.  Commands can be easily
 provided to allow him or her to be independent, not needing a firmware
 engineer to be help for every action.
 
-* Firmware updates
+### Firmware updates
 
 Almost every product needs some kind of remote firmware update capabilty. 
 This library provides one way to do it which can be extended to match your
@@ -64,54 +62,51 @@ complete the update.
 This local flash memory could be unused space in the MCU flash memory, or it
 could be an external device such as a SPI-flash chip.
 
-* Embedded database
+### Embedded database
 
 Many products need some kind of non-volatile storage for calibration and
-configuration settings.  We provide a schema-defined database with schema
-change / migration support for this.  The idea is to save the serialized
-version of a memory structure into non-volatile memory such as SPI-flash. 
-On boot up, the database is deserialized back into RAM.  Fields can be added
-or deleted as the product evolves.  New fields will be loaded with a default
-value, and date for deleted fields will be ignored.
+configuration settings.  We provide a schema-defined database with
+schema-change / migration support for this.  The idea is to save a
+serialized version of a C-structure into non-volatile memory such as
+SPI-flash.  On boot up, the database is deserialized back into RAM.  Fields
+can be added or deleted as the product evolves.  New fields will be loaded
+with a default value, and data for deleted fields will be ignored.
+
+The C-structure can be arbitrarily complex (including arrays, strings and
+substructures), but must not use pointers and must fit in a contiguous
+region of memory.  Malloc is not used at all.  Arrays and strings are
+variable in size, but bounded to a pre-allocated maximum size.
 
 The serialized format of a database can also be transferred over the CLI. 
 This allows you to save the database on a host computer.
 
 The CLI provides an automatic interface to set or get individual fields from
-the database.
+the database.  You can index a part of the database using an expression,
+somewhat similar to XML's XPath expressions.
 
-* Common drivers
+### Common drivers and foundations
 
 Some basic drivers for common devices are included:
 
 * Flash memory
-* EEPROM
+* SPI and I2C EEPROM
 * Real Time Clock
 
-This library provides functionality useful for embedded applications on
-small microcontrollers:
+Some foundational libraries are also provided:
 
-* A command line interface (CLI) with line editor, on-line help and history. 
-  Commands are declared statically anywhere in the project instead of
-  requiring a central command table or the calling of registration functions.
+* A low memory footprint version of printf that supports floating point (it is smaller than newlib's printf).
+* A unified parsing system: it's used for parsing command line arguments and deserializing databases.
+* An instream / outsream library allowing redirecting input and output from the above formatting print and parsing functions to block devices or strings.
+* A work-queue schedular, replaces an RTOS in cases where you don't need preemption and your code is event driven.
 
-* A schema-defined database with schema change  / migration support,
-  typically used for holding calibration and configuration parameters in local flash memory
+### Other characteristics
 
-* A serialization / de-serialization system so that databases can be transferred over the CLI
-* Y-MODEM protocol for transferring files over the CLI, for example for firmware updates
-* Replacement printf() that supports floating point but is much smaller than the newlib one
-* Repacement scanf() designed for parsing instead of simple input reading. 
-  CLI commands use this to parse command line arguments.
-* A work-queue scheduler which can be used in place of an RTOS if preemptive multitasking is not required
-* Commonly used CRC and cryptographic functions including SHA and AES
-* Support for firmware version numbers and automatic build-date insertion
-* CLI commands for many basic things, such as access to SPI and I2C devices
-* Real time clock support
-* Watchdog timer support
 * Malloc is not used at all to ensure determinism
+* The example application includes watchdog timer support
+* The build system includes automatic insertion of git hash, build date and version numbers into the binary.
+* Commonly used cryptographic and CRC functions are also included
 
-### Including libnklabs in your own project
+# Including libnklabs in your own project
 
 The library is designed to be modular, though many of the modules depend on
 each other.
@@ -136,7 +131,7 @@ To execute the unit tests:
 	cd tests
 	make
 
-### Examples
+# Example Application
 
 An example application is available in [app/](app/).
 
@@ -148,7 +143,7 @@ To build a particular example and install it on a target board:
 	make
 	make flash
 
-### Module Documentation
+# Module Documentation
 
 [nksched - minimal work queue scheduler](doc/nksched.md)
 
