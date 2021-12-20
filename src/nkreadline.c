@@ -320,10 +320,7 @@ void prompt_task(void *data)
 					if (tab_count) {
 						redraw();
 					}
-					if (ch == 0) {
-						typech(' ');
-						break;
-					} else if (ch == -1) { // No matches
+					if (ch == -1) { // No matches
 						console_putchar(7);
 						break;
 					} else if (ch == -2) { // Multiple matches
@@ -333,6 +330,8 @@ void prompt_task(void *data)
 						break;
 					} else {
 						typech((char)ch);
+						if (ch == ' ')
+							break;
 					}
 				}
 			} else if ((ch == 8 || ch == 127)) { // ^H, DEL

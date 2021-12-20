@@ -72,20 +72,23 @@ static struct console_cmd *find_cmd(char *s)
     return 0;
 }
 
-// list_flag = 0: find next character to complete command, 0 if command already complete or -1 if there are none or multiple matches
+// list_flag = 0: find next character to complete command, ' ' if command already complete, -1 if there are none or -2 multiple matches
 // list_flag = 1: show all possible completions
 
 int nk_complete(const char *s, int list_flag)
 {
     int match_count = 0;
-    struct console_cmd *match = 0;
+    int match_char = -1;
     struct console_cmd *x;
     size_t len = strlen(s);
     
     for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
         if (name_match(x->text, s, len, facmode)) {
-            match = x;
-            ++match_count;
+            if (match_char != x->text[1 + len])
+            {
+                match_char = x->text[1 + len];
+                ++match_count;
+            }
             if (list_flag)
             {
                 int y;
@@ -96,7 +99,9 @@ int nk_complete(const char *s, int list_flag)
         }
     }
     if (match_count == 1) {
-        return match->text[1 + len];
+        if (!match_char) // Command could end with NUL or space
+            match_char = ' ';
+        return match_char;
     } else if (match_count == 0) {
         return -1;
     } else {
