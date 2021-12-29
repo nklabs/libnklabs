@@ -14,13 +14,11 @@
 
   Demo CLI manual
 
-  nkymodem
-
-    write documentation
-
 - - - - -
 nkymodem:
   ymodem send should send back the file we downloaded..
+  make it event driven
+  provide file access functions right in call to nk_yrecv?
 
 nkchecked:
   nkwrite does not check if we ran out of space

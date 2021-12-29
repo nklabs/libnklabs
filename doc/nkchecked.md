@@ -37,7 +37,7 @@ nk_checked_read_open returns a non-zero value.
 
 Once a file has been opened, nk_checked_read can be used to read a range of
 data from the file into a memory buffer.  This function is intended to be
-useable as the block read function of by nkinfile_t.
+useable as the block read function of nkinfile_t.
 
 nk_checked_read returns the number of bytes read.  If the asked for range
 goes past the end of the file, the returned value will be less than the
