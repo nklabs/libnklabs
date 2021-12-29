@@ -66,17 +66,17 @@ int nk_flash_busy_wait(const struct nk_spiflash_info *info);
 // Region must start and end on a mutliple of the device's smallest erasable unit size
 // Return 0 for success, -1 for error.
 
-int nk_spiflash_erase(const struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count);
+int nk_spiflash_erase(const void *info, /* const struct nk_spiflash_info *info, */ uint32_t address, uint32_t byte_count);
 
 // Write to flash. This handles any number for byte_count- it will break up the write
 // into multiple page writes as necessary.
 // Return 0 for success, -1 for error.
-int nk_spiflash_write(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_write(const void *info, /* const struct nk_spiflash_info *info, */ uint32_t address, uint8_t *data, uint32_t byte_count);
 
 // Read from flash.  address and byte_count can be any values- the flash memory
 // automatically crosses page boundaries.
 // Return 0 for success, -1 for error.
-int nk_spiflash_read(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_spiflash_read(const void *info, /* const struct nk_spiflash_info *info, */ uint32_t address, uint8_t *data, uint32_t byte_count);
 
 // Hex dump of spi-flash
 void nk_spiflash_hex_dump(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len);

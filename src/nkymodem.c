@@ -21,6 +21,7 @@
 
 // X/Y-modem protocol
 
+#include <string.h>
 #include "nkprintf.h"
 #include "nkcrclib.h"
 #include "nkymodem.h"
@@ -43,7 +44,7 @@
 #endif
 
 // Comment out to use XMODEM send
-// #define YMODEM_SEND 1
+#define YMODEM_SEND 1
 
 
 #define NK_YM_SOH 0x01
@@ -680,7 +681,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             }
         }
 #endif
-        else if (len == 1 && rcvbuf[0] == NK_YM_CAN)
+        else if (len == 1 && rcvbuf[0] == NK_YM_EOT)
         {
             ymodem_can = 0;
             if (ymodem_xmodem)
@@ -790,4 +791,5 @@ void debug_rcv_status()
     nk_printf("crc_count = %d\n", crc_count);
     nk_printf("cksum_count = %d\n", cksum_count);
     NK_YM_DEBUG_LOG_SHOW();
+    nk_printf("%p %d\n", debug_log_show, debug_log_idx);
 }

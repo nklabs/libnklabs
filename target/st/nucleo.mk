@@ -47,6 +47,7 @@ $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
+$(NK_SRC)/nkchecked.c \
 $(NK_SRC)/nkcli.c \
 $(NK_SRC)/nkcrclib.c \
 $(NK_SRC)/nkdatetime.c \
