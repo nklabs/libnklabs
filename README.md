@@ -162,7 +162,7 @@ To build a particular example and install it on a target board:
 
 [nkoutfile - output abstraction](doc/nkoutfile.md)
 
-[nkchecked - maintain a file in flash memory)[doc/nkchecked.md]
+[nkchecked - maintain a file in flash memory](doc/nkchecked.md)
 
 [nkserialize - schema driven serialization](doc/nkserialize.md)
 
