@@ -22,7 +22,7 @@ int nk_fseek_slow(nkinfile_t *f, size_t pos)
         // Load block.  If end of file is within block, f->len will be less than block_size.
         // If end of file is exactly at start of block, then nothing is loaded and f->len is zero.
         // Otherwise f->len will be equal to block_size.
-        f->len = f->block_read(f->block_read_ptr, f->start, f->start_offset);
+        f->len = f->block_read(f->block_read_ptr, f->start_offset, f->start, f->block_size);
     }
     f->end = f->start + f->len;
 
@@ -40,7 +40,7 @@ int nk_fseek_slow(nkinfile_t *f, size_t pos)
     }
 }
 
-nkinfile_t *nkinfile_open(nkinfile_t *f, size_t (*block_read)(void *block_read_ptr, unsigned char *buffer, size_t offset), void *block_read_ptr, size_t block_size, unsigned char *buffer)
+nkinfile_t *nkinfile_open(nkinfile_t *f, size_t (*block_read)(void *block_read_ptr, size_t pos, unsigned char *buffer, size_t block_size), void *block_read_ptr, size_t block_size, unsigned char *buffer)
 {
     f->start = buffer;
     f->ptr = f->start;
@@ -53,7 +53,7 @@ nkinfile_t *nkinfile_open(nkinfile_t *f, size_t (*block_read)(void *block_read_p
 
     // Read first block into buffer
     if (block_read)
-        f->len = block_read(block_read_ptr, buffer, f->start_offset);
+        f->len = block_read(block_read_ptr, f->start_offset, buffer, f->block_size);
 
     f->end = f->start + f->len;
 

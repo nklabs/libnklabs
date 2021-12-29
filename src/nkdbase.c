@@ -151,7 +151,7 @@ struct filt
 	size_t size;
 };
 
-static size_t dbase_flash_read(void *ptr, unsigned char *buffer, size_t offset)
+static size_t dbase_flash_read(void *ptr, size_t offset, unsigned char *buffer, size_t block_size)
 {
 	struct filt *f = (struct filt *)ptr;
 	if (offset >= f->size)

@@ -45,7 +45,6 @@ const nk_checked_base_t ymodem_file_base =
     .area_size = 131072,
     .area_base = 0,
     .erase_size = 256,
-    .buf_size = 256,
     .info = &m95m04,
     .flash_read = nk_spiflash_read, // info, address, data, byte_count
     .flash_erase = 0,
@@ -142,9 +141,9 @@ int cmd_ymodem(nkinfile_t *args)
             nk_printf("read_open = %d\n", rtn);
         nk_printf("size = %lu\n", ymodem_file.size);
         nk_printf("crc = %lx\n", ymodem_file.crc);
-        len = nk_checked_read(&ymodem_file, ebuf, 0);
+        len = nk_checked_read(&ymodem_file, 0, ebuf, sizeof(ebuf));
         nk_printf("read = %d\n", len);
-        nk_byte_hex_dump(ebuf, 0, 0, 128);
+        nk_byte_hex_dump(ebuf, 0, 0, len);
     } else {
         nk_printf("Syntax error\n");
     }

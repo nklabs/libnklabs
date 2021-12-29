@@ -23,7 +23,6 @@ typedef struct {
     const uint32_t area_size; // Size of flash area
     const uint32_t area_base; // Location of flash area
     const uint32_t erase_size; // Flash erase size
-    const uint32_t buf_size; // Size of above buffer: power of 2 less than or equal to erase_size, but >= sizeof(nk_checked_header_t)
     const void *info; // First arg to flash access functions
     // Flash access functions
     // These should all return 0 for success
@@ -55,6 +54,6 @@ int nk_checked_write(void *ptr, unsigned char *buffer, size_t len);
 int nk_checked_write_close(nk_checked_t *var_file);
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(void *ptr, unsigned char *buffer, size_t offset);
+size_t nk_checked_read(void *ptr, size_t offset, unsigned char *buffer, size_t block_size);
 
 #endif

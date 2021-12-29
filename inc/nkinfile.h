@@ -58,7 +58,7 @@ struct nkinfile
 
     // For abstracting some kind of fixed-length block-based storage system into a file
     void *block_read_ptr; // Pointer to pass to block_read
-    size_t (*block_read)(void *block_read_ptr, unsigned char *buffer, size_t pos);
+    size_t (*block_read)(void *block_read_ptr, size_t pos, unsigned char *buffer, size_t block_size);
     size_t block_size; // Block size, also buffer must be this size
 };
 
@@ -132,8 +132,9 @@ nkinfile_t *nkinfile_open(
     nkinfile_t *f,
     size_t (*block_read)(
         void *block_read_ptr,
+        size_t pos,
         unsigned char *buffer,
-        size_t offset
+        size_t block_size
     ),
     void *block_read_ptr,
     size_t block_size,
