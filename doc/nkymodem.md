@@ -1,0 +1,136 @@
+# nkymodem: YMODEM protocol
+
+These functions provide a way to transfer files over the console serial port
+using the classic YMODEM protocol.  This protocol is convenient because it
+is supported in many terminal emulators, meaning that no software has to be
+written for the host and there is defacto compatibility with many host
+operating systems.
+
+The YMODEM protocol is used (vs.  the other classic serial port protocols),
+because it is efficient (supports 1K packets), can handle binary files (this
+requires UART-link to be 8-bit clean), and transfers the file name.
+
+Files: nkymodem.c nkymodem.h, nkymodem_cmd.c
+
+Functions used: UART functions: nk_uart_read, nk_set_uart_mode, nk_uart_write,
+nk_puts.  Flash functions: nk_flash_erase, nk_flash_write.  CLI functions:
+nk_scan.
+
+
+## Configuration options
+
+```c
+// Define this to allow 1K packets.  Otherwise only allow 128 byte packets. 
+// This could be used to save RAM by reducing the size of the necessary
+// receive buffer.
+#define NK_YM_ALLOWLONG
+
+// Define this to 1 to send NAK instead of C, to indicate to the sender to
+// use checksums intead of CRC.
+// This should be set to 0 if NK_YM_ALLOWLONG is defined.  This is because
+// the "sz" host command will use 1K packets if it detects that the receive
+// side can accept packets with CRC.
+#define NK_YM_NOCRC 0
+
+// Comment out to use XMODEM send instead of YMODEM send.  This could be
+// used to save some code space if the filename is not needed.
+#define YMODEM_SEND
+```
+
+## YMODEM vs. XMODEM
+
+X-MODEM:
+
+* Onle a single file per transfer is allowed
+* The file name is not transferred
+* The file size is not transferred, so the recevied size will be a multiple of 128 bytes
+
+Y-MODEM:
+
+* Multiple files per transfer are allowed
+* The file name and exact file size are included in a header for each file
+
+Both protocols support either CRC or checksums for packets.  The receiver
+indicates that he wants CRCs by transmitting 'C' to request the first
+packet.  The receiver indicates that he watns checksums by transmitting NAK
+instead.
+
+## cmd_ymodem()
+
+This is a command line interface with the following commands:
+
+	ymodem
+
+Receive a file from the host using YMODEM protocol.  The file is written to
+flash memory.  Typically this is used for firmware update. 
+ymodem_recv_file_open (in nkymodem_cmd.c) parses the file name, and can be
+used to target different areas of the flash memory depending on the name.
+
+	ymodem send
+
+Send a small test file to the host using YMODEM protocol.  This is to verify
+that YMODEM transfer to host is working.
+
+## nk_ysend_file()
+
+```c
+void nk_ysend_file(
+    const char *name, 
+    void *(*topen)(const char *name, const char *mode),
+    void (*tclose)(void *f),
+    int (*tgetc)(void *f),
+    int (tsize)(void *f)
+);
+```
+
+Send a file to host over serial port using YMODEM protocol.  The file name
+on the host will be 'name'.  You provide file access functions that match
+the stdio ones.  (These functions do not necessarily have to read from a
+file).
+
+## nk_ysend_buffer()
+
+```c
+void nk_ysend_buffer(const char *name, char *buffer, size_t len);
+```
+
+Send a memory buffer to host over serial port using YMODEM protocol.  The
+file name on the host will be 'name'.
+
+## nk_yrecv()
+
+```c
+int nk_yrecv();
+```
+
+Receive a file from console serial port using YMODEM protocol.  The return
+value indicates the transfer status:
+
+	YMODEM_RECV_DONE: file was recevied with no error
+
+	YMODEM_RECV_REMOTE_CANCEL: host-side canceled the transfer
+
+	YMODEM_RECV_OPEN_CANCEL: receove-side couldn't open file
+
+nk_yrecv requires that you provide the following functions to write the file:
+
+```c
+int ymodem_recv_file_open(char *name);
+
+void ymodem_recv_file_write(unsigned char *buffer, int len);
+
+void ymodem_recv_file_close();
+
+void ymodem_recv_file_cancel();
+```
+
+ymodem_recv_file_open is called when the file should be opened.  'name'
+contains a NUL-terminated file-name.  ymodem_recv_file_open should return 0
+if there were no errors.
+
+ymodem_recv_file_write is called to append some recevied data to the file.
+
+ymodem_recv_file_close is called after all data has been received.
+
+ymodem_recv_file_cancel is called instead of ymodem_recv_file_close if the
+transfer was canceled for some reason.

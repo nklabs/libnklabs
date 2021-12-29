@@ -16,11 +16,16 @@
 
   nkymodem
 
-    actual file download test
-
     write documentation
 
 - - - - -
+nkymodem:
+  ymodem send should send back the file we downloaded..
+
+nkchecked:
+  nkwrite does not check if we ran out of space
+
+  better error return for nk_checked_read- maybe return ssize_t.
 
 extrtc:
   set MCU clock from it?

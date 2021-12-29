@@ -5,8 +5,9 @@ nkinfile_t *nkinfile_open(
     nkinfile_t *f,
     size_t (*block_read)(
         void *block_read_ptr,
+        size_t offset,
         unsigned char *buffer,
-        size_t offset
+	size_t size
     ),
     void *block_read_ptr,
     size_t block_size,

@@ -162,11 +162,13 @@ To build a particular example and install it on a target board:
 
 [nkoutfile - output abstraction](doc/nkoutfile.md)
 
+[nkchecked - maintain a file in flash memory)[doc/nkchecked.md]
+
 [nkserialize - schema driven serialization](doc/nkserialize.md)
 
 [nkdbase - schema driven database](doc/nkdbase.md)
 
-[nkzmodem - ZMODEM protocol](doc/nkzmodem.md)
+[nkymodem - YMODEM protocol](doc/nkymodem.md)
 
 # Licensing
 
