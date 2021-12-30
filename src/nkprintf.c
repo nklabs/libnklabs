@@ -430,7 +430,8 @@ static nkoutfile_t __nkstdout =
 	.end = 1 + &nkstdoutbuf,
 	.size = 1,
 	.block_write_ptr = 0,
-	.block_write = outc
+	.block_write = outc,
+	.granularity = 1
 };
 
 static int outnull(void *ptr, unsigned char *buf, size_t len)
@@ -445,7 +446,8 @@ static nkoutfile_t __nkstdnull =
 	.end = 1 + &nkstdnullbuf,
 	.size = 1,
 	.block_write_ptr = 0,
-	.block_write = outnull
+	.block_write = outnull,
+	.granularity = 1
 };
 
 nkoutfile_t *nkstdout = &__nkstdout;

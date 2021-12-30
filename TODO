@@ -7,12 +7,12 @@
 
   Atmel:
     i2c not working well on atsame70 (crash during i2c scan), but ok on others
+    use bitbang for atsame70..
 
-  make sure dbase works on every platform (maybe not with mcuflash...)
-
-  documentation: complete target descriptions
-
-  Demo CLI manual
+  missing documentation:
+     target descriptions
+     Demo CLI manual
+     drivers: flash, rtc, i2c
 
 - - - - -
 nkymodem:
@@ -21,9 +21,8 @@ nkymodem:
   provide file access functions right in call to nk_yrecv?
 
 nkchecked:
-  nkwrite does not check if we ran out of space
-
-  better error return for nk_checked_read- maybe return ssize_t.
+  better error return for nk_checked_read- maybe return ssize_t. [done]
+    but this means nkinfile needs to expect ssize_t from block_read.
 
 extrtc:
   set MCU clock from it?

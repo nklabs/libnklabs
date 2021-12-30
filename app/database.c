@@ -7,6 +7,7 @@
 #include "nkdbase.h"
 #include "nkmcuflash.h"
 #include "nkmcuflash_map.h"
+#include "nkspiflash.h"
 #include "database.h"
 
 // Test database metadata
@@ -133,20 +134,37 @@ char testdb_rev;
 
 unsigned char xfer_buf[128];
 
+extern const struct nk_spiflash_info m95m04;
+
 const struct nk_dbase test_dbase =
 {
     .ty = &tyTESTTOP,
 
-    .bank0 = NKDBASE_BANK0,
-    .bank1 = NKDBASE_BANK1,
+    .bank0 = {
+        .area_size = 8192,
+        .area_base = 131072,
+        .erase_size = 256,
+        .info = &m95m04,
+        .flash_read = nk_spiflash_read,
+        .flash_erase = NULL,
+        .flash_write = nk_spiflash_write,
+        .granularity = 1
+    },
 
-    .bank_size = NKDBASE_SIZE,
+    .bank1 = {
+        .area_size = 8192,
+        .area_base = 139264,
+        .erase_size = 256,
+        .info = &m95m04,
+        .flash_read = nk_spiflash_read,
+        .flash_erase = NULL,
+        .flash_write = nk_spiflash_write,
+        .granularity = 1
+    },
+
     .buf = xfer_buf,
     .buf_size = sizeof(xfer_buf),
-    .flash_read = nk_mcuflash_read,
-    .flash_erase = nk_mcuflash_erase,
-    .flash_write = nk_mcuflash_write,
-    .flash_granularity = NK_MCUFLASH_MIN_SIZE
+    .flash_granularity = 1
 };
 
 // Initialize calibration database

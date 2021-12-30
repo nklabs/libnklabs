@@ -48,7 +48,8 @@ const nk_checked_base_t ymodem_file_base =
     .info = &m95m04,
     .flash_read = nk_spiflash_read, // info, address, data, byte_count
     .flash_erase = 0,
-    .flash_write = nk_spiflash_write // info, address, data, byte_count
+    .flash_write = nk_spiflash_write, // info, address, data, byte_count
+    .granularity = 1
 };
 
 nk_checked_t ymodem_file;

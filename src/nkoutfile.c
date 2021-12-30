@@ -32,13 +32,15 @@ nkoutfile_t *nkoutfile_open(
     ),
     void *block_write_ptr,
     unsigned char *buffer,
-    size_t len
+    size_t len,
+    size_t granularity
 ) {
     f->start = f->ptr = buffer;
     f->size = len;
     f->end = f->start + f->size;
     f->block_write_ptr = block_write_ptr;
     f->block_write = block_write;
+    f->granularity = granularity;
     return f;
 }
 
@@ -46,6 +48,8 @@ int nk_fflush(nkoutfile_t *f)
 {
     size_t len = f->ptr - f->start;
     f->ptr = f->start;
+    // Round write up to granularity
+    len = (len + (f->granularity - 1)) & ~(f->granularity - 1);
     return f->block_write(f->block_write_ptr, f->start, len);
 }
 
@@ -56,5 +60,5 @@ static int block_write_overflow(void *ptr, unsigned char *buffer, size_t len)
 
 nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, char *mem, size_t size)
 {
-    return nkoutfile_open(f, block_write_overflow, NULL, (unsigned char *)mem, size);
+    return nkoutfile_open(f, block_write_overflow, NULL, (unsigned char *)mem, size, 1);
 }

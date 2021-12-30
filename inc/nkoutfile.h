@@ -41,6 +41,7 @@ struct nkoutfile
     // For abstracting some kind of fixed-length block-based storage system into a file
     void *block_write_ptr; // Pointer to pass to block_read
     int (*block_write)(void *block_write_ptr, unsigned char *buffer, size_t len);
+    size_t granularity; // Write granularity
 };
 
 // Write character to file, flush if buffer is full
@@ -63,7 +64,8 @@ nkoutfile_t *nkoutfile_open(
     ),
     void *block_write_ptr,
     unsigned char *buffer,
-    size_t len
+    size_t len,
+    size_t granularity
 );
 
 // Open a memory block as a file

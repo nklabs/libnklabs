@@ -25,9 +25,18 @@ int nk_checked_write_close(nk_checked_t *var_file);
 
 ```
 
-This module implements a single file store in flash memory.  The file is
-stored along with a small header in a contiguous range of memory accessible
-via the given flash_read, flash_erase and flash_write functions.
+This module implements a simple single file store in flash memory.  This is
+useful for cases where a full filesystem is not needed.  It is used by
+nkdbase to locate the serialized database in flash memory.  It is also used
+by nkymodem to locate the transferred file into flash memory.
+
+The file is stored along with a small header in a contiguous range of memory
+accessible via the given flash_read, flash_erase and flash_write functions. 
+The header holds the exact file size and a CRC of contents of the file.  The
+header is written only when the file is closed.  The CRC is checked when the
+file is opened for reading, to give assurance that the file is valid.  In
+particular, it will detect the case of a power failure occurring between
+open is called and close has completed.
 
 When nk_checked_read_open is called, the CRC of the file is verified.  The
 CRC of the file is computed and compared with the CRC saved in the file's
@@ -51,8 +60,12 @@ nk_checked_write appends a block of data to the file.  The CRC and file size
 variables in nk_checked_t are updated.  nk_checked_write returns 0 if there
 are no errors.  It returns non-zero on error. 
 
+Note that nk_checked_write is not buffered: it calls the given flash_write
+function to write the given data to the memory.  If the memory has a minimum
+write size (as is the case for the on-die MCU flash of STM32), it is up to
+you to ensure that calls to nk_checked_write are multiples of this size.
+
 nk_checked_write_close writes the header to the flash memory.  The header is
 written to the very beginning of the flash memory area reserved for the
 file.  This was the area erased when nk_checked_write_open was called. 
 nk_checked_write_close returns 0 for success.
-

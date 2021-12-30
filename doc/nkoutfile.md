@@ -14,7 +14,8 @@ nkoutfile_t *nkoutfile_open(
     ),
     void *block_write_ptr,
     unsigned char *buffer,
-    size_t len
+    size_t len,
+    size_t granularity
 );
 
 nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, unsigned char *mem, size_t size);
@@ -39,7 +40,8 @@ __nkoutfile_open__ opens a block device for writing.  __block_write__ is a
 function that is called whenever the buffer is full.  __block_write_ptr__ is
 a void pointer that is passed unchanged as the first argument to
 __block_write__.  __buffer__ is the address of a memory area with space for
-__len__ bytes.  __len__ is the block size.
+__len__ bytes.  __len__ is the block size.  __granularity__ is the minimum
+alloweed write size for block_write.
 
 When __block_write__ is called, its __buffer__ argument has the start of the
 write buffer, and its __len__ argument has the number of bytes to write. 
@@ -61,8 +63,9 @@ block size.  __nk_fputc__ is implemented as a macro.
 
 __nk_fflush__ calls __block_write__ with any remaining bytes to write out. 
 In this case, __block_write's__ __len__ argument can be anything from 0 to
-one less than the block size.  __block_write__ is called even if there are
-no bytes to write.
+one less than the block size.  The write size is rounded up to be a multiple
+of __granularity__.  __block_write__ is called even if there are no bytes to
+write.
 
 __nkstdout__ is the __nkoutfile_t__ used by __nk_printf__ to print to a
 standard console device.  It is normally set up to use __nk_putc__ to write

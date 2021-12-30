@@ -29,6 +29,7 @@ typedef struct {
     int (* const flash_read)(const void *info, uint32_t addr, uint8_t *buf, uint32_t size);
     int (* const flash_erase)(const void *info, uint32_t addr, uint32_t size); // NULL for no erase
     int (* const flash_write)(const void *info, uint32_t addr, uint8_t *buf, uint32_t size);
+    const size_t granularity;
 } nk_checked_base_t;
 
 // File access structure: variable part

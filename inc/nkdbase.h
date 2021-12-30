@@ -25,6 +25,7 @@
 #define _nkdbase
 
 #include <stdint.h>
+#include "nkchecked.h"
 #include "nkserialize.h"
 
 // Database definition
@@ -32,16 +33,10 @@
 
 struct nk_dbase {
 	const struct type *ty; // Schema describing the data layout
-	const uint32_t bank0; // Flash address of bank0
-	const uint32_t bank1; // Flash address of bank1
-	const uint32_t bank_size; // Size of each bank, this is the size passed to flash_erase
+	nk_checked_base_t bank0;
+	nk_checked_base_t bank1;
 	unsigned char * const buf; // Transfer buffer for flash memory: this is used for flash_read and flash_write
 	const uint32_t buf_size; // Size of above buffer
-	// Flash access functions
-	// These should all return 0 for success
-	int (* const flash_read)(uint32_t addr, uint8_t *buf, uint32_t size);
-	int (* const flash_erase)(uint32_t addr, uint32_t size);
-	int (* const flash_write)(uint32_t addr, uint8_t *buf, uint32_t size);
 	// Flash write granularity
 	//  flash_writes are padded to a multiple of this size
 	//  flash_granularity must be a power of 2 (including 2^0 == 1)
