@@ -144,6 +144,36 @@ To build a particular example and install it on a target board:
 	make
 	make flash
 
+## Arduino interface
+
+The example application includes CLI commands that allow you to access
+common embedded system peripherals including I2C EEPROMs, SPI-Flash devices
+and an external Real Time Clock.  The low cost vendor development boards do
+not include these peripherals, so the example application accesses them on
+the following Arduino "shield" boards that can be plugged into the MCU
+vendor's development boards:
+
+For I2C and SPI EEPROMs:
+
+[X-NUCLEO-EEPRMA2](https://www.st.com/en/evaluation-tools/x-nucleo-eeprma2.html)
+
+![X-NUCLEO-EEPRMA2](doc/x-nucleo-eeprma2.jpg)
+
+For the PCF8253 Real Time Clock:
+
+[Adalogger Shield](https://learn.adafruit.com/adafruit-data-logger-shield)
+
+![Adalogger Shield](doc/adalogger_shield.jpg)
+
+You need a recent version of this board- one that supports 3.3v.
+
+For Atmel/Microchip's Xplained Pro development boards, you need this Arduino
+Shield adapter to use the above boards:
+
+[ATARDADPT-XPRO](https://www.microchip.com/en-us/development-tool/ATARDADPT-XPRO)
+
+![ATARDADPT-XPRO](doc/shield_adapter.jpg)
+
 # Module Documentation
 
 [nkarch - processor specific functions](doc/nkarch.md)
