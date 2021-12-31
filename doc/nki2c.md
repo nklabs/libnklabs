@@ -1,8 +1,15 @@
 # I2C device driver
 
+A wrapper for the MCU vendor's I2C driver.  This driver is usable by I2C bus
+device drivers, such as [nki2c_eepom](nki2c_eeprom.md) and [nkrtc](nkrtc.md).
+
+## Files
+
+nki2c.h, nki2c.c, nki2c_atsam.c, nki2c_stm32.c
+
 ## Direct driver
 
-These functions are simple wrappers around the MCU HAL's I2C device driver.
+These functions are simple wrappers around the MCU vendor's HAL I2C device driver.
 
 The __port__ argument for these functions is the address of the HAL driver's
 handle:

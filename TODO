@@ -72,9 +72,6 @@ event driven:
 
 nkdbase:
 
-  more generic way to deal with crc checking: the infile_t and outfile_t could be used for
-  other things
-
   more tests..
   try all input number formats, including negatives..
 

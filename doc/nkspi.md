@@ -1,12 +1,18 @@
 # SPI device driver
 
-A simple wrapper around the MCU's HAL SPI-driver which includes the SPI CS
-(chip select) GPIO pin.
+A simple wrapper around the MCU vendor's HAL SPI-driver which includes the
+SPI CS (chip select) GPIO pin.  This driver is usable by SPI-bus device
+drivers, such as [nkspiflash.md](nkspiflash.md) and
+[nkspirtc.md](nkspirtc.md).
+
+## Files
+
+nkspi.h, nkspi.c
 
 ## nkspi_device_t
 
-You initialize a structure containing the MCU HAL's SPI device handle and
-the GPIO pin to use for chip select.  Pass an address of this structure to
+You initialize a structure containing the MCU vendor's HAL SPI device handle and
+the GPIO pins to use for chip select.  Pass an address of this structure to
 nk_spi_transfer.
 
 ~~~c
