@@ -1,8 +1,8 @@
 # NK Labs common library
 
 This is our library for very quickly making products based on common
-microcontrollers.  It is a layer added on top of the vendor libraries that
-provides features required for almost every product.
+microcontrollers.  It is a layer added on top of the MCU vendor's library
+that provides features required for almost every product.
 
 It is important to work with and not replace the vendor tools and libraries
 in commercial products.  First, some vendor tools facilitate rapid
@@ -173,6 +173,10 @@ To build a particular example and install it on a target board:
 [nkspiflash - SPI Flash / EEPROM driver](doc/nkspiflash.md)
 
 [nki2ceeprom - I2C EEPROM driver](doc/nki2ceeprom.md)
+
+[nkspi - SPI device driver](doc/nkspi.md)
+
+[nki2c - I2C device driver](doc/nki2c.md)
 
 # Licensing
 
