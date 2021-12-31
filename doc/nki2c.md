@@ -19,7 +19,7 @@ address __addr__.  __port__ has the handle to the I2C bus.
 int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf);
 ~~~
 
-This is the same as nk_i2c_write, except that the I2C stop condition is
+This is the same as nk_i2c_write, except that the I2C stop condition isn't
 transmitted.  Instead, a repeated start is issued on a subsequent
 nk_i2c_read call.  Some MCUs do not support this function.  In this case,
 nk_i2c_write_nostop is equivalent to nk_i2c_write.
@@ -84,10 +84,19 @@ int nk_i2c_get2_le24(void *port, uint8_t addr, uint16_t ofst, uint32_t *data);
 int nk_i2c_put2_melong(void *port, uint8_t addr, uint16_t ofst, uint32_t data);
 ~~~
 
-key: put / get mean that the register address is a single byte.  put2 / get2
-mean that the address is two bytes.
+key:
 
-The register size is:
+__port__ is the I2C device handle.
+
+__addr__ is the 7-bit I2C device address.
+
+__ofst__ is the regsiter address: 8-bits for the functions with put/get
+in their names or 16-bits for the functions put2/get2 in their names.
+
+__data__ has the data to write to the regsiter or an address where data read
+from the register should be returned.
+
+The register size is indicated by the function name:
 
 * byte for single byte
 * leshort for little endian short
