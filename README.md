@@ -146,41 +146,41 @@ To build a particular example and install it on a target board:
 
 # Module Documentation
 
-[nksched - minimal work queue scheduler](doc/nksched.md)
-
 [nkarch - processor specific functions](doc/nkarch.md)
-
-[nkreadline - command line editor](doc/nkreadline.md)
-
-[nkcli - command line interface](doc/nkcli.md)
-
-[nkscan - formatted input](doc/nkscan.md)
-
-[nkinfile - input abstraction](doc/nkinfile.md)
-
-[nkprintf - formatted output](doc/nkprintf.md)
-
-[nkoutfile - output abstraction](doc/nkoutfile.md)
 
 [nkchecked - maintain a file in flash memory](doc/nkchecked.md)
 
-[nkserialize - schema driven serialization](doc/nkserialize.md)
-
-[nkdbase - schema driven database](doc/nkdbase.md)
-
-[nkymodem - YMODEM protocol](doc/nkymodem.md)
-
-[nkspiflash - SPI Flash / EEPROM driver](doc/nkspiflash.md)
-
-[nki2ceeprom - I2C EEPROM driver](doc/nki2ceeprom.md)
-
-[nkspi - SPI device driver](doc/nkspi.md)
-
-[nki2c - I2C device driver](doc/nki2c.md)
+[nkcli - command line interface](doc/nkcli.md)
 
 [nkdatetime - Date / Time functions](doc/nkdatetime.md)
 
+[nkdbase - schema driven database](doc/nkdbase.md)
+
+[nki2ceeprom - I2C EEPROM driver](doc/nki2ceeprom.md)
+
+[nki2c - I2C device driver](doc/nki2c.md)
+
+[nkinfile - input abstraction](doc/nkinfile.md)
+
+[nkoutfile - output abstraction](doc/nkoutfile.md)
+
+[nkprintf - formatted output](doc/nkprintf.md)
+
+[nkreadline - command line editor](doc/nkreadline.md)
+
 [nkrtc - Real Time Clock functions](doc/nkrtc.md)
+
+[nkscan - formatted input](doc/nkscan.md)
+
+[nksched - minimal work queue scheduler](doc/nksched.md)
+
+[nkserialize - schema driven serialization](doc/nkserialize.md)
+
+[nkspiflash - SPI Flash / EEPROM driver](doc/nkspiflash.md)
+
+[nkspi - SPI device driver](doc/nkspi.md)
+
+[nkymodem - YMODEM protocol](doc/nkymodem.md)
 
 # Licensing
 
