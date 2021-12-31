@@ -1,5 +1,12 @@
 # NK Labs Serialization Library
 
+## Files
+
+[nkserialize.h](../inc/nkserialize.h),
+[nkserialize.c](../src/nkserialize.c)
+
+## Description
+
 nkserialize is a schema-driven serialization / deserialization library
 similar to Google's Protocol Buffers, but suitable for embedded systems with
 limited RAM.  Heap memory is not required and malloc is not used.

@@ -1,5 +1,17 @@
 # Maintain a CRC-checked file in a contiguous region of flash memory
 
+This module implements a simple single file store in flash memory.  This is
+useful for cases where a full filesystem is not needed.  It is used by
+nkdbase to locate the serialized database in flash memory.  It is also used
+by nkymodem to locate the transferred file into flash memory.
+
+## Files
+
+[nkchecked.h](../inc/nkchecked.h),
+[nkchecked.c](../src/nkchecked.c)
+
+## Description
+
 ```c
 typedef struct {
     const uint32_t area_size; // Size of flash area
@@ -24,11 +36,6 @@ int nk_checked_write(void *ptr, unsigned char *buffer, size_t len);
 int nk_checked_write_close(nk_checked_t *var_file);
 
 ```
-
-This module implements a simple single file store in flash memory.  This is
-useful for cases where a full filesystem is not needed.  It is used by
-nkdbase to locate the serialized database in flash memory.  It is also used
-by nkymodem to locate the transferred file into flash memory.
 
 The file is stored along with a small header in a contiguous range of memory
 accessible via the given flash_read, flash_erase and flash_write functions. 

@@ -1,5 +1,6 @@
 # Database based on serialization library
 
+
 Functions are provided to create a database located in flash memory.  This
 just means that we save a serialized form of a structure into flash memory. 
 The serialized form is useful because it tends to preserve data across
@@ -8,6 +9,12 @@ schema changes.
 Two areas of memory (banks) are allocated so that an older version of the
 database is always preserved in case of a power outage during a write.   The
 data in each bank is marked with a revision number and a 32-bit CRC.
+
+## Files
+
+[nkdbase.h](../inc/nkdbase.h), [nkdbase.c](../src/nkdbase.c)
+
+## Usage
 
 An nk_dbase structure should be filled out with information about the database:
 

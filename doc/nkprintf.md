@@ -1,5 +1,13 @@
 # Formatted output
 
+## Files
+
+[nkprintf.h](../inc/nkprintf.h),
+[nkprintf.c](../src/nkprintf.c),
+[nkprintf_fp.c](../src/nkprintf_fp.c)
+
+## Description
+
 ```c
 int nk_printf(const char *fmt,...);
 

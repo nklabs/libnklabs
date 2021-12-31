@@ -6,7 +6,7 @@ device drivers, such as [nki2c_eepom](nki2c_eeprom.md) and [nkrtc](nkrtc.md).
 ## Files
 
 [nki2c.h](../inc/nki2c.h), [nki2c.c](../src/nki2c.c),
-[nki2c_atsam.c](../src/nki2c_atsam.c), [nki2c_stm32.c](../src/nki2c_stm32.c)
+[nki2c_atsam.c](../src/nki2c_atsam.c), [nki2c_stm.c](../src/nki2c_stm.c)
 
 ## Direct driver
 

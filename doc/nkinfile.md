@@ -1,5 +1,12 @@
 # Input file abstraction
 
+## Files
+
+[nkinfile.h](../inc/nkinfile.h),
+[nkinfile.c](../src/nkinfile.c)
+
+## Description
+
 ```c
 nkinfile_t *nkinfile_open(
     nkinfile_t *f,

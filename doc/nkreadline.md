@@ -1,6 +1,9 @@
 # nkreadline: Command line editor
 
-Files: nkreadline.c, nkreadline.h, nkreadline_config.h
+## Files
+
+[nkreadline.c](../src/nkreadline.c), [nkreadline.h](../inc/nkreadline.h),
+[nkreadline_config.h](../config/nkreadline_config.h)
 
 nkreadline_config.h parameters:
 

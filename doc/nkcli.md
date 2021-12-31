@@ -1,5 +1,12 @@
 # Command Line Interface
 
+## Files
+
+[nkcli.h](../inc/nkcli.h),
+[nkcli.c](../src/nkcli.c)
+
+## Description
+
 ## nk_init_cli()
 
 ```c

@@ -1,5 +1,12 @@
 # Output file abstraction
 
+## Files
+
+[nkoutfile.h](../inc/nkoutfile.h),
+[nkoutfile.c](../src/nkoutfile.c)
+
+## Description
+
 ```c
 extern nkoutfile_t *nkstdout;
 extern nkoutfile_t *nkstderr;

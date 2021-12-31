@@ -1,5 +1,9 @@
 # Date and time functions
 
+## Files
+
+[nkdatetime.h](../inc/nkdatetime.h), [nkdatetime.c](../src/nkdatetime.c)
+
 ## nkdatetime_t
 
 This structure can be used to pass around the date and time:
