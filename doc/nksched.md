@@ -1,7 +1,9 @@
 # nksched: Minimal work queue scheduler
 
-Files:
-    nksched.h, nksched.c, nksched_config.h
+## Files
+
+[nksched.h](../inc/nksched.h), [nksched.c](../src/nksched.c),
+[nksched_config.h](../config/nksched_config.h)
 
 nksched_config.h parameters:
 
