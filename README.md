@@ -178,6 +178,10 @@ To build a particular example and install it on a target board:
 
 [nki2c - I2C device driver](doc/nki2c.md)
 
+[nkdatetime - Date / Time functions](doc/nkdatetime.md)
+
+[nkrtc - Real Time Clock functions](doc/nkrtc.md)
+
 # Licensing
 
 The MIT License file is called "nklib_mit_license.txt".  Add the contents to
