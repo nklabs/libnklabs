@@ -5,9 +5,9 @@ This is a simple driver for most SPI flash and EEPROM memory devices.
 ## nk_spiflash_info structure
 
 You initialize a structure containing information about the device as well
-as a pointer to function which performs a SPI that accesses the device.  The
-address of this structure is then passed to the provided memory access
-functions.
+as a pointer to a function which performs a full-duplex SPI transfer to the
+device.  The address of this structure should be given as the first argument
+to the provided memory access functions.
 
 ~~~c
 // Describe a particular SPI-flash
@@ -45,8 +45,7 @@ argument to this function.
 
 __buffer__ is the address of a memory buffer that can be used as the transfer
 buffer for SPI transactions.  It will be used as the __data__ argument for
-__spi_transfer__.  __buffer__ must be equal to or larger than __page_size__
-+ __addr_size__ + 1.
+__spi_transfer__.  __buffer__ must be equal to or larger than __page_size__ + __addr_size__ + 1.
 
 __page_size__ should be a power of 2.  Memory reads and writes are broken up
 into transactions no larger than __page_size__.  __page_size__ +
