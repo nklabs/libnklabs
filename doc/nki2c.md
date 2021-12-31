@@ -4,6 +4,21 @@
 
 These functions are simple wrappers around the MCU HAL's I2C device driver.
 
+The __port__ argument for these functions is the address of the HAL driver's
+handle:
+
+For ATSAM devices, this should be:
+
+~~~c
+struct i2c_m_sync_desc *
+~~~
+
+For STM32 devices, this should be:
+
+~~~c
+I2C_HandleTypeDef *
+~~~
+
 ### nk_i2c_write
 
 ~~~c
@@ -91,7 +106,7 @@ __port__ is the I2C device handle.
 __addr__ is the 7-bit I2C device address.
 
 __ofst__ is the regsiter address: 8-bits for the functions with put/get
-in their names or 16-bits for the functions put2/get2 in their names.
+in their names or 16-bits for the functions with put2/get2 in their names.
 
 __data__ has the data to write to the regsiter or an address where data read
 from the register should be returned.
