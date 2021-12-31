@@ -9,10 +9,8 @@ These functions must all be provided when porting to a new processor.
 [nkarch_config.h](../config_stm32/nkarch_config.h),
 [nkarch_atsam.h](../inc/nkarch_atsam.h),
 [nkarch_stm32.h](../inc/nkarch_stm32.h),
-[nkarch_zynqmp.h](../inc/nkarch_zyncmp.h),
 [nkarch_atsam.c](../src/nkarch_atsam.c),
-[nkarch_stm32.c](../src/nkarch_stm32.c),
-[nkarch_zynqmp.c](../src/nkarch_zynqmp.c),
+[nkarch_stm32.c](../src/nkarch_stm32.c)
 
 Usually you just include nkarch.h, which just includes nkarch_config.h.
 nkarch_config.h includes the correct nkarch_xxx.h for the target device.
