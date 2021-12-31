@@ -32,10 +32,10 @@ extern const char *nk_month_name[12];
 
 An array with month names: "Jan", "Feb", "Mar", etc.
 
-## nk_mcu_rtc_date_string
+## nk_date_string
 
 ~~~c
-int nk_mcu_rtc_date_string(char *buf, size_t len, const nkdatetime_t *datetime);
+int nk_date_string(char *buf, size_t len, const nkdatetime_t *datetime);
 ~~~
 
 Print nkdatetime_t as a NUL-terminated string in the following format: YYYY-MM-DD HH:MM:SS
@@ -48,18 +48,18 @@ int nk_calc_day_of_week(int y, int m, int d);
 
 Compute day of week [0 .. 6] from date.
 
-## nk_mcu_rtc_get_minute_of_day
+## nk_calc_minute_of_day
 
 ~~~c
-int nk_mcu_rtc_get_minute_of_day(const nkdatetime_t *datetime);
+int nk_calc_minute_of_day(const nkdatetime_t *datetime);
 ~~~
 
 Get current minute of day [0 .. 1439]
 
-## nk_mcu_rtc_get_minute_of_week
+## nk_calc_minute_of_week
 
 ~~~c
-int nk_mcu_get_minute_of_week(const nkdatetime_t *datetime);
+int nk_calc_minute_of_week(const nkdatetime_t *datetime);
 ~~~
 
 Get current minute of week [0 .. 10,079]

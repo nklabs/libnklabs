@@ -15,7 +15,7 @@ typedef struct {
 } nkdatetime_t;
 
 // Print date time plus NUL: YYYY-MM-DD HH:MM:SS
-int nk_mcu_rtc_date_string(char *buf, size_t len, const nkdatetime_t *datetime);
+int nk_date_string(char *buf, size_t len, const nkdatetime_t *datetime);
 
 // "Sun", "Mon", "Tue", etc.
 extern const char *nk_weekday_name[7];
@@ -27,10 +27,10 @@ extern const char *nk_month_name[12];
 int nk_calc_day_of_week(int y, int m, int d);
 
 // Get current minute of day [0 .. 1439]
-int nk_mcu_rtc_get_minute_of_day(const nkdatetime_t *datetime);
+int nk_calc_minute_of_day(const nkdatetime_t *datetime);
 
 // Get current minute of week [0 .. 10,079]
-int nk_mcu_get_minute_of_week(const nkdatetime_t *datetime);
+int nk_calc_minute_of_week(const nkdatetime_t *datetime);
 
 // Sanity check datetime
 // If any problems, make datetime have legal value and return -1

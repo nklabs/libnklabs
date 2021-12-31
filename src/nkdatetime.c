@@ -27,21 +27,21 @@ int nk_calc_day_of_week(int y, int m, int d)
 
 // Return current minute of day
 
-int nk_mcu_rtc_get_minute_of_day(const nkdatetime_t *datetime)
+int nk_calc_minute_of_day(const nkdatetime_t *datetime)
 {
     return datetime->hour * 60 + datetime->min;
 }
 
 // Return current minute of week
 
-int nk_mcu_get_minute_of_week(const nkdatetime_t *datetime)
+int nk_calc_minute_of_week(const nkdatetime_t *datetime)
 {
     return datetime->weekday * 1440 + (datetime->hour * 60) + datetime->min;
 }
 
 // Get date/time as a string: YYYY-MM-DD HH:MM:SS
 
-int nk_mcu_rtc_date_string(char *buf, size_t len, const nkdatetime_t *datetime)
+int nk_date_string(char *buf, size_t len, const nkdatetime_t *datetime)
 {
     return nk_snprintf(buf, len, "%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d", datetime->year, datetime->month, datetime->day, datetime->hour, datetime->min, datetime->sec);
 }
