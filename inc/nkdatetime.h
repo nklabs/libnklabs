@@ -9,7 +9,7 @@ typedef struct {
     uint8_t min; // 0 - 59
     uint8_t hour; // 0 - 23
     uint8_t weekday; // 0 - 6
-    uint8_t day; // 1 - 31
+    uint8_t day; // 0 - 30
     uint8_t month; // 0 - 11
     uint16_t year; // 2000 - 2099
 } nkdatetime_t;
