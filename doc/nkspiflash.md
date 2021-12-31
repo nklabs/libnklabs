@@ -49,12 +49,12 @@ __spi_transfer__.  __buffer__ must be equal to or larger than __page_size__ + __
 
 __page_size__ should be a power of 2.  Memory reads and writes are broken up
 into transactions no larger than __page_size__.  __page_size__ +
-__addr_size__ + 1 mjst not be larger than the maximum transfer size allowed
-by __spi_transfer__ and must fit in the provide __buffer__.
+__addr_size__ + 1 must not be larger than the maximum transfer size allowed
+by __spi_transfer__ and must fit in the provided __buffer__.
 
 __busy_timeout__ is the number of times the read status command (command
-0x05) when waiting for erase and writes to complete before timing out with
-an error.
+0x05) is issued when waiting for erase and writes to complete before timing
+out with an error.
 
 __addr_size__ is the number of address bytes required by the memory device. 
 It is in the range 1 to 4, depending on the memory size.
