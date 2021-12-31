@@ -41,8 +41,9 @@ __spi_transfer__ is a pointer to a function which performs a full-duplex
 SPI-transaction to the memory device.  It should read and write __len__ bytes
 to the device.  The write data is given in the array __data__.  The read data
 is returned in the same array.  __spi_ptr__ is passed unchanged as the first
-argument to this function.
-
+argument to this function.  __spi_transfer__ should return 0 for success or
+any other value for error.
+ 
 __buffer__ is the address of a memory buffer that can be used as the transfer
 buffer for SPI transactions.  It will be used as the __data__ argument for
 __spi_transfer__.  __buffer__ must be equal to or larger than __page_size__ + __addr_size__ + 1.
@@ -78,6 +79,8 @@ int nk_flash_write_enable(const struct nk_spiflash_info *info);
 Issue the write enable command to the memory device (command code 0x06). 
 You do not normally have to call this function.
 
+Returns 0 for success.
+
 ## nk_flash_write_status
 
 ~~~c
@@ -87,6 +90,7 @@ int nk_flash_write_status(const struct nk_spiflash_info *info, uint8_t val);
 Issue the write status command (command code 0x01) to the memory device with
 the given status value.  You do not normally have to call this function.
 
+Returns 0 for success.
 
 ## nk_flash_write_disable
 
@@ -95,6 +99,8 @@ int nk_flash_write_disable(const struct nk_spiflash_info *info);
 ~~~
 
 Issue the write disable command (command code 0x04) to the memory device.
+
+Returns 0 for success.
 
 ## nk_flash_busy_wait
 
@@ -105,6 +111,8 @@ int nk_flash_busy_wait(const struct nk_spiflash_info *info);
 Repeatedly issue the read status command (command code 0x05) until the
 memory device indicates that it is no longer busy.  You do normally have to
 call this function.
+
+Returns 0 for success, or -1 for timeout.
 
 ## nk_spiflash_erase
 
@@ -159,6 +167,8 @@ void nk_spiflash_hex_dump(const struct nk_spiflash_info *info, uint32_t addr, ui
 
 Generate a hex dump of a region of the memory device and print it to
 nkstdout.
+
+Returns void, but prints error messages if there are SPI-transfer errors.
 
 ## nk_spiflash_crc
 

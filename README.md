@@ -172,6 +172,8 @@ To build a particular example and install it on a target board:
 
 [nkspiflash - SPI Flash / EEPROM driver](doc/nkspiflash.md)
 
+[nki2ceeprom - I2C EEPROM driver](doc/nki2ceeprom.md)
+
 # Licensing
 
 The MIT License file is called "nklib_mit_license.txt".  Add the contents to
