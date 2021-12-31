@@ -43,6 +43,11 @@ int nk_mcu_rtc_set_datetime(const nkdatetime_t *datetime);
 int nk_mcu_rtc_get_datetime(nkdatetime_t *datetime);
 ~~~
 
+Note that the ATSAM integrated real time clock does not have a weekday
+support.  So for ATSAM devices: Weekday is ignored in nk_mcu_rtc_set_date
+and is set to 0 when nk_mcu_rtc_get_date is called.  The weekday can be
+calculated from the date by calling nk_calc_day_of_week.
+
 These functions all return 0 for success.
 
 Call nk_mcu_rtc_init once at startup to initialize the MCU's real time

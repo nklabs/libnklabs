@@ -233,7 +233,7 @@ int nk_mcu_rtc_get_datetime(nkdatetime_t *datetime)
     datetime->sec = tim.time.sec;
     datetime->min = tim.time.min;
     datetime->hour = tim.time.hour;
-    datetime->weekday = 1;
+    datetime->weekday = 0;
     datetime->day = tim.date.day - 1;
     datetime->month = tim.date.month - 1;
     datetime->year = tim.date.year;

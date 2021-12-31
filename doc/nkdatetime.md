@@ -82,6 +82,8 @@ long long nk_datetime_to_unix(const nkdatetime_t *datetime);
 Convert from nkdatetime_t to UNIX time (number of seconds from Jan 1, 1970). 
 Returns -1 for error.
 
+This is for local time only- there is no concept of timezone.
+
 ## nk_unix_to_datetime
 
 ~~~c
@@ -90,3 +92,6 @@ int nk_unix_to_datetime(long long unixtime, nkdatetime_t *datetime);
 
 Convert from UNIX time (number of seconds from Jan 1, 1970) to nkdatetime_t. 
 Return 0 for success.
+
+This is for local time only- there is no concept of timezone.
+
