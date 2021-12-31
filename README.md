@@ -170,6 +170,8 @@ To build a particular example and install it on a target board:
 
 [nkymodem - YMODEM protocol](doc/nkymodem.md)
 
+[nkspiflash - SPI Flash / EEPROM driver](doc/nkspiflash.md)
+
 # Licensing
 
 The MIT License file is called "nklib_mit_license.txt".  Add the contents to
