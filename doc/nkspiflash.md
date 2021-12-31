@@ -2,6 +2,10 @@
 
 This is a simple driver for most SPI flash and EEPROM memory devices.
 
+## Files
+
+[nkspiflash.h](../inc/nkspiflash.h), [nkspiflash.c](../src/nkspiflash.c)
+
 ## nk_spiflash_info structure
 
 You initialize a structure containing information about the device as well

@@ -7,7 +7,7 @@ drivers, such as [nkspiflash.md](nkspiflash.md) and
 
 ## Files
 
-nkspi.h, nkspi.c
+[nkspi.h](../inc/nkspi.h), [nkspi.c](../src/nkspi.c)
 
 ## nkspi_device_t
 

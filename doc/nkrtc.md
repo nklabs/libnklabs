@@ -2,6 +2,13 @@
 
 See [nkdatetime.md](nkdatetime.md) for the definition of nkdatetime_t.
 
+## Files
+
+[nki2crtc_ds3231.c](../src/nki2crtc_ds3231.c),
+[nki2crtc_pcf8523.c](../src/nki2crtc_pcf8523.c),
+[nketxrtc.h](../inc/nkextrtc.h),
+[nkmcurtc.h](../inc/nkmcurtc.h)
+
 ## Access external Real Time Clock
 
 ~~~c

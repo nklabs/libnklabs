@@ -10,7 +10,11 @@ The YMODEM protocol is used (vs.  the other classic serial port protocols),
 because it is efficient (supports 1K packets), can handle binary files (this
 requires UART-link to be 8-bit clean), and transfers the file name.
 
-Files: nkymodem.c nkymodem.h, nkymodem_cmd.c
+## Files
+
+[nkymodem.c](../src/nkymodem.c),
+[nkymodem.h](../inc/nkymodem.h),
+[nkymodem_cmd.c](../app/nkymodem_cmd.c)
 
 Functions used: UART functions: nk_uart_read, nk_set_uart_mode, nk_uart_write,
 nk_puts.  Flash functions: nk_flash_erase, nk_flash_write.  CLI functions:

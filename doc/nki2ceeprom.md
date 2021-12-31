@@ -2,6 +2,11 @@
 
 This is a simple driver for most I2C EEPROM memory devices.
 
+## Files
+
+[nki2c_eeprom.h](../inc/nki2c_eeprom.h),
+[nki2c_eeprom.c](../src/nki2c_eeprom.c)
+
 ## nk_i2c_eeprom_info structure
 
 You initialize a structure containing information about the device as well
