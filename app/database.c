@@ -172,6 +172,9 @@ const struct nk_dbase test_dbase =
 void database_init()
 {
     int rtn;
+
+    nk_startup_message("Database\n");
+
     testdb = testdb_defaults;
 
     rtn = nk_dbase_load(&test_dbase, &testdb_rev, &testdb);

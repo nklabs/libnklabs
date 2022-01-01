@@ -77,6 +77,14 @@ int nk_datetime_sanity(nkdatetime_t *datetime);
 Sanity check datetime.  If any problems, make nkdatetime_t have a legal
 value and return -1.  If nkdatetime_t was OK, return 0.
 
+## nk_clear_datetime
+
+~~~c
+void nk_clear_datetime(nkdatetime_t *datetime);
+~~~
+
+Clear nkdatetime_t to a valid value: Jan 1, 2000.
+
 ## nk_datetime_to_unix
 
 ~~~c

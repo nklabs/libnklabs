@@ -1,19 +1,20 @@
-- - - - -
+STM32:
+  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+  Missing flash size
+  Try shields with small nucleo
 
-  STM32:
-    How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+  low power modes?  We need lpuart..
 
-    Missing flash size
+Atmel:
+  i2c not working well on atsame70 (crash during i2c scan), but ok on others
+  use bitbang for atsame70..
 
-  Atmel:
-    i2c not working well on atsame70 (crash during i2c scan), but ok on others
-    use bitbang for atsame70..
+  low power modes?  which is the best clock to use?
 
-  missing documentation:
-     target descriptions
-     Demo CLI manual
+missing documentation:
+  target descriptions
+  Demo CLI manual
 
-- - - - -
 nkymodem:
   ymodem send should send back the file we downloaded..
   make it event driven
@@ -28,12 +29,6 @@ arduino:
   attachInterrupt, detachInterrupt
   analogRead, analogReference,
   analogWrite
-
-output freezes on ST- fixed by reboot linux
-
-Atmel:
-
-  low power modes?  which is the best clock to use?
 
 mcuflash:
 
@@ -113,6 +108,7 @@ nkinfile:
 for block_read..
 
 Notes:
+  output freezes on ST- fixed by reboot linux
 
   It seems like a nice idea to use non-standard format sequences in nk_printf-
   but we can not if we also want gcc's built-in format string checking to work.  Therefore we
