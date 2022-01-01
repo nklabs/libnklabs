@@ -73,7 +73,8 @@ nkinfile.o \
 nkoutfile.o \
 nkdectab.o \
 nkstring.o \
-nkstrtod.o
+nkstrtod.o \
+nkchecked.o
 
 # Add our include files
 DIR_INCLUDES +=  \

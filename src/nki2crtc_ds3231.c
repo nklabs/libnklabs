@@ -200,7 +200,18 @@ int nk_ext_rtc_get_datetime(void *port, nkdatetime_t *datetime)
     datetime->year = (0x0F & buf[DS3231_REG_YEAR]) + ((buf[DS3231_REG_YEAR] >> 4) * 10) + 2000;
 
     // Sanity check the date- so we don't crash
-    return nk_datetime_sanity(datetime);
+    rtn = nk_datetime_sanity(datetime);
+    if (rtn)
+    {
+        return NK_ERROR_TIME_LOST;
+    }
+
+    if (buf[DS3231_REG_STATUS] & DS3231_REG_STATUS_OSF_BIT)
+    {
+        return nk_ERROR_TIME_LOST;
+    }
+
+    return 0;
 }
 
 int nk_ext_rtc_init(void *port)

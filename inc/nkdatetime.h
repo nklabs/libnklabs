@@ -37,6 +37,9 @@ int nk_calc_minute_of_week(const nkdatetime_t *datetime);
 
 int nk_datetime_sanity(nkdatetime_t *datetime);
 
+// Clear nkdatetime_t
+void nk_datetime_clear(nkdatetime_t *datetime);
+
 // Convert to and from UNIX time
 // These return -1 for errors
 

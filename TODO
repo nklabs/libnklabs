@@ -23,11 +23,6 @@ nkchecked:
   better error return for nk_checked_read- maybe return ssize_t. [done]
     but this means nkinfile needs to expect ssize_t from block_read.
 
-extrtc:
-  set MCU clock from it?
-  report if clock was lost.
-  move rtc specific drive to app?
-
 arduino:
   digitalRead, digitalWrite, pinMode
   attachInterrupt, detachInterrupt

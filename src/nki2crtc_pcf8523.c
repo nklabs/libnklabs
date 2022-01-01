@@ -169,76 +169,6 @@
 
 #define PCF8523_REG_TMRB 0x13
 
-
-
-// RTC Notes
-
-// DS1307: I2C ADDR = 0x68, BBRAM = 0x08 - 0x3F, 0x00 - 0x07:
-//   0x00   BCD Seconds    Bit 7 = CH (Clock Halt)
-//   0x01   BCD Mins
-//   0x02   BCD Hours      Bit 6 = 12 hour mode
-//   0x03   Day of week [1..7]
-//   0x04   BCD Date [1..31]
-//   0x05   BCD Month [1..12]
-//   0x06   BCD Year [00..99]
-//   0x07   Control:
-//            Bit 7 = Out pin level (when SQWE == 0), Bit 4 = SQWE (square wave enable), Bit 1:0 = RS: Out frequency 0=1Hz, 1=4KHz, 2=8KHz, 3=32KHz
-// On first power up, datetime is 01/01/00 1 00:00:00 with CH bit set
-// Reads are buffered for consistency
-// During write, divider chain is cleared when you write to seconds and you must write remaining registers within one second.
-
-// DS1338: same as DS1307 except:
-//    More control bits:
-//      Bit 5 = OSF, 1 if clock had ever stopped since this bit was last cleared
-// 400 KHz capable
-
-// DS1308: same as DS1307 except:
-//    More control bits:
-//      Bit 2 = BBCLK, 1 means clock output is enabled even when under battery power
-//      Bit 3 = LOS, 1 means loss of external clock input
-//      Bit 5 = OSF, 1 if clock had ever stopped since this bit was last cleared
-//      Bit 6 = ECLK, 1 = use clock input
-
-// DS1337: same as DS1307 except: (address is 0x68)
-//      Bit 7 of 0x00 is always zero, not CH bit
-//      Bit 7 of 0x05 is century bit
-//     0x07 - 0x0A is Alarm 1
-//     0x0B - 0x0D is Alarm 2
-//     0x0E is control
-//        Bit 0 A1 interrupt enable
-//            1 A2 interrupt enable
-//            2 INTCN  1 enable interrupt output pin, 0 enable square wave pin.  Is low when power first applied
-//          4:3 RS
-//            7 EOSC_L  Enable oscillator when low, is low when power first applied
-//     0x0F is control/status
-//        Bit 0 A1F  alarm 1 status, write 0 to clear
-//            1 A2F  alarm 2 status, write 0 to clear
-//            7 OSF, 1 if oscillator had ever stopped
-// no BBRAM
-// 400 KHz capable
-//
-// DS1339: same as DS1337 but with trickle charger
-
-
-// PCF8523 is different:
-//  0x00 Control_1
-//  0x01 Control_2
-//  0x02 Control_3
-//  0x03 BCD Seconds, OS in bit 7
-//  0x04 BCD Minutes
-//  0x05 BCD Hours  (12 hour mode bit is not here)
-//  0x06 BCD Day of month [1..31]
-//  0x07 Day of week [0..6]
-//  0x08 Month [1..12]
-//  0x09 Year [0..99]
-// 0x0A - 0x0D  alarm
-//  0x0E Offset register
-//  0x0F Clkout
-//  0x10-0x11: timer A
-//  0x12-0x13: timer B
-
-
-
 int nk_ext_rtc_set_datetime(void *port, const nkdatetime_t *datetime)
 {
     uint8_t buf[21];
@@ -274,7 +204,7 @@ int nk_ext_rtc_set_datetime(void *port, const nkdatetime_t *datetime)
 int nk_ext_rtc_get_datetime(void *port, nkdatetime_t *datetime)
 {
     uint8_t buf[20];
-    int rtn;
+    int rtn = 0;
     
 
     buf[0] = 0; // Set starting address
@@ -299,8 +229,18 @@ int nk_ext_rtc_get_datetime(void *port, nkdatetime_t *datetime)
     datetime->month = (0x0F & buf[PCF8523_REG_MONTH]) + ((0x1 & (buf[PCF8523_REG_MONTH] >> 4)) * 10) - 1;
     datetime->year = (0x0F & buf[PCF8523_REG_YEAR]) + ((buf[PCF8523_REG_YEAR] >> 4) * 10) + 2000;
 
-    // Sanity check the date- so we don't crash
-    return nk_datetime_sanity(datetime);
+    rtn = nk_datetime_sanity(datetime);
+    if (rtn)
+    {
+        return NK_ERROR_TIME_LOST;
+    }
+
+    if (buf[PCF8523_REG_SECONDS] & PCF8523_OS_BIT)
+    {
+        return NK_ERROR_TIME_LOST;
+    }
+
+    return 0;
 }
 
 int nk_ext_rtc_init(void *port)

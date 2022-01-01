@@ -96,6 +96,17 @@ int nk_datetime_sanity(nkdatetime_t *datetime)
     return rtn;
 }
 
+void nk_clear_datetime(nkdatetime_t *datetime)
+{
+    datetime->sec = 0;
+    datetime->min = 0;
+    datetime->hour = 0;
+    datetime->weekday = 6;
+    datetime->day = 0;
+    datetime->month = 0;
+    datetime->year = 2000;
+}
+
 /* Return true if year is a leap-year */
 
 /* In the Gregorian calendar, each leap year has 366 days instead of the
