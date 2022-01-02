@@ -9,6 +9,9 @@
 
 #ifdef NK_PLATFORM_STM32
 
+void shared_gpio_setup_for_spi(void); // For STM32 boards where USER_LED is on the same pin as MAIN_SPI_CLK
+void shared_gpio_setup_for_led(void); // For STM32 boards...
+
 typedef struct {
     GPIO_TypeDef *cs_port; // Port of CS_L line
     uint16_t cs_pin; // Pin of CS_L line
@@ -28,6 +31,6 @@ typedef struct {
 
 // Perform a SPI transaction
 
-int nk_spi_transfer(void *info, uint8_t *date, uint32_t len);
+int nk_spi_transfer(nkspi_device_t *info, uint8_t *date, uint32_t len);
 
 #endif

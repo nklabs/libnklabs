@@ -25,7 +25,7 @@ const nkspi_device_t m95040_bus =
 
 const struct nk_spiflash_info m95040 =
 {
-    .spi_transfer = nk_spi_transfer,
+    .spi_transfer = (int (*)(void *, uint8_t *, uint32_t))nk_spi_transfer,
     .spi_ptr = (void *)&m95040_bus,
     .buffer = spi_buffer,
     .page_size = 16,

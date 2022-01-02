@@ -45,11 +45,10 @@ int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, 
 }
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(void *ptr, size_t offset, unsigned char *buffer, size_t buf_size)
+size_t nk_checked_read(nk_checked_t *var_file, size_t offset, unsigned char *buffer, size_t buf_size)
 {
     int rtn;
     uint32_t len;
-    nk_checked_t *var_file = (nk_checked_t *)ptr;
     const nk_checked_base_t *file = var_file->file;
     len = buf_size;
     if (offset + len > var_file->size)
@@ -86,10 +85,9 @@ int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file)
 }
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(void *ptr, unsigned char *buffer, size_t len)
+int nk_checked_write(nk_checked_t *var_file, unsigned char *buffer, size_t len)
 {
     int rtn = 0;
-    nk_checked_t *var_file = (nk_checked_t *)ptr;
     const nk_checked_base_t *file = var_file->file;
     uint32_t x;
 

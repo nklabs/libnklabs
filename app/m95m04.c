@@ -25,7 +25,7 @@ const nkspi_device_t m95m04_bus =
 
 const struct nk_spiflash_info m95m04 =
 {
-    .spi_transfer = nk_spi_transfer,
+    .spi_transfer = (int (*)(void *, uint8_t *, uint32_t))nk_spi_transfer,
     .spi_ptr = (void *)&m95m04_bus,
     .buffer = spi_buffer,
     .page_size = 128,

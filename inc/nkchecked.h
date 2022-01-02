@@ -49,12 +49,12 @@ int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, 
 int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file);
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(void *ptr, unsigned char *buffer, size_t len);
+int nk_checked_write(nk_checked_t *ptr, unsigned char *buffer, size_t len);
 
 // Close write file: write header
 int nk_checked_write_close(nk_checked_t *var_file);
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(void *ptr, size_t offset, unsigned char *buffer, size_t block_size);
+size_t nk_checked_read(nk_checked_t *ptr, size_t offset, unsigned char *buffer, size_t block_size);
 
 #endif

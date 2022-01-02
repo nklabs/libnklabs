@@ -1,9 +1,7 @@
 #include "nkspi.h"
 
-int nk_spi_transfer(void *info, uint8_t *data, uint32_t len)
+int nk_spi_transfer(nkspi_device_t *device, uint8_t *data, uint32_t len)
 {
-    nkspi_device_t *device = (nkspi_device_t *)info;
-
 #ifdef NK_PLATFORM_ATSAM
     int rtn;
 

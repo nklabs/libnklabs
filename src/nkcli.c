@@ -283,5 +283,5 @@ void nk_init_cli()
 #endif
 	// Delay it until startup is completely done
 	nk_cli_tid = nk_alloc_tid();
-	nk_sched(nk_cli_tid, handle_cmd, "", 0, "CLI start");
+	nk_sched(nk_cli_tid, (void (*)(void *))handle_cmd, "", 0, "CLI start");
 }

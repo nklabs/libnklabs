@@ -68,9 +68,8 @@ int nk_spiflash_busy_wait(const struct nk_spiflash_info *info)
 	return status;
 }
 
-int nk_spiflash_erase(const void *inf, uint32_t address, uint32_t byte_count)
+int nk_spiflash_erase(const struct nk_spiflash_info *info, uint32_t address, uint32_t byte_count)
 {
-	const struct nk_spiflash_info *info = (const struct nk_spiflash_info *)inf;
 	int status = 0;
 	if (info->n_erase_options)
 	{
@@ -112,9 +111,8 @@ int nk_spiflash_erase(const void *inf, uint32_t address, uint32_t byte_count)
 	return status;
 }
 
-int nk_spiflash_write(const void *inf, uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_write(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
-	const struct nk_spiflash_info *info = (const struct nk_spiflash_info *)inf;
 	int status = 0; // Assume success
 	uint32_t page_size = info->page_size;
 
@@ -156,9 +154,8 @@ int nk_spiflash_write(const void *inf, uint32_t address, uint8_t *data, uint32_t
 	return status;
 }
 
-int nk_spiflash_read(const void *inf, uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_spiflash_read(const struct nk_spiflash_info *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
-	const struct nk_spiflash_info *info = (const struct nk_spiflash_info *)inf;
 	int status = 0; // Assume success
 	uint32_t page_size = info->page_size;
 

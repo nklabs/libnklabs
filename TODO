@@ -19,6 +19,8 @@ nkymodem:
   document options, move them to a config file
   ymodem send should send back the file we downloaded..
   provide file access functions right in call to nk_yrecv?
+  call-back when nk_yrecv is done
+  some clean up
 
 nkchecked:
   better error return for nk_checked_read- maybe return ssize_t. [done]
@@ -72,8 +74,6 @@ nkdbase:
 global:
 
   probably only app should print error messages
-
-  this pointer should probably not be 'void *'.
 
 Nkscan:
 

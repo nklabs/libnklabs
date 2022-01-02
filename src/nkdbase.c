@@ -73,7 +73,7 @@ int nk_dbase_save(
         return -1;
     }
 
-    nkoutfile_open(f, nk_checked_write, &ofilt, dbase->buf, dbase->buf_size, ofilt.file->granularity);
+    nkoutfile_open(f, (int (*)(void *,unsigned char *,size_t))nk_checked_write, &ofilt, dbase->buf, dbase->buf_size, ofilt.file->granularity);
 
     nk_printf("Writing...\n");
 
@@ -112,11 +112,11 @@ int nk_dbase_load(const struct nk_dbase *dbase, char *rev, void *ram)
     int use_bank = -1;
 
     zero_good = !nk_checked_read_open(&filt, &dbase->bank0, dbase->buf, dbase->buf_size);
-    nkinfile_open(f, nk_checked_read, &filt, dbase->buf_size, dbase->buf);
+    nkinfile_open(f, (size_t (*)(void *,size_t,unsigned char *,size_t))nk_checked_read, &filt, dbase->buf_size, dbase->buf);
     zero_rev = nk_fgetc(f);
 
     one_good = !nk_checked_read_open(&filt, &dbase->bank1, dbase->buf, dbase->buf_size);
-    nkinfile_open(f, nk_checked_read, &filt, dbase->buf_size, dbase->buf);
+    nkinfile_open(f, (size_t (*)(void *,size_t,unsigned char *,size_t))nk_checked_read, &filt, dbase->buf_size, dbase->buf);
     one_rev = nk_fgetc(f);
 
     if (one_good && zero_good) {
@@ -135,12 +135,12 @@ int nk_dbase_load(const struct nk_dbase *dbase, char *rev, void *ram)
         nk_printf("Using bank 0\n");
         *rev = zero_rev;
         nk_checked_read_open(&filt, &dbase->bank0, dbase->buf, dbase->buf_size);
-        nkinfile_open(f, nk_checked_read, &filt, dbase->buf_size, dbase->buf);
+        nkinfile_open(f, (size_t (*)(void *,size_t,unsigned char *,size_t))nk_checked_read, &filt, dbase->buf_size, dbase->buf);
     } else if (use_bank == 1) { 
         nk_printf("Using bank 1\n");
         *rev = one_rev;
         nk_checked_read_open(&filt, &dbase->bank1, dbase->buf, dbase->buf_size);
-        nkinfile_open(f, nk_checked_read, &filt, dbase->buf_size, dbase->buf);
+        nkinfile_open(f, (size_t (*)(void *,size_t,unsigned char *,size_t))nk_checked_read, &filt, dbase->buf_size, dbase->buf);
     } else {
         nk_fprintf(nkstderr, "Neither bank is good!\n");
         return -1;
