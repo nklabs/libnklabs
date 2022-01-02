@@ -16,8 +16,8 @@ missing documentation:
   Demo CLI manual
 
 nkymodem:
+  document options, move them to a config file
   ymodem send should send back the file we downloaded..
-  make it event driven
   provide file access functions right in call to nk_yrecv?
 
 nkchecked:
@@ -56,8 +56,6 @@ event driven:
 
   multi-line gets for dbase
 
-  nkymodem- pause cli input until communication is done
-
   maybe call sched recursively?
 
 nkdbase:
@@ -70,6 +68,12 @@ nkdbase:
   should error output be an argument instead of nkstderr?  Better for threads
 
   Finish schema compiler
+
+global:
+
+  probably only app should print error messages
+
+  this pointer should probably not be 'void *'.
 
 Nkscan:
 

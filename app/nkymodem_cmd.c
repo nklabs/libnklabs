@@ -65,9 +65,7 @@ int ymodem_recv_file_open(char *name)
         dld_exact = atoi(name+len+1);
     }
 
-    nk_checked_write_open(&ymodem_file, &ymodem_file_base);
-
-    return 1;
+    return nk_checked_write_open(&ymodem_file, &ymodem_file_base);
 }
 
 void ymodem_recv_file_write(unsigned char *buffer, int len)
@@ -91,28 +89,8 @@ int cmd_ymodem(nkinfile_t *args)
 {
     unsigned char ebuf[256];
     if (nk_fscan(args, "")) { // Receive a file
-        int sta;
         name_buf[0] = 0;
-
-        sta = nk_yrecv();
-
-        nk_printf("\n");
-
-        switch (sta) {
-            case YMODEM_RECV_DONE: {
-                nk_printf("Transfer complete: %ld bytes\n", ymodem_file.size);
-                break;
-            } case YMODEM_RECV_REMOTE_CANCEL: {
-                nk_printf("Canceled after %ld bytes\n", ymodem_file.size);
-                break;
-            } case YMODEM_RECV_OPEN_CANCEL: {
-                nk_printf("Canceled after %ld bytes (couldn't open file)\n", ymodem_file.size);
-                break;
-            } default: {
-                nk_printf("YMODEM error code %d after %ld bytes\n", sta, ymodem_file.size);
-                break;
-            }
-        }
+        nk_yrecv();
     } else if (nk_fscan(args, "send ")) { // Send a file
         nk_ysend_buffer("foo", sdata_test, sizeof(sdata_test));
     } else if (nk_fscan(args, "show ")) {

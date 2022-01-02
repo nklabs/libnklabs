@@ -50,4 +50,12 @@ void nk_init_cli(void);
 
 extern int facmode; // Set if we are in factory mode
 
+// Re-enable CLI: this will print the prompt and request more input
+void nk_cli_enable();
+
+// Disable the CLI- it will not request more commands from user
+void nk_cli_disable();
+
+extern int nk_cli_tid;
+
 #endif

@@ -24,16 +24,21 @@
 #include <string.h>
 #include "nkprintf.h"
 #include "nkcrclib.h"
+#include "nkcli.h"
+#include "nkchecked.h"
+#include "nksched.h"
 #include "nkymodem.h"
+
+int timeout_tid;
 
 // Options:
 
 // Keep all received data in packet_buf for debugging.  Received data is printed with "ymodem show"
-// #define PROTOLOG 1
+//#define PROTOLOG 1
 
 // Allow 1K packets.  When this is disabled, we also set ymodem_nocrc because "sz" command will use 1K
 // packets if it detects that receive side can accept packets with CRC.
-#define NK_YM_ALLOWLONG 1
+// #define NK_YM_ALLOWLONG 1
 
 // Set NOCRC to 1 to supporess sending 'C" instead of 'NAK', to indicate to sender to use checksum
 // instead of CRC
@@ -67,7 +72,7 @@ static int last_idx;
 #ifdef NK_YM_ALLOWLONG
 static unsigned char packet_buf[NK_YM_LONG_PACKET_LEN]; // Enough for STX 01 FE Data[1024] CRC CRC
 #else
-static unsigned char packet_buf[NK_YM_SHORT_PACKET_LEN]; // Enough for STX 01 FE Data[1024] CRC CRC
+static unsigned char packet_buf[NK_YM_SHORT_PACKET_LEN]; // Enough for SOH 01 FE Data[128] CRC CRC
 #endif
 
 // Define size of debug code log
@@ -300,7 +305,62 @@ static int nk_ysend_evt(int (*tgetc)(void *), void *file, int c)
     return status;
 }
 
+// This is the UART callback function
+
+static void *ysend_file;
+static int (*ysend_tgetc)(void *f);
+static void (*ysend_tclose)(void *f);
+// static int ymodem_async;
+
+static void ymodem_send_task(void *data)
+{
+    int sta = YMODEM_SEND_STATUS_MORE;
+    do {
+        int c = nk_getc();
+        if (c != -1)
+            sta = nk_ysend_evt(ysend_tgetc, ysend_file, c);
+        else
+            break;
+    } while (sta == YMODEM_SEND_STATUS_MORE);
+
+    if (sta == YMODEM_SEND_STATUS_MORE)
+    {
+        nk_set_uart_callback(nk_cli_tid, ymodem_send_task, NULL);
+    }
+    else
+    {
+        ysend_tclose(ysend_file);
+
+        // Restore UART to console mode
+        // Re-enable background messages
+        nk_set_uart_mode(0);
+        // async_log_set(ymodem_async);
+
+        // Delay to allow other end to restore terminal
+        nk_udelay(1000000);
+        nk_printf("\n");
+
+
+        if (sta == YMODEM_SEND_STATUS_CANCEL)
+        {
+            nk_printf("Transfer canceled.\n");
+        }
+        else if (sta == YMODEM_SEND_STATUS_DONE)
+        {
+            nk_printf("Transfer complete.\n");
+        }
+        else
+        {
+            nk_printf("Unknown status\n");
+        }
+
+        // Re-enable CLI on UART
+        nk_cli_enable();
+    }
+}
+
 // Send a file using ymodem protocol
+// This disbles the CLI until the transfer is complete or canceled
 
 void nk_ysend_file(
     const char *name, 
@@ -309,21 +369,26 @@ void nk_ysend_file(
     int (*tgetc)(void *f),
     int (tsize)(void *f)
 ) {
-    int sta = YMODEM_SEND_STATUS_MORE;
-    void *file = topen(name, "r");
+    ysend_tgetc = tgetc;
+    ysend_tclose = tclose;
+    ysend_file = topen(name, "r");
     
-    if (!file)
+    if (!ysend_file)
     {
         nk_printf("Couldn't open file\n");
         return;
     }
 
-    // int async;
-    // async = async_log_set(0);
-    nk_set_uart_mode(1);
+    nk_printf("Start YMODEM receive transfer...\n");
+    nk_printf("Hit Ctrl-X to cancel.\n");
 
-    nk_printf("Start YMODEM receive transfer...\r\n");
-    nk_printf("Hit Ctrl-X to cancel.\r\n");
+    // Disable CLI
+    nk_cli_disable();
+    // Change UART to 8-bit clear mode
+    // Disable background messages
+    // int async;
+    // ymodem_async = async_log_set(0);
+    nk_set_uart_mode(1);
 
     NK_YM_DEBUG_CLRIT();
     ymodem_send_eot = 0;
@@ -333,7 +398,7 @@ void nk_ysend_file(
 #ifdef YMODEM_SEND
     ymodem_send_seq = 0;
     memset(packet_buf + 3, 0, 128);
-    nk_snprintf((char *)packet_buf + 3, 125, "%s%c%d", name, 0, tsize(file));
+    nk_snprintf((char *)packet_buf + 3, 125, "%s%c%d", name, 0, tsize(ysend_file));
     ymodem_setup_header();
     ymodem_send_hdr = 1;
 #else
@@ -345,34 +410,7 @@ void nk_ysend_file(
     }
 #endif
 
-    do
-    {
-        int c = nk_getc();
-        if (c != -1)
-            sta = nk_ysend_evt(tgetc, file, c);
-    } while (sta == YMODEM_SEND_STATUS_MORE);
-
-    tclose(file);
-    nk_set_uart_mode(0);
-    // Re-enable background messages
-    // async_log_set(async);
-
-    // Delay to allow other end to restore terminal
-    nk_udelay(1000000);
-    nk_printf("\n");
-
-    if (sta == YMODEM_SEND_STATUS_CANCEL)
-    {
-        nk_printf("Transfer canceled.\n");
-    }
-    else if (sta == YMODEM_SEND_STATUS_DONE)
-    {
-        nk_printf("Transfer complete.\n");
-    }
-    else
-    {
-        nk_printf("Unknown status\n");
-    }
+    nk_set_uart_callback(nk_cli_tid, ymodem_send_task, NULL);
 }
 
 // Funcitons for transferring a memory buffer as a file
@@ -540,7 +578,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 nk_putc(NK_YM_ACK);
                 status = YMODEM_RECV_DONE;
             }
-            else if (ymodem_recv_file_open((char *)rcvbuf+3))
+            else if (!ymodem_recv_file_open((char *)rcvbuf+3))
             {
                 nk_putc(NK_YM_ACK);
                 ymodem_old_seq = 0;
@@ -551,6 +589,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             }
             else
             {
+                nk_putc(NK_YM_CAN);
                 nk_putc(NK_YM_CAN);
                 status = YMODEM_RECV_OPEN_CANCEL;
             }
@@ -567,7 +606,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 nk_putc(NK_YM_ACK);
                 status = YMODEM_RECV_DONE;
             }
-            else if (ymodem_recv_file_open("anonymous\0"))
+            else if (!ymodem_recv_file_open("anonymous\0"))
             {
                 nk_putc(NK_YM_ACK);
                 ymodem_old_seq = 1;
@@ -580,6 +619,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             }
             else
             {
+                nk_putc(NK_YM_CAN);
                 nk_putc(NK_YM_CAN);
                 status = YMODEM_RECV_OPEN_CANCEL;
             }
@@ -641,6 +681,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 // Out of sync
                 nk_putc(NK_YM_CAN);
+                nk_putc(NK_YM_CAN);
                 ymodem_recv_file_cancel();
                 status = YMODEM_RECV_SYNC_CANCEL;
             }
@@ -653,8 +694,8 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 nk_putc(NK_YM_ACK);
             }
         }
-#ifdef ALLOWLONG
-        else if (len == NK_LONG_PACKET_LEN-ymodem_nocrc && rcvbuf[0] == NK_YM_STX && ((rcvbuf[1] ^ 0xFF) == rcvbuf[2]) && ymcrc_check(rcvbuf+3, NK_LONG_PACKET_LEN-3))
+#ifdef NK_YM_ALLOWLONG
+        else if (len == NK_YM_LONG_PACKET_LEN-ymodem_nocrc && rcvbuf[0] == NK_YM_STX && ((rcvbuf[1] ^ 0xFF) == rcvbuf[2]) && ymcrc_check(rcvbuf+3, NK_YM_LONG_PACKET_LEN-3))
         {
             ymodem_got_eot = 0;
             ymodem_can = 0;
@@ -666,6 +707,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             else if (rcvbuf[1] != ymodem_seq)
             {
                 // Out of sync
+                nk_putc(NK_YM_CAN);
                 nk_putc(NK_YM_CAN);
                 ymodem_recv_file_cancel();
                 status = YMODEM_RECV_SYNC_CANCEL;
@@ -717,21 +759,178 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
 
 static int laststatus; // Final ymodem receive status- for "ymodem show" command
 
+static int yrecv_mode = 0;
+static int yrecv_len = 0;
+
+char TIMEOUT[] = "timeout!";
+
+extern nk_checked_t ymodem_file;
+
+int process_full_outer()
+{
+    int sta = ymodem_rcv(packet_buf + last_idx, yrecv_len);
+#ifdef PROTOLOG
+    last_idx += yrecv_len;
+#endif
+    yrecv_len = 0;
+    if (sta == YMODEM_RECV_PURGE)
+    {
+        yrecv_mode = 3;
+        return 0;
+    }
+    else if (sta == YMODEM_RECV_MORE)
+    {
+        yrecv_mode = 0;
+        return 0;
+    }
+    else
+    {
+        // We're done
+        laststatus = sta;
+
+        // Restore NL->CR-LF mode
+        nk_set_uart_mode(0);
+
+        // Time for other end to restore tty
+        nk_udelay(1000000);
+
+        // Re-enable background messages
+        // async_log_set(async);
+
+        nk_printf("\n");
+
+        // Print message
+
+        switch (sta) {
+            case YMODEM_RECV_DONE: {
+                nk_printf("Transfer complete: %ld bytes\n", ymodem_file.size);
+                break;
+            } case YMODEM_RECV_REMOTE_CANCEL: {
+                nk_printf("Canceled after %ld bytes\n", ymodem_file.size);
+                break;
+            } case YMODEM_RECV_OPEN_CANCEL: {
+                nk_printf("Canceled after %ld bytes (couldn't open file)\n", ymodem_file.size);
+                break;
+            } default: {
+                nk_printf("YMODEM error code %d after %ld bytes\n", sta, ymodem_file.size);
+                break;
+            }
+        }
+
+        // Re-enable CLI on UART
+        nk_cli_enable();
+        return 1;
+    }
+}
+
+// Buffer full packet, then call ymodem_rcv
+
+int max_len;
+
+void ymodem_recv_task(void *data)
+{
+    if (data == TIMEOUT)
+    {
+        yrecv_len = 0;
+        if (process_full_outer())
+            return;
+    }
+    else
+    {
+        for (;;)
+        {
+            int gotit = 0;
+            int c = nk_getc();
+            if (c != -1)
+            {
+                packet_buf[last_idx + yrecv_len] = c;
+                ++yrecv_len;
+                if (yrecv_len > max_len)
+                    max_len = yrecv_len;
+                if (yrecv_mode == 0) // First character
+                {
+                    if (c == NK_YM_SOH)
+                    {
+                        // Get 132 more
+                        yrecv_mode = 1;
+                    }
+#ifdef NK_YM_ALLOWLONG
+                    else if (c == NK_YM_STX)
+                    {
+                        // Get 1028 more
+                        yrecv_mode = 2;
+                    }
+#endif
+                    else if (c == NK_YM_CAN || c == NK_YM_EOT)
+                    {
+                        gotit = 1;
+                    }
+                    else
+                    {
+                        // Ignore it
+                        yrecv_len = 0;
+                    }
+                }
+                else if (yrecv_mode == 1) // Short packet
+                {
+                    if (yrecv_len == NK_YM_SHORT_PACKET_LEN - ymodem_nocrc)
+                    {
+                        gotit = 1;
+                        yrecv_mode = 0;
+                    }
+                }
+                else if (yrecv_mode == 2) // Long packet
+                {
+                    if (yrecv_len == NK_YM_LONG_PACKET_LEN - ymodem_nocrc)
+                    {
+                        yrecv_mode = 0;
+                        gotit = 1;
+                        ++long_count;
+                    }
+                }
+                else if (yrecv_mode == 3) // Purging
+                {
+                    yrecv_len = 0;
+                }
+
+                if (gotit) // We have a complete packet
+                {
+                    gotit = 0;
+                    if (process_full_outer())
+                    {
+                        nk_unsched(timeout_tid);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    // Get more data
+    nk_set_uart_callback(nk_cli_tid, ymodem_recv_task, NULL);
+    // Restart timeout
+    nk_sched(timeout_tid, ymodem_recv_task, TIMEOUT, 1000, "YMODEM timeout");
+}
+
 // Receive and process a file
 
-int nk_yrecv()
+void nk_yrecv()
 {
-    int sta = 0;
-    // int async;
+    nk_printf("Start YMODEM send transfer...\r\n");
+    nk_printf("Hit Ctrl-X twice to cancel.\r\n");
+
+    // Disable CLI
+    nk_cli_disable();
 
     // Disable background messages
-    // async = async_log_set(0);
+    // ymodem_async = async_log_set(0);
 
     // Disable NL->CR-LF mode
     nk_set_uart_mode(1);
-
-    nk_printf("Start YMODEM send transfer...\r\n");
-    nk_printf("Hit Ctrl-X twice to cancel.\r\n");
 
     last_idx = 0;
     long_count = 0;
@@ -739,56 +938,19 @@ int nk_yrecv()
     crc_count = 0;
     ymodem_recv_init();
 
-    do {
-        int len;
-        if (sta == YMODEM_RECV_PURGE) {
-            // Purging- read as much as we can
-            len = nk_uart_read((char *)packet_buf + last_idx, sizeof(packet_buf), 1000);
-        } else {
-            // Read one byte.  If we got SOH read 132 more.  If we got STX read 1028 more
-            len = nk_uart_read((char *)packet_buf + last_idx, 1, 1000);
-            if (len) {
-                if (packet_buf[last_idx] == NK_YM_SOH) {
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, NK_YM_SHORT_PACKET_LEN-1-ymodem_nocrc, 1000);
-                    ++len;
-#ifdef ALLOWLONG
-                } else if (packet_buf[last_idx] == NK_YM_STX) {
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1-ymodem_nocrc, 1000);
-                    ++len;
-#endif
-                } else if (packet_buf[last_idx] == NK_YM_CAN || packet_buf[last_idx] == NK_YM_CAN) {
-                    // Return single character
-                } else {
-                    // Junk
-                    len = nk_uart_read((char *)packet_buf + last_idx + 1, sizeof(packet_buf)-1, 1000);
-                    ++len;
-                }
-            }
-        }
-        sta = ymodem_rcv(packet_buf + last_idx, len); // Call whenever we have some data...
-#ifdef PROTOLOG
-        last_idx += len;
-#endif
-    } while (sta == YMODEM_RECV_MORE || sta == YMODEM_RECV_PURGE);
+    if (!timeout_tid)
+        timeout_tid = nk_alloc_tid();
 
-    laststatus = sta;
-
-    // Restore NL->CR-LF mode
-    nk_set_uart_mode(0);
-
-    // Time for other end to restore tty
-    nk_udelay(1000000);
-
-    // Re-enable background messages
-    // async_log_set(async);
-    return sta;
-}  
+    nk_set_uart_callback(nk_cli_tid, ymodem_recv_task, NULL);
+    nk_sched(timeout_tid, ymodem_recv_task, TIMEOUT, 1000, "YMODEM timeout");
+}
 
 void debug_rcv_status()
 {
     nk_printf("status = %d\n", laststatus);
     nk_printf("long_count = %d\n", long_count);
     nk_printf("crc_count = %d\n", crc_count);
+    nk_printf("max_len = %d\n", max_len);
     nk_printf("cksum_count = %d\n", cksum_count);
     NK_YM_DEBUG_LOG_SHOW();
     nk_printf("%p %d\n", debug_log_show, debug_log_idx);

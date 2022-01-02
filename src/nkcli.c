@@ -24,7 +24,9 @@
 #include "nkreadline.h"
 #include "nkcli.h"
 
+int nk_cli_tid;
 int facmode = 1; // Set if we are in factory mode
+int cli_disabled = 0;
 
 // Command table
 
@@ -213,18 +215,32 @@ static void process_cmd(char *pCmd)
     }
 }
 
-int cli_tid;
-
-static void cmd_next(char *s)
+static void handle_cmd(char *s)
 {
-	process_cmd(s);
-	nk_readline(cli_tid, cmd_next, ">");
+    // Process this command
+    if (s)
+    {
+        process_cmd(s);
+    }
+    // Request next command CLI is still enabled
+    if (!cli_disabled)
+    {
+        nk_readline(nk_cli_tid, handle_cmd, ">");
+    }
 }
 
-static void cli_first(void *p)
+void nk_cli_enable()
 {
-	(void)p;
-	cmd_next("");
+    if (cli_disabled)
+    {
+        cli_disabled = 0;
+        handle_cmd("");
+    }
+}
+
+void nk_cli_disable()
+{
+    cli_disabled = 1;
 }
 
 int cmd_compare(const void *a, const void *b)
@@ -265,6 +281,7 @@ void nk_init_cli()
             }
         } while (work);
 #endif
-	cli_tid = nk_alloc_tid();
-	nk_sched(cli_tid, cli_first, NULL, 0, "CLI start");
+	// Delay it until startup is completely done
+	nk_cli_tid = nk_alloc_tid();
+	nk_sched(nk_cli_tid, handle_cmd, "", 0, "CLI start");
 }

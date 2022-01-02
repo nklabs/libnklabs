@@ -33,7 +33,7 @@ int nk_i2c_eeprom_busy_wait(const struct nk_i2c_eeprom_info *info)
 		if (!info->i2c_write(info->i2c_ptr, info->i2c_addr, 0, info->buffer))
 			return 0;
 	}
-	nk_printf("Timeout!\n");
+	// nk_printf("Timeout!\n");
 	return -1;
 }
 

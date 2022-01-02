@@ -63,7 +63,7 @@ int nk_spiflash_busy_wait(const struct nk_spiflash_info *info)
 			return status;
 		}
 	}
-	nk_printf("Timeout!\n");
+	// nk_printf("Timeout!\n");
 	status = -1;
 	return status;
 }

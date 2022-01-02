@@ -85,7 +85,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len);
 // Receive and process a file
 //  This calls ymodem_recv_init and ymodem_rcv.
 
-int nk_yrecv();
+void nk_yrecv();
 
 // Print some receive status for debugging
 void debug_rcv_status();

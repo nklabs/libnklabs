@@ -1,3 +1,4 @@
+#include <string.h>
 #include "nkcrclib.h"
 #include "nkchecked.h"
 
@@ -70,7 +71,17 @@ int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file)
     var_file->crc = 0;
     var_file->size = 0;
     if (file->flash_erase)
+    {
         rtn = file->flash_erase(file->info, file->area_base, file->erase_size);
+    }
+    else
+    {
+        uint8_t junk[8];
+        memset(junk, 0xFF, sizeof(junk));
+        // Even if there is no erase, try to write FFs to the start.. we want to know if
+        // if somethin is wrong with the flash as early as possible.
+        rtn = file->flash_write(file->info, file->area_base, junk, sizeof(junk));
+    }
     return rtn;
 }
 
