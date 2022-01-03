@@ -239,6 +239,34 @@ extrtc                    Show date/time
 extrtc YYYY-MM-DD HH:MM:SS
                           Set date/time
 ~~~
+### extrtc example
+
+~~~
+>extrtc
+Error getting date/time -100
+>
+~~~
+
+The above means that the date/time was lost.  This is what you will see when
+power is first applied.  This error is cleared when you set the date/time:
+
+~~~
+>extrtc 2022-01-03 11:47:00
+Mon
+Time and date set.
+>
+~~~
+
+Now the external real time clock is running:
+
+~~~
+>extrtc
+2022-01-03 11:47:03
+>
+~~~
+
+On boot up, the external real time clock is used to set the MCU's real time
+clock.
 
 ## help - Help Command
 
@@ -436,6 +464,25 @@ mcurtc YYYY-MM-DD HH:MM:SS
                           Set date/time
 ~~~
 
+### "mcurtc" example
+
+~~~
+>mcurtc
+2022-01-03 11:50:24
+~~~
+
+To set the clock use:
+
+~~~
+>mcurtc 2021-12-12 12:12:15
+Sun
+Time and date set.
+>
+>mcurtc
+2021-12-12 12:12:19
+>
+~~~
+
 ## mem - Access MCU RAM
 
 ~~~
@@ -444,6 +491,47 @@ mem wr <addr> <data>      Write 32-bit word to address
 mem hd <addr> <len>       Hex dump memory
 mem hd <addr>             Hex dump 256 bytes
 mem hd                    Hex dump next 256 bytes
+~~~
+
+### "mem hd" example
+
+~~~
+>mem hd 8000000
+8000000: 00 90 00 20 15 d5 00 08  fd 22 00 08 ff 22 00 08  ... ....."..."..
+8000010: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+8000020: 00 00 00 00 00 00 00 00  00 00 00 00 01 23 00 08  .............#..
+8000030: 00 00 00 00 00 00 00 00  03 23 00 08 05 23 00 08  .........#...#..
+8000040: 65 d5 00 08 65 d5 00 08  0d 23 00 08 65 d5 00 08  e...e....#..e...
+8000050: 65 d5 00 08 65 d5 00 08  65 d5 00 08 1d 23 00 08  e...e...e....#..
+8000060: 65 d5 00 08 29 23 00 08  39 23 00 08 65 d5 00 08  e...)#..9#..e...
+8000070: 65 d5 00 08 65 d5 00 08  65 d5 00 08 65 d5 00 08  e...e...e...e...
+8000080: 49 23 00 08 65 d5 00 08  65 d5 00 08 65 d5 00 08  I#..e...e...e...
+8000090: 59 23 00 08 65 d5 00 08  65 d5 00 08 65 d5 00 08  Y#..e...e...e...
+80000a0: 65 d5 00 08 69 23 00 08  65 d5 00 08 65 d5 00 08  e...i#..e...e...
+80000b0: 65 d5 00 08 79 23 00 08  65 d5 00 08 10 b5 06 4c  e...y#..e......L
+80000c0: 23 78 00 2b 07 d1 05 4b  00 2b 02 d0 04 48 00 e0  #x.+...K.+...H..
+80000d0: 00 bf 01 23 23 70 10 bd  c0 06 00 20 00 00 00 00  ...##p..... ....
+80000e0: 14 db 00 08 08 4b 10 b5  00 2b 03 d0 07 49 08 48  .....K...+...I.H
+80000f0: 00 e0 00 bf 07 48 03 68  00 2b 00 d1 10 bd 06 4b  .....H.h.+.....K
+~~~
+
+### "mem rd" example
+
+~~~
+>mem rd 8000040
+[8000040] has 800d565
+~~~
+
+### "mem wr" example
+
+~~~
+>mem rd 20002000
+[20002000] has 283deb64
+>mem wr 20002000 12345678
+Wrote 12345678 to [20002000]
+>mem rd 20002000
+[20002000] has 12345678
+>
 ~~~
 
 ## power - Set / Control idle power mode
