@@ -204,7 +204,7 @@ int cmd_dbase(nkinfile_t *args)
         if (rtn)
             nk_printf("Save failure\n");
     } else if (nk_fscan(args, "load ")) {
-        rtn = nk_dbase_save(&test_dbase, &testdb_rev, &testdb);
+        rtn = nk_dbase_load(&test_dbase, &testdb_rev, &testdb);
         if (rtn)
             nk_printf("Load failure\n");
     } else if (nk_fscan(args, "show ")) {
@@ -269,7 +269,7 @@ COMMAND(cmd_dbase,
     "-dbase clear               Clear database store\n"
     "-dbase show                Show entire database\n"
     "-dbase load                Load database from flash\n"
-    "-dbase flush               Save database to flash\n"
+    "-dbase save                Save database to flash\n"
     "-dbase replace             Replace database: prompts for multi-line value\n"
     "-dbase get <key>           Get value assigned to key\n"
     "-dbase set <key> <value>\n"
