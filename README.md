@@ -154,6 +154,9 @@ not include these peripherals, so the example application accesses them on
 the following Arduino "shield" boards that can be plugged into the MCU
 vendor's development boards:
 
+The example application will work without these shields, you just lose the
+associated features.
+
 Shields plugged into ST Nucleo board:
 
 ![Nucleo-stack](doc/nucleo-stack.jpg)
