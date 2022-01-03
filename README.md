@@ -46,12 +46,13 @@ could be an external device such as a SPI-flash chip.
 ### Embedded database
 
 Many products need some kind of non-volatile storage for calibration and
-configuration settings.  We provide a schema-defined database with
-schema-change / migration support for this.  The idea is to save a
-serialized version of a C-structure into non-volatile memory such as
-SPI-flash.  On boot up, the database is deserialized back into RAM.  Fields
-can be added or deleted as the product evolves.  New fields will be loaded
-with a default value, and data for deleted fields will be ignored.
+configuration settings- something akin to the Windows Registry.  We provide
+a schema-defined database with schema-change / migration support for this. 
+The idea is to save a serialized version of a C-structure into non-volatile
+memory such as SPI-flash.  On boot up, the database is deserialized back
+into RAM.  Fields can be added or deleted as the product evolves.  New
+fields will be loaded with a default value, and data for deleted fields will
+be ignored.
 
 The C-structure can be arbitrarily complex (including arrays, strings and
 substructures), but must not use pointers and must fit in a contiguous
