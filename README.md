@@ -154,6 +154,18 @@ not include these peripherals, so the example application accesses them on
 the following Arduino "shield" boards that can be plugged into the MCU
 vendor's development boards:
 
+Shields plugged into ST Nucleo board:
+
+![Nucleo-stack](doc/nucleo-stack.jpg)
+
+ST Nucleo Nano board plugged into Nano adapter, then plugged into shields:
+
+![Nano-stack](doc/nano-stack.jpg)
+
+Shields plugged into ATARDADPT-XPRO for Atmel Xplained Pro board:
+
+![Atmel-stack](doc/atmel-stack.jpg)
+
 For I2C and SPI EEPROMs:
 
 [X-NUCLEO-EEPRMA2](https://www.st.com/en/evaluation-tools/x-nucleo-eeprma2.html)
