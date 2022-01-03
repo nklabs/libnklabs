@@ -115,7 +115,7 @@ To execute the unit tests:
 
 # Example Application
 
-An example application is available in [app/](app/).
+The source code for an example application is available in [app/](app/).
 
 It can be compiled for various targets, see [target/](target/).
 
@@ -140,6 +140,10 @@ It is important to note that these tools are not IDEs.  They can target
 IDEs, but they also can generate code that can be built from the command
 line using Make and Gcc.  We prefer this since it facilitates automated
 testing and building.
+
+Once the application is running, the follow commands are available:
+
+[Example application commands](doc/app.md)
 
 ## Arduino interface
 
