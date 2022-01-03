@@ -2,28 +2,8 @@
 
 This is our library for very quickly making products based on common
 microcontrollers.  It is a layer added on top of the MCU vendor's library
-that provides features required for almost every product.
-
-It is important to work with and not replace the vendor tools and libraries
-in commercial products.  First, some vendor tools facilitate rapid
-development.  In particular:
-
-* STM32CubeMX allows you to instantiate peripherals, define the pinouts, set up clocking and generate startup code for ST Mirco's MCUs.
-
-* Atmel Start is a web tool that does the same for Microchip/Atmel's ATSAM ARM microcontrollers.
-
-These tools do have a learning curve that we believe is worth overcoming. 
-The example application provided here can be a good starting point for this.
-
-It is important to note that these tools are not IDEs.  They can target
-IDEs, but they also can generate code that can be built from the command
-line using Make and Gcc.  We prefer this since it facilitates automated
-testing and building.
-
-Second, very importantly, if you want technical support you must use the
-vendor tools.
-
-Back to our library: it provides these features:
+that provides features required for almost every product.  It provides these
+features:
 
 ### User interface
 
@@ -107,7 +87,7 @@ Some foundational libraries are also provided:
 * The build system includes automatic insertion of git hash, build date and version numbers into the binary.
 * Commonly used cryptographic and CRC functions are also included
 
-# Including libnklabs in your own project
+# Integrating libnklabs with your own project
 
 The library is designed to be modular, though many of the modules depend on
 each other.
@@ -143,6 +123,22 @@ To build a particular example and install it on a target board:
 	cd target/nucleo-g071rb
 	make
 	make flash
+
+It is important to work with and not replace the vendor tools and libraries
+in commercial products.  The example uses each vendor's tool generated HAL
+(hardware abtraction layer) and Makefile.  In particular:
+
+* STM32CubeMX allows you to instantiate peripherals, define the pinouts, set up clocking and generate startup code for ST Mirco's MCUs.
+
+* Atmel Start is a web tool that does the same for Microchip/Atmel's ATSAM ARM microcontrollers.
+
+These tools do have a learning curve that we believe is worth overcoming. 
+The example application provided here can be a good starting point for this.
+
+It is important to note that these tools are not IDEs.  They can target
+IDEs, but they also can generate code that can be built from the command
+line using Make and Gcc.  We prefer this since it facilitates automated
+testing and building.
 
 ## Arduino interface
 
