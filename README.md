@@ -1,9 +1,9 @@
 # NK Labs common library
 
-This is our library for very quickly making products based on common
-microcontrollers.  It is a layer added on top of the MCU vendor's library
-that provides features required for almost every product.  It provides these
-features:
+This is our library for very quickly making products based on common 32-bit
+and 64-bit microcontrollers.  It is a layer added on top of the MCU vendor's
+library that provides features required for almost every product.  It
+provides these features:
 
 ### User interface
 
@@ -90,6 +90,7 @@ Some foundational libraries are also provided:
 * The example application includes watchdog timer support
 * The build system includes automatic insertion of git hash, build date and version numbers into the binary.
 * Commonly used cryptographic and CRC functions are also included
+* The example application just fits on an STM32F030R8 (64K Flash, 8K RAM).  We recommend at least 96K of flash and 20K of RAM.
 
 # Integrating libnklabs with your own project
 
