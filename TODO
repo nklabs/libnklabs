@@ -13,7 +13,6 @@ Atmel:
 
 missing documentation:
   target descriptions
-  Demo CLI manual
 
 nkymodem:
   document options, move them to a config file

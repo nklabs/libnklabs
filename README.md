@@ -160,7 +160,7 @@ For I2C and SPI EEPROMs:
 
 ![X-NUCLEO-EEPRMA2](doc/x-nucleo-eeprma2.jpg)
 
-For the PCF8253 Real Time Clock:
+For the PCF8523 Real Time Clock:
 
 [Adalogger Shield](https://learn.adafruit.com/adafruit-data-logger-shield)
 

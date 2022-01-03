@@ -22,7 +22,7 @@ echo off                  Disable echoing
 echo                      Show current echo mode
 ~~~
 
-## extrtc - External Real Time Clock access
+## extrtc - Access PCF8523 Real Time Clock on Adalogger Shield
 
 ~~~
 extrtc                    Show date/time
