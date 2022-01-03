@@ -66,6 +66,9 @@ The CLI provides an automatic interface to set or get individual fields from
 the database.  You can index a part of the database using an expression,
 somewhat similar to XML's XPath expressions.
 
+See the [Example application commands](doc/app.md) document to see how these
+work.
+
 ### Common drivers and foundations
 
 Some basic drivers for common devices are included:
