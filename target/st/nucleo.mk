@@ -37,12 +37,14 @@ $(NK_APP)/i2c.c \
 $(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
 $(NK_APP)/app_main.c \
+$(NK_APP)/lm75.c \
 $(NK_APP)/m24256.c \
 $(NK_APP)/m24c02.c \
 $(NK_APP)/m24m01.c \
 $(NK_APP)/m95040.c \
 $(NK_APP)/m95256.c \
 $(NK_APP)/m95m04.c \
+$(NK_APP)/max6675.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/wdt.c \
