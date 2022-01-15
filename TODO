@@ -1,7 +1,6 @@
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
   Missing flash size
-  Try shields with small nucleo
 
   low power modes?  We need lpuart..
 
