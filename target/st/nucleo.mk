@@ -45,6 +45,7 @@ $(NK_APP)/m95040.c \
 $(NK_APP)/m95256.c \
 $(NK_APP)/m95m04.c \
 $(NK_APP)/max6675.c \
+$(NK_APP)/mcp9808.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/pcf8574.c \
 $(NK_APP)/test_cmds.c \
