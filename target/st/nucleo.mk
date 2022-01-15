@@ -48,6 +48,7 @@ $(NK_APP)/max6675.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/pcf8574.c \
 $(NK_APP)/test_cmds.c \
+$(NK_APP)/w25q64.c \
 $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
 $(NK_SRC)/nkchecked.c \

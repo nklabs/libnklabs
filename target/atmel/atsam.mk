@@ -45,6 +45,7 @@ m24m01.o \
 m24c02.o \
 m24256.o \
 pcf8574.o \
+w25q64.o \
 basic_cmds.o \
 test_cmds.o \
 info_cmd.o \
