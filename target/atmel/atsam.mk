@@ -30,6 +30,7 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 # Add out source files
 OBJS += \
 button.o \
+ina219.o \
 led.o \
 wdt.o \
 nki2c_atsam.o \
@@ -46,6 +47,7 @@ m24c02.o \
 m24256.o \
 mcp23017.o \
 mcp9808.o \
+pca9685.o \
 pcf8574.o \
 w25q64.o \
 basic_cmds.o \

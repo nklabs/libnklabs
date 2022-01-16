@@ -34,6 +34,7 @@ $(NK_APP)/button.c \
 $(NK_APP)/database.c \
 $(NK_APP)/extrtc.c \
 $(NK_APP)/i2c.c \
+$(NK_APP)/ina219.c \
 $(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
 $(NK_APP)/app_main.c \
@@ -48,6 +49,7 @@ $(NK_APP)/max6675.c \
 $(NK_APP)/mcp23017.c \
 $(NK_APP)/mcp9808.c \
 $(NK_APP)/nkymodem_cmd.c \
+$(NK_APP)/pca9685.c \
 $(NK_APP)/pcf8574.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/w25q64.c \
