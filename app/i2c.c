@@ -1,16 +1,25 @@
 #include <string.h>
 #include "nkarch.h"
 #include "nkcli.h"
-#include "nki2c_eeprom.h"
-#include "nki2c.h"
+#include "i2c.h"
 
 uint8_t i2c_buffer[16];
 
-// Raw I2C bus
+// Arduino pin I2C bus
+
+const nk_i2c_bus_t ard_i2c_bus =
+{
+	.i2c_write = nk_hal_i2c_write,
+	.i2c_write_nostop = nk_hal_i2c_write_nostop,
+	.i2c_read = nk_hal_i2c_read,
+	.i2c_ptr = &ARD_I2C
+};
+
+// I2C bus CLI command
 
 static int cmd_i2c(nkinfile_t *args)
 {
-	return nk_i2c_command(&ARD_I2C, args);
+	return nk_i2c_command(&ard_i2c_bus, args);
 }
 
 COMMAND(cmd_i2c,

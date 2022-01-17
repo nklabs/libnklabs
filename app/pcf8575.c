@@ -8,22 +8,28 @@
 
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
 #define PCF8575_I2C_ADDR 0x20 // 0x20 - 0x27 depending on A0-A2 inputs
-#define PCF8575_PORT (&ARD_I2C)
+
+const nk_i2c_device_t pcf8575 =
+{
+    .i2c_bus = &ard_i2c_bus, // Which bus it's on
+    .i2c_addr = PCF8575_I2C_ADDR // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
+};
 
 // Read GPIO short
 
-int pcf8575_read(uint16_t *val)
+int pcf8575_read(const nk_i2c_device_t *dev, uint16_t *val)
 {
-    return nk_i2c_read(PCF8575_PORT, PCF8575_I2C_ADDR, 2, (uint8_t *)val);
+    return nk_i2c_read(dev, 2, (uint8_t *)val);
 }
 
 // Write GPIO short
 
-int pcf8575_write(uint16_t val)
+int pcf8575_write(const nk_i2c_device_t *dev, uint16_t val)
 {
-    return nk_i2c_write(PCF8575_PORT, PCF8575_I2C_ADDR, 2, (uint8_t *)&val);
+    return nk_i2c_write(dev, 2, (uint8_t *)&val);
 }
 
 // Command line
@@ -33,13 +39,13 @@ int cmd_pcf8575(nkinfile_t *args)
     uint16_t val;
     int rtn;
     if (nk_fscan(args, " ")) {
-        rtn = pcf8575_read(&val);
+        rtn = pcf8575_read(&pcf8575, &val);
         if (rtn)
             nk_printf("I2C error\n");
         else
             nk_printf("Read value = %x\n", val);
     } else if (nk_fscan(args, "%hx ", &val)) {
-        rtn = pcf8575_write(val);
+        rtn = pcf8575_write(&pcf8575, val);
         if (rtn)
             nk_printf("I2C error\n");
         else

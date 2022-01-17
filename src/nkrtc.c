@@ -20,12 +20,11 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
-#include "nkcli.h"
-#include "nkextrtc.h"
+#include "nkrtc.h"
 
 // User interface
 
-int nk_ext_rtc_command(void *port, nkinfile_t *args)
+int nk_rtc_command(const nk_rtc_t *dev, nkinfile_t *args)
 {
     nkdatetime_t datetime;
     if (nk_fscan(args, "%hd-%hhd-%hhd %hhd:%hhd:%hhd ", &datetime.year, &datetime.month, &datetime.day, &datetime.hour, &datetime.min, &datetime.sec)) {
@@ -39,7 +38,7 @@ int nk_ext_rtc_command(void *port, nkinfile_t *args)
         }
         else
         {
-            int rtn = nk_ext_rtc_set_datetime(port, &datetime);
+            int rtn = dev->set_datetime(dev->port, &datetime);
             if (rtn) {
                 nk_printf("Error setting date/time %d\n", rtn);
             } else {
@@ -47,7 +46,7 @@ int nk_ext_rtc_command(void *port, nkinfile_t *args)
             }
         }
     } else if (nk_fscan(args, "")) {
-        int rtn = nk_ext_rtc_get_datetime(port, &datetime);
+        int rtn = dev->get_datetime(dev->port, &datetime);
         if (rtn) {
             nk_printf("Error getting date/time %d\n", rtn);
         } else {

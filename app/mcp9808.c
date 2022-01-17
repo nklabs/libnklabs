@@ -2,15 +2,21 @@
 
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
 #define MCP9808_I2C_ADDR 0x18
-#define MCP9808_PORT (&ARD_I2C)
 
-int nk_mcp9808_read_temp(float *val)
+const nk_i2c_device_t mcp9808 =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = MCP9808_I2C_ADDR
+};
+
+int nk_mcp9808_read_temp(const nk_i2c_device_t *dev, float *val)
 {
     int rtn;
     uint16_t rdata = 0;
-    rtn = nk_i2c_get_beshort(MCP9808_PORT, MCP9808_I2C_ADDR, 5, &rdata);
+    rtn = nk_i2c_get_beshort(dev, 5, &rdata);
 
     if (rdata & 0x1000)
         rdata |= 0xE000;
@@ -20,11 +26,12 @@ int nk_mcp9808_read_temp(float *val)
     *val = (int16_t)rdata * 0.0625f;
     return rtn;
 }
+
 static int cmd_mcp9808(nkinfile_t *args)
 {
     if (nk_fscan(args, "")) {
         float val;
-        int rtn = nk_mcp9808_read_temp(&val);
+        int rtn = nk_mcp9808_read_temp(&mcp9808, &val);
         if (rtn) {
             nk_printf("Couldn't access MCP9808\n");
         } else {

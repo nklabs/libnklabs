@@ -1,15 +1,19 @@
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
-#define LM75_I2C_ADDR 0x48
-#define LM75_PORT (&ARD_I2C)
+const nk_i2c_device_t lm75 =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = 0x48
+};
 
-int nk_lm75_read_temp(float *val)
+int nk_lm75_read_temp(const nk_i2c_device_t *dev, float *val)
 {
     int rtn;
     uint16_t rdata = 0;
     int16_t v;
-    rtn = nk_i2c_get_beshort(LM75_PORT, LM75_I2C_ADDR, 0, &rdata);
+    rtn = nk_i2c_get_beshort(dev, 0, &rdata);
     v = (int16_t)rdata;
     if (v < 0) {
         // Avoid signed right shift
@@ -23,7 +27,7 @@ static int cmd_lm75(nkinfile_t *args)
 {
     if (nk_fscan(args, "")) {
         float val;
-        int rtn = nk_lm75_read_temp(&val);
+        int rtn = nk_lm75_read_temp(&lm75, &val);
         if (rtn) {
             nk_printf("Couldn't access LM75\n");
         } else {

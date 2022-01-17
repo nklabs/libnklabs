@@ -4,13 +4,15 @@
 #include "nkuart.h"
 #include "nksched.h"
 #include "nkcli.h"
-#include "nkmcurtc.h"
 #include "nkdbase.h"
 #include "database.h"
 #include "button.h"
 #include "led.h"
 #include "startup.h"
 #include "wdt.h"
+#ifdef NK_PLATFORM_ATSAM
+#include "nkdriver_rtc_atsam.h"
+#endif
 
 extern void extrtc_init(void);
 
@@ -38,7 +40,9 @@ void user_main(void)
 
     nk_init_uart();
     nk_init_sched();
-    nk_mcu_rtc_init();
+#ifdef NK_PLATFORM_ATSAM
+    nk_mcu_rtc_init(&CALENDAR_0);
+#endif
     nk_init_cli();
     database_init();
 #ifdef NK_PLATFORM_ATSAM
@@ -49,7 +53,6 @@ void user_main(void)
 #endif
     nk_init_led();
     nk_init_button();
-    extrtc_init();
     nk_init_wdt();
 
     // Go

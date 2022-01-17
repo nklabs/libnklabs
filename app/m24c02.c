@@ -3,20 +3,21 @@
 #include "nkcli.h"
 #include "nki2c_eeprom.h"
 #include "nki2c.h"
-
-extern uint8_t i2c_buffer[16];
+#include "i2c.h"
 
 // m24c02 I2C EEPROM on X-NUCLEO-EEPRMA2 board
 
 #define M24C02_I2C_ADDR 0x54
 
+const nk_i2c_device_t m24c02_dev =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = M24C02_I2C_ADDR
+};
+
 const struct nk_i2c_eeprom_info m24c02 =
 {
-	.i2c_write = nk_i2c_write,
-	.i2c_read = nk_i2c_read,
-	.i2c_ptr = &ARD_I2C,
-
-	.i2c_addr = M24C02_I2C_ADDR,
+	.dev = &m24c02_dev,
 
 	.buffer = i2c_buffer,
 

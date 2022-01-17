@@ -19,9 +19,11 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <string.h>
+#ifndef _Inkdriver_pcf8523
+#define _Inkdriver_pcf8523
+
 #include "nki2c.h"
-#include "nkextrtc.h"
+#include "nkdatetime.h"
 
 // PCF8523 Real Time Clock
 
@@ -169,81 +171,8 @@
 
 #define PCF8523_REG_TMRB 0x13
 
-int nk_ext_rtc_set_datetime(void *port, const nkdatetime_t *datetime)
-{
-    uint8_t buf[21];
+int nk_pcf8523_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime);
 
-    memset(buf, 0, sizeof(buf));
+int nk_pcf8523_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime);
 
-    buf[0] = 0; // Starting write address
-    buf[1 + PCF8523_REG_CONTROL_1] = 0x00;
-    buf[1 + PCF8523_REG_CONTROL_2] = 0x00;
-    buf[1 + PCF8523_REG_CONTROL_3] = 0x00;
-    buf[1 + PCF8523_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10);
-    buf[1 + PCF8523_REG_MINUTES] = ((datetime->min / 10) << 4) + (datetime->min % 10);
-    buf[1 + PCF8523_REG_HOURS] = ((datetime->hour / 10) << 4) + (datetime->hour % 10);
-    buf[1 + PCF8523_REG_DATE] = (((datetime->day + 1) / 10) << 4) + ((datetime->day + 1) % 10);
-    buf[1 + PCF8523_REG_WEEKDAY] = datetime->weekday ; // Day of week
-    buf[1 + PCF8523_REG_MONTH] = (((datetime->month + 1) / 10) << 4) + ((datetime->month + 1) % 10);
-    buf[1 + PCF8523_REG_YEAR] = (((datetime->year - 2000) / 10) << 4) + ((datetime->year - 2000) % 10);
-    buf[1 + PCF8523_REG_AL_MINUTES] = 0x00;
-    buf[1 + PCF8523_REG_AL_HOURS] = 0x00;
-    buf[1 + PCF8523_REG_AL_DATE] = 0x00;
-    buf[1 + PCF8523_REG_AL_WEEKDAY] = 0x00;
-    buf[1 + PCF8523_REG_OFFSET] = 0x00;
-    buf[1 + PCF8523_REG_CLKOUT] = 0x00; // CLKOUT is 32 KHz
-    buf[1 + PCF8523_REG_TMRA_FREQ] = 0x00;
-    buf[1 + PCF8523_REG_TMRA] = 0x00;
-    buf[1 + PCF8523_REG_TMRB_FREQ] = 0x00;
-    buf[1 + PCF8523_REG_TMRB] = 0x00;
-    
-
-    return nk_i2c_write(port, PCF8523_I2C_ADDR, sizeof(buf), buf);
-}
-
-int nk_ext_rtc_get_datetime(void *port, nkdatetime_t *datetime)
-{
-    uint8_t buf[20];
-    int rtn = 0;
-    
-
-    buf[0] = 0; // Set starting address
-    rtn = nk_i2c_write(port, PCF8523_I2C_ADDR, 1, buf);
-
-    if (rtn)
-        return rtn;
-
-    memset(buf, 0, sizeof(buf));
-
-    // Read everything
-    rtn = nk_i2c_read(port, PCF8523_I2C_ADDR, 20, buf);
-
-    if (rtn)
-        return rtn;
-
-    datetime->sec = (0x0F & buf[PCF8523_REG_SECONDS]) + ((0x7 & (buf[PCF8523_REG_SECONDS] >> 4)) * 10);
-    datetime->min = (0x0F & buf[PCF8523_REG_MINUTES]) + ((0x07 & (buf[PCF8523_REG_MINUTES] >> 4)) * 10);
-    datetime->hour = (0x0F & buf[PCF8523_REG_HOURS]) + ((0x3 & (buf[PCF8523_REG_HOURS] >> 4)) * 10);
-    datetime->weekday = (0x07 & buf[PCF8523_REG_WEEKDAY]);
-    datetime->day = (0x0F & buf[PCF8523_REG_DATE]) + ((0x03 & (buf[PCF8523_REG_DATE] >> 4)) * 10) - 1;
-    datetime->month = (0x0F & buf[PCF8523_REG_MONTH]) + ((0x1 & (buf[PCF8523_REG_MONTH] >> 4)) * 10) - 1;
-    datetime->year = (0x0F & buf[PCF8523_REG_YEAR]) + ((buf[PCF8523_REG_YEAR] >> 4) * 10) + 2000;
-
-    rtn = nk_datetime_sanity(datetime);
-    if (rtn)
-    {
-        return NK_ERROR_TIME_LOST;
-    }
-
-    if (buf[PCF8523_REG_SECONDS] & PCF8523_OS_BIT)
-    {
-        return NK_ERROR_TIME_LOST;
-    }
-
-    return 0;
-}
-
-int nk_ext_rtc_init(void *port)
-{
-    return 0;
-}
+#endif

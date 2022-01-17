@@ -3,9 +3,15 @@
 
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
 #define PCA9685_I2C_ADDR 0x40
-#define PCA9685_PORT (&ARD_I2C)
+
+const nk_i2c_device_t pca9685 =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = PCA9685_I2C_ADDR
+};
 
 #define PCA9685_REG_MODE1 0x00
 
@@ -55,16 +61,16 @@
 
 // To set PWM frequency 
 
-int nk_pca9685_setup(float hz)
+int nk_pca9685_setup(const nk_i2c_device_t *dev, float hz)
 {
     int rtn;
 
     // Disable oscillator to allow prescale to be written
-    rtn = nk_i2c_put_byte(PCA9685_PORT, PCA9685_I2C_ADDR, PCA9685_REG_MODE1, PCA9685_AI_BIT | PCA9685_SLEEP_BIT);
+    rtn = nk_i2c_put_byte(dev, PCA9685_REG_MODE1, PCA9685_AI_BIT | PCA9685_SLEEP_BIT);
 
-    rtn |= nk_i2c_put_byte(PCA9685_PORT, PCA9685_I2C_ADDR, PCA9685_REG_PRE_SCALE, PCA9685_PRESCALE_CALC(hz));
+    rtn |= nk_i2c_put_byte(dev, PCA9685_REG_PRE_SCALE, PCA9685_PRESCALE_CALC(hz));
 
-    rtn |= nk_i2c_put_byte(PCA9685_PORT, PCA9685_I2C_ADDR, PCA9685_REG_MODE1, PCA9685_AI_BIT);
+    rtn |= nk_i2c_put_byte(dev, PCA9685_REG_MODE1, PCA9685_AI_BIT);
 
     // Wait for oscillator to turn on
     nk_udelay(1000);
@@ -74,7 +80,7 @@ int nk_pca9685_setup(float hz)
 
 // Set PWM fraction for a channel.  PWM should be between 0.0 and 1.0
 
-int nk_pca9685_set(int led, float pwm)
+int nk_pca9685_set(const nk_i2c_device_t *dev, int led, float pwm)
 {
     uint8_t data[5];
     int off = (int)(4096.0f * pwm);
@@ -89,20 +95,20 @@ int nk_pca9685_set(int led, float pwm)
     data[3] = off;
     data[4] = (off >> 8);
 
-    return nk_i2c_write(PCA9685_PORT, PCA9685_I2C_ADDR, 5, data);
+    return nk_i2c_write(dev, 5, data);
 }
 
 // Read PWM fraction from a channel
 
-int nk_pca9685_get(int led, float *pwm)
+int nk_pca9685_get(const nk_i2c_device_t *dev, int led, float *pwm)
 {
     int rtn;
     uint8_t data[5];
 
     data[0] = PCA9685_REG_LED0_ON_L + led * 4;
 
-    rtn = nk_i2c_write(PCA9685_PORT, PCA9685_I2C_ADDR, 1, data);
-    rtn |= nk_i2c_read(PCA9685_PORT, PCA9685_I2C_ADDR, 4, data + 1);
+    rtn = nk_i2c_write(dev, 1, data);
+    rtn |= nk_i2c_read(dev, 4, data + 1);
 
     *pwm = (float)((data[3] + (data[4] << 8)) & 8191) / 4096.0f;
 
@@ -118,28 +124,28 @@ static int cmd_pca9685(nkinfile_t *args)
     double pos;
     if (nk_fscan(args, "")) {
     } else if (nk_fscan(args, "init ")) {
-        rtn = nk_pca9685_setup(50.0f);
+        rtn = nk_pca9685_setup(&pca9685, 50.0f);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("PCA9685 Set up for 50 Hz\n");
         }
     } else if (nk_fscan(args, "init %f", &freq)) {
-        rtn = nk_pca9685_setup(freq);
+        rtn = nk_pca9685_setup(&pca9685, freq);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("PCA9685 Set up for %g Hz\n", freq);
         }
     } else if (nk_fscan(args, "pwm %d %f ", &led, &pwm)) {
-        rtn = nk_pca9685_set(led, pwm);
+        rtn = nk_pca9685_set(&pca9685, led, pwm);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("PCA9685 channel %d set to %g%%\n", led, pwm/100.0);
         }
     } else if (nk_fscan(args, "servo %d %f ", &led, &pos)) {
-        rtn = nk_pca9685_set(led, .075 + .025*pos/45.0);
+        rtn = nk_pca9685_set(&pca9685, led, .075 + .025*pos/45.0);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {

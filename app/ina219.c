@@ -2,9 +2,13 @@
 
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
-#define INA219_I2C_ADDR 0x40
-#define INA219_PORT (&ARD_I2C)
+const nk_i2c_device_t ina219 =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = 0x40
+};
 
 #define INA219_REG_CONFIG 0x00
 #define INA219_REG_VSHUNT 0x01
@@ -23,7 +27,7 @@ int nk_ina219_init()
 {
     uint16_t cal = CAL;
     nk_printf("%x\n", cal);
-    return nk_i2c_put_beshort(INA219_PORT, INA219_I2C_ADDR, INA219_REG_CAL, CAL);
+    return nk_i2c_put_beshort(&ina219, INA219_REG_CAL, CAL);
 }
 
 int nk_ina219_read(float *vbus_rtn, float *vshunt_rtn, float *power_rtn, float *current_rtn)
@@ -33,10 +37,10 @@ int nk_ina219_read(float *vbus_rtn, float *vshunt_rtn, float *power_rtn, float *
     uint16_t vbus = 0;
     uint16_t power = 0;
     uint16_t current = 0;
-    rtn = nk_i2c_get_beshort(INA219_PORT, INA219_I2C_ADDR, INA219_REG_VSHUNT, &vshunt);
-    rtn |= nk_i2c_get_beshort(INA219_PORT, INA219_I2C_ADDR, INA219_REG_VBUS, &vbus);
-    rtn |= nk_i2c_get_beshort(INA219_PORT, INA219_I2C_ADDR, INA219_REG_POWER, &power);
-    rtn |= nk_i2c_get_beshort(INA219_PORT, INA219_I2C_ADDR, INA219_REG_CURRENT, &current);
+    rtn = nk_i2c_get_beshort(&ina219, INA219_REG_VSHUNT, &vshunt);
+    rtn |= nk_i2c_get_beshort(&ina219, INA219_REG_VBUS, &vbus);
+    rtn |= nk_i2c_get_beshort(&ina219, INA219_REG_POWER, &power);
+    rtn |= nk_i2c_get_beshort(&ina219, INA219_REG_CURRENT, &current);
 
     *vshunt_rtn = (10e-6f * (float)(int16_t)vshunt); // LSB is 10uV for PGA = /8
     *vbus_rtn = (4e-3f * (float)(vbus >> 3)); // LSB is 4mV
@@ -45,6 +49,7 @@ int nk_ina219_read(float *vbus_rtn, float *vshunt_rtn, float *power_rtn, float *
 
     return rtn;
 }
+
 static int cmd_ina219(nkinfile_t *args)
 {
     float vbus, vshunt, power, current;

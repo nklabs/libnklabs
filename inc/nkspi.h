@@ -31,6 +31,6 @@ typedef struct {
 
 // Perform a SPI transaction
 
-int nk_spi_transfer(nkspi_device_t *info, uint8_t *date, uint32_t len);
+int nk_spi_transfer(const nkspi_device_t *info, uint8_t *date, uint32_t len);
 
 #endif

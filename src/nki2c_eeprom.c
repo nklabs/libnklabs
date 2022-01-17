@@ -30,7 +30,7 @@ int nk_i2c_eeprom_busy_wait(const struct nk_i2c_eeprom_info *info)
 {
 	int x;
 	for (x = 0; x != info->busy_timeout; ++x) {
-		if (!info->i2c_write(info->i2c_ptr, info->i2c_addr, 0, info->buffer))
+		if (!nk_i2c_write(info->dev, 0, info->buffer))
 			return 0;
 	}
 	// nk_printf("Timeout!\n");
@@ -61,7 +61,7 @@ int nk_i2c_eeprom_write(const struct nk_i2c_eeprom_info *info, uint32_t address,
 		memcpy(info->buffer + info->addr_size, data, transfer_len);
 		// nk_printf("Write, len = %lu\n", transfer_len + info->addr_size);
 		// nk_byte_hex_dump(info->buffer, 0, 0, transfer_len + info->addr_size);
-		status |= info->i2c_write(info->i2c_ptr, info->i2c_addr, info->addr_size + transfer_len, info->buffer);
+		status |= nk_i2c_write(info->dev, info->addr_size + transfer_len, info->buffer);
 		if (status)
 			break;
 		status |= nk_i2c_eeprom_busy_wait(info);
@@ -98,10 +98,10 @@ int nk_i2c_eeprom_read(const struct nk_i2c_eeprom_info *info, uint32_t address, 
 			addr >>= 8;
 		}
 
-		status |= info->i2c_write(info->i2c_ptr, info->i2c_addr, info->addr_size, info->buffer);
+		status |= nk_i2c_write(info->dev, info->addr_size, info->buffer);
 		if (status)
 			break;
-		status |= info->i2c_read(info->i2c_ptr, info->i2c_addr, transfer_len, data);
+		status |= nk_i2c_read(info->dev, transfer_len, data);
 		if (status)
 			break;
 

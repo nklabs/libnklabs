@@ -27,7 +27,7 @@
 #include "nkarch.h"
 #include "nki2c.h"
 
-int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_hal_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
         struct i2c_m_sync_desc *i2c = (struct i2c_m_sync_desc *)port;
 
@@ -45,9 +45,9 @@ int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
         return rtn;
 }
 
-int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_hal_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
-        return nk_i2c_write(port, addr, len, buf);
+        return nk_hal_i2c_write(port, addr, len, buf);
 
 #if 0
         struct i2c_m_sync_desc *i2c = (struct i2c_m_sync_desc *)port;
@@ -68,7 +68,7 @@ int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf
 }
 
 
-int nk_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
+int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
 {
         struct i2c_m_sync_desc *i2c = (struct i2c_m_sync_desc *)port;
 
@@ -85,6 +85,3 @@ int nk_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
 
         return rtn;
 }
-
-
-

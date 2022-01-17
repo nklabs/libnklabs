@@ -46,7 +46,7 @@ Add more targets:
   PIC32
   Some example in an RTOS
 
-i2c
+I2C:
   better abstraction, table method to set up i2c devices?
   allow use of bitbang i2c, or fpga i2c..
 

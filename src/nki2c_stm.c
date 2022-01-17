@@ -44,7 +44,7 @@ static const char *stm_i2c_error_string(int code)
 }
 #endif
 
-int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_hal_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
 	I2C_HandleTypeDef *hand = (I2C_HandleTypeDef *)port;
 	int e;
@@ -62,12 +62,12 @@ int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
         return 0;
 }
 
-int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_hal_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
-        return nk_i2c_write(port, addr, len, buf);
+        return nk_hal_i2c_write(port, addr, len, buf);
 }
 
-int nk_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
+int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
 {
 	I2C_HandleTypeDef *hand = (I2C_HandleTypeDef *)port;
 	int e;

@@ -2,9 +2,15 @@
 
 #include "nkcli.h"
 #include "nki2c.h"
+#include "i2c.h"
 
 #define MCP23017_I2C_ADDR 0x27 // 0x20 - 0x27 depending on A0,A1,A2
-#define MCP23017_PORT (&ARD_I2C)
+
+const nk_i2c_device_t mcp23017 =
+{
+    .i2c_bus = &ard_i2c_bus,
+    .i2c_addr = MCP23017_I2C_ADDR
+};
 
 // IOCON.BANK = 0 register map
 
@@ -34,77 +40,77 @@
 // Set/Get PORT A direction bits
 //   1 means input, 0 means output
 
-int mcp23017_set_dira(uint8_t dir)
+int mcp23017_set_dira(const nk_i2c_device_t *dev, uint8_t dir)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_IODIRA, dir);
+    return nk_i2c_put_byte(dev, MCP23017_REG_IODIRA, dir);
 }
 
-int mcp23017_get_dira(uint8_t *dir)
+int mcp23017_get_dira(const nk_i2c_device_t *dev, uint8_t *dir)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_IODIRA, dir);
+    return nk_i2c_get_byte(dev, MCP23017_REG_IODIRA, dir);
 }
 
 // Set/Get PORT B direction bits
 //   1 means input, 0 means output
 
-int mcp23017_set_dirb(uint8_t dir)
+int mcp23017_set_dirb(const nk_i2c_device_t *dev, uint8_t dir)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_IODIRB, dir);
+    return nk_i2c_put_byte(dev, MCP23017_REG_IODIRB, dir);
 }
 
-int mcp23017_get_dirb(uint8_t *dir)
+int mcp23017_get_dirb(const nk_i2c_device_t *dev, uint8_t *dir)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_IODIRB, dir);
+    return nk_i2c_get_byte(dev, MCP23017_REG_IODIRB, dir);
 }
 
 // Set/Get PORT A pull-up bits
 //   1 means enable pull-up
 
-int mcp23017_set_pupa(uint8_t pup)
+int mcp23017_set_pupa(const nk_i2c_device_t *dev, uint8_t pup)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPPUA, pup);
+    return nk_i2c_put_byte(dev, MCP23017_REG_GPPUA, pup);
 }
 
-int mcp23017_get_pupa(uint8_t *pup)
+int mcp23017_get_pupa(const nk_i2c_device_t *dev, uint8_t *pup)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPPUA, pup);
+    return nk_i2c_get_byte(dev, MCP23017_REG_GPPUA, pup);
 }
 
 // Set/Get PORT B pull-up bits
 //   1 means enable pull-up
 
-int mcp23017_set_pupb(uint8_t pup)
+int mcp23017_set_pupb(const nk_i2c_device_t *dev, uint8_t pup)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPPUB, pup);
+    return nk_i2c_put_byte(dev, MCP23017_REG_GPPUB, pup);
 }
 
-int mcp23017_get_pupb(uint8_t *pup)
+int mcp23017_get_pupb(const nk_i2c_device_t *dev, uint8_t *pup)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPPUB, pup);
+    return nk_i2c_get_byte(dev, MCP23017_REG_GPPUB, pup);
 }
 
 // Set/Get PORT A pins
 
-int mcp23017_set_gpioa(uint8_t val)
+int mcp23017_set_gpioa(const nk_i2c_device_t *dev, uint8_t val)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPIOA, val);
+    return nk_i2c_put_byte(dev, MCP23017_REG_GPIOA, val);
 }
 
-int mcp23017_get_gpioa(uint8_t *val)
+int mcp23017_get_gpioa(const nk_i2c_device_t *dev, uint8_t *val)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPIOA, val);
+    return nk_i2c_get_byte(dev, MCP23017_REG_GPIOA, val);
 }
 
 // Set/Get PORT B pins
 
-int mcp23017_set_gpiob(uint8_t val)
+int mcp23017_set_gpiob(const nk_i2c_device_t *dev, uint8_t val)
 {
-    return nk_i2c_put_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPIOB, val);
+    return nk_i2c_put_byte(dev, MCP23017_REG_GPIOB, val);
 }
 
-int mcp23017_get_gpiob(uint8_t *val)
+int mcp23017_get_gpiob(const nk_i2c_device_t *dev, uint8_t *val)
 {
-    return nk_i2c_get_byte(MCP23017_PORT, MCP23017_I2C_ADDR, MCP23017_REG_GPIOB, val);
+    return nk_i2c_get_byte(dev, MCP23017_REG_GPIOB, val);
 }
 
 int cmd_mcp23017(nkinfile_t *args)
@@ -112,84 +118,84 @@ int cmd_mcp23017(nkinfile_t *args)
     uint8_t val;
     int rtn;
     if (nk_fscan(args, "gpioa ")) {
-        rtn = mcp23017_get_gpioa(&val);
+        rtn = mcp23017_get_gpioa(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("GPIOA = %x\n", val);
         }
     } else if (nk_fscan(args, "gpioa %hhx", &val)) {
-        rtn = mcp23017_set_gpioa(val);
+        rtn = mcp23017_set_gpioa(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("Wrote %x to GPIOA\n", val);
         }
     } else if (nk_fscan(args, "gpiob ")) {
-        rtn = mcp23017_get_gpiob(&val);
+        rtn = mcp23017_get_gpiob(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("GPIOB = %x\n", val);
         }
     } else if (nk_fscan(args, "gpiob %hhx", &val)) {
-        rtn = mcp23017_set_gpiob(val);
+        rtn = mcp23017_set_gpiob(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("Wrote %x to GPIOB\n", val);
         }
     } else if (nk_fscan(args, "dira ")) {
-        rtn = mcp23017_get_dira(&val);
+        rtn = mcp23017_get_dira(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("DIRA = %x\n", val);
         }
     } else if (nk_fscan(args, "dira %hhx", &val)) {
-        rtn = mcp23017_set_dira(val);
+        rtn = mcp23017_set_dira(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("Wrote %x to DIRA\n", val);
         }
     } else if (nk_fscan(args, "dirb ")) {
-        rtn = mcp23017_get_dirb(&val);
+        rtn = mcp23017_get_dirb(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("DIRB = %x\n", val);
         }
     } else if (nk_fscan(args, "dirb %hhx", &val)) {
-        rtn = mcp23017_set_dirb(val);
+        rtn = mcp23017_set_dirb(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("Wrote %x to DIRB\n", val);
         }
     } else if (nk_fscan(args, "pupa ")) {
-        rtn = mcp23017_get_pupa(&val);
+        rtn = mcp23017_get_pupa(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("PUPA = %x\n", val);
         }
     } else if (nk_fscan(args, "pupa %hhx", &val)) {
-        rtn = mcp23017_set_pupa(val);
+        rtn = mcp23017_set_pupa(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("Wrote %x to PUPA\n", val);
         }
     } else if (nk_fscan(args, "pupb ")) {
-        rtn = mcp23017_get_pupb(&val);
+        rtn = mcp23017_get_pupb(&mcp23017, &val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {
             nk_printf("PUPB = %x\n", val);
         }
     } else if (nk_fscan(args, "pupb %hhx", &val)) {
-        rtn = mcp23017_set_pupb(val);
+        rtn = mcp23017_set_pupb(&mcp23017, val);
         if (rtn) {
             nk_printf("I2C error\n");
         } else {

@@ -4,18 +4,14 @@
 #define _Inki2c_eeprom
 
 #include <stdint.h>
+#include "nki2c.h"
 
 // Describe a particular I2C EEPROM
 
 struct nk_i2c_eeprom_info
 {
-	// How to access this device's I2C bus
-	int (*i2c_write)(void *i2c_ptr, uint8_t addr, size_t len, const uint8_t *buf);
-	int (*i2c_read)(void *i2c_ptr, uint8_t addr, size_t len, uint8_t *buf);
-	void *i2c_ptr;
-
-	// This device's I2C address
-	uint8_t i2c_addr;
+	// I2C device
+	const nk_i2c_device_t *dev;
 
 	// Pointer to transfer buffer
 	// This must be page_size + addr_size or more

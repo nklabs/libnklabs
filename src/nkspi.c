@@ -1,6 +1,6 @@
 #include "nkspi.h"
 
-int nk_spi_transfer(nkspi_device_t *device, uint8_t *data, uint32_t len)
+int nk_spi_transfer(const nkspi_device_t *device, uint8_t *data, uint32_t len)
 {
 #ifdef NK_PLATFORM_ATSAM
     int rtn;
