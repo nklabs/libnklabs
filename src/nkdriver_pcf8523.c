@@ -25,7 +25,7 @@
 
 // PCF8523 Real Time Clock
 
-int nk_ext_rtc_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
+int nk_pcf8523_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
 {
     uint8_t buf[21];
 
@@ -57,7 +57,7 @@ int nk_ext_rtc_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     return nk_i2c_write(dev, sizeof(buf), buf);
 }
 
-int nk_ext_rtc_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
+int nk_pcf8523_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
 {
     uint8_t buf[20];
     int rtn = 0;

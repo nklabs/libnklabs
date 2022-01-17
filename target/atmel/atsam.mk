@@ -34,6 +34,7 @@ at25df081.o \
 basic_cmds.o \
 button.o \
 database.o \
+ds3231.o \
 i2c.o \
 ina219.o \
 info_cmd.o \
@@ -50,6 +51,7 @@ mcp23017.o \
 mcp9808.o \
 nkymodem_cmd.o \
 pca9685.o \
+pcf8523.o \
 pcf8574.o \
 pcf8575.o \
 pins.o \

@@ -47,7 +47,6 @@ Add more targets:
   Some example in an RTOS
 
 I2C:
-  better abstraction, table method to set up i2c devices?
   allow use of bitbang i2c, or fpga i2c..
 
 GPIO:

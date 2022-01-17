@@ -13,12 +13,12 @@ extern RTC_HandleTypeDef *hrtc;
 
 
 const nk_rtc_t mcu_rtc = {
-    .set_datetime = (int (*)(void *, const nkdatetime_t *))nk_mcu_rtc_set_datetime,
-    .get_datetime = (int (*)(void *, nkdatetime_t *))nk_mcu_rtc_get_datetime,
+    .set_datetime = (int (*)(const void *, const nkdatetime_t *))nk_mcu_rtc_set_datetime,
+    .get_datetime = (int (*)(const void *, nkdatetime_t *))nk_mcu_rtc_get_datetime,
 #ifdef NK_PLATFORM_STM32
     .port = &hrtc
 #endif
-#ifdef NK_PLATFORM_STM32
+#ifdef NK_PLATFORM_ATSAM
     .port = &CALENDAR_0
 #endif
 };

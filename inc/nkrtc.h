@@ -6,9 +6,9 @@
 
 // Device descriptor for a real time clock
 typedef struct {
-    int (*set_datetime)(void *port, const nkdatetime_t *datetime);
-    int (*get_datetime)(void *port, nkdatetime_t *datetime);
-    void *port;
+    int (*set_datetime)(const void *port, const nkdatetime_t *datetime);
+    int (*get_datetime)(const void *port, nkdatetime_t *datetime);
+    const void *port;
 } nk_rtc_t;
 
 #define NK_ERROR_TIME_LOST -100
