@@ -51,6 +51,8 @@ $(NK_APP)/mcp9808.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/pca9685.c \
 $(NK_APP)/pcf8574.c \
+$(NK_APP)/pcf8575.c \
+$(NK_APP)/pins.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/w25q64.c \
 $(NK_APP)/wdt.c \
@@ -69,6 +71,7 @@ $(NK_SRC)/nki2c_stm.c \
 $(NK_SRC)/nkinfile.c \
 $(NK_SRC)/nkmcuflash.c \
 $(NK_SRC)/nkoutfile.c \
+$(NK_SRC)/nkpin.c \
 $(NK_SRC)/nkprintf.c \
 $(NK_SRC)/nkprintf_fp.c \
 $(NK_SRC)/nkreadline.c \

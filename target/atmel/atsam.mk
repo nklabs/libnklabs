@@ -49,6 +49,7 @@ mcp23017.o \
 mcp9808.o \
 pca9685.o \
 pcf8574.o \
+pcf8575.o \
 w25q64.o \
 basic_cmds.o \
 test_cmds.o \
