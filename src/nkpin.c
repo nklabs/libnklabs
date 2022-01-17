@@ -45,10 +45,16 @@ void hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
     GPIO_InitStruct.Alternate = 0; // FIXME
     HAL_GPIO_Init(pin->port, &GPIO_InitStruct);
 #endif
+
+#ifdef NK_PLATFORM_ATSAM
+    gpio_set_pin_direction(pin->pin, nk_pinmode_table[mode].mode);
+    gpio_set_pin_pull_mode(pin->pin, nk_pinmode_table[mode].pull);
+#endif
 }
 
 nk_pinmode_t hal_pin_getmode(const nk_pin_t *pin)
 {
+    // HAL does not provide this..
     return 0;
 }
 
@@ -69,6 +75,14 @@ const struct gpio_mode_entry nk_pinmode_table[] =
     [NK_PINMODE_OUTPUT] = { "output", GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM },
     [NK_PINMODE_OUTPUT_OD] = { "output", GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM },
     [NK_PINMODE_OUTPUT_OD_PULLUP] = { "output", GPIO_MODE_OUTPUT_OD, GPIO_PULLUP, GPIO_SPEED_FREQ_MEDIUM },
+#endif
+
+#ifdef NK_PLATFORM_ATSAM
+    [NK_PINMODE_INPUT] = { "input", GPIO_DIRECTION_IN, GPIO_PULL_UP, 0 },
+    [NK_PINMODE_INPUT_PULLUP] = { "input_pullup", GPIO_DIRECTION_IN, GPIO_PULL_UP, 0 },
+    [NK_PINMODE_OUTPUT] = { "output", GPIO_DIRECTION_OUT, GPIO_PULL_OFF, 0 },
+    [NK_PINMODE_OUTPUT_OD] = { "output", GPIO_DIRECTION_OUT, GPIO_PULL_OFF, 0 },
+    [NK_PINMODE_OUTPUT_OD_PULLUP] = { "output", GPIO_DIRECTION_OUT, GPIO_PULL_UP, 0 },
 #endif
 };
 

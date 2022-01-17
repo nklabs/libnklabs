@@ -29,6 +29,7 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 
 # Our soruce files..
 C_SOURCES += \
+$(NK_APP)/app_main.c \
 $(NK_APP)/basic_cmds.c \
 $(NK_APP)/button.c \
 $(NK_APP)/database.c \
@@ -37,7 +38,6 @@ $(NK_APP)/i2c.c \
 $(NK_APP)/ina219.c \
 $(NK_APP)/info_cmd.c \
 $(NK_APP)/led.c \
-$(NK_APP)/app_main.c \
 $(NK_APP)/lm75.c \
 $(NK_APP)/m24256.c \
 $(NK_APP)/m24c02.c \
@@ -65,21 +65,21 @@ $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkextrtc.c \
 $(NK_SRC)/nki2c.c \
-$(NK_SRC)/nki2crtc_pcf8523.c \
 $(NK_SRC)/nki2c_eeprom.c \
+$(NK_SRC)/nki2crtc_pcf8523.c \
 $(NK_SRC)/nki2c_stm.c \
 $(NK_SRC)/nkinfile.c \
 $(NK_SRC)/nkmcuflash.c \
+$(NK_SRC)/nkmcurtc.c \
 $(NK_SRC)/nkoutfile.c \
 $(NK_SRC)/nkpin.c \
 $(NK_SRC)/nkprintf.c \
 $(NK_SRC)/nkprintf_fp.c \
 $(NK_SRC)/nkreadline.c \
-$(NK_SRC)/nkspi.c \
-$(NK_SRC)/nkmcurtc.c \
 $(NK_SRC)/nkscan.c \
 $(NK_SRC)/nksched.c \
 $(NK_SRC)/nkserialize.c \
+$(NK_SRC)/nkspi.c \
 $(NK_SRC)/nkspiflash.c \
 $(NK_SRC)/nkstring.c \
 $(NK_SRC)/nkstrtod.c \
