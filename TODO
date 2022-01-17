@@ -1,6 +1,6 @@
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
-  Missing flash size
+  Missing flash size for info
 
   low power modes?  We need lpuart..
 
@@ -46,11 +46,34 @@ Add more targets:
   PIC32
   Some example in an RTOS
 
-Add more peripherals:
+i2c
+  better abstraction, table method to set up i2c devices?
+  allow use of bitbang i2c, or fpga i2c..
 
-  CAN, ADC, DAC, GPIO, etc.. all arduino GPIOs?
+GPIO:
+
+  Pinmode to alternate functions
+  A way to read back the current mode
+  Include i2c pin expander gpio pins
+
+Add more MCU peripheral drivers:
+
+  CAN, ADC, DAC, etc..
 
   fat filesystem + sdio?
+
+Add more common external peripheral drivers:
+
+  ADS1115    16-bit ADC
+  MCP4725    12-bit DAC
+  TCA9548A   i2c mux
+  lcd1602 using AIP31068 + PCA9633
+  SSD1306    OLED display
+  si5351a    PLL clock generator
+  TM1637/TM1638     7-segment driver
+  SC16IS750  I2C serial port
+  AD9954     DDS
+  74HC595    SPI output port
 
 event driven:
 
