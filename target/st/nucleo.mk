@@ -67,7 +67,15 @@ $(NK_SRC)/nkdatetime.c \
 $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkdriver_ds3231.c \
+$(NK_SRC)/nkdriver_ina219.c \
+$(NK_SRC)/nkdriver_lm75.c \
+$(NK_SRC)/nkdriver_max6675.c \
+$(NK_SRC)/nkdriver_mcp23017.c \
+$(NK_SRC)/nkdriver_mcp9808.c \
+$(NK_SRC)/nkdriver_pca9685.c \
 $(NK_SRC)/nkdriver_pcf8523.c \
+$(NK_SRC)/nkdriver_pcf8574.c \
+$(NK_SRC)/nkdriver_pcf8575.c \
 $(NK_SRC)/nkdriver_rtc_stm32.c \
 $(NK_SRC)/nki2c.c \
 $(NK_SRC)/nki2c_eeprom.c \

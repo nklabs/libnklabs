@@ -7,30 +7,14 @@
 // This is just like the PCF8574, except 16-bits instead of 8
 
 #include "nkcli.h"
-#include "nki2c.h"
+#include "nkdriver_pcf8575.h"
 #include "i2c.h"
-
-#define PCF8575_I2C_ADDR 0x20 // 0x20 - 0x27 depending on A0-A2 inputs
 
 const nk_i2c_device_t pcf8575 =
 {
     .i2c_bus = &ard_i2c_bus, // Which bus it's on
     .i2c_addr = PCF8575_I2C_ADDR // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
 };
-
-// Read GPIO short
-
-int pcf8575_read(const nk_i2c_device_t *dev, uint16_t *val)
-{
-    return nk_i2c_read(dev, 2, (uint8_t *)val);
-}
-
-// Write GPIO short
-
-int pcf8575_write(const nk_i2c_device_t *dev, uint16_t val)
-{
-    return nk_i2c_write(dev, 2, (uint8_t *)&val);
-}
 
 // Command line
 

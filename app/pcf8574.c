@@ -5,7 +5,7 @@
 //   Write 0 for output low
 
 #include "nkcli.h"
-#include "nki2c.h"
+#include "nkdriver_pcf8574.h"
 #include "i2c.h"
 
 const nk_i2c_device_t pcf8574 =
@@ -13,20 +13,6 @@ const nk_i2c_device_t pcf8574 =
     .i2c_bus = &ard_i2c_bus, // Which bus it's on
     .i2c_addr = 0x20 // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
 };
-
-// Read GPIO byte
-
-int pcf8574_read(const nk_i2c_device_t *dev, uint8_t *val)
-{
-    return nk_i2c_read(dev, 1, val);
-}
-
-// Write GPIO byte
-
-int pcf8574_write(const nk_i2c_device_t *dev, uint8_t val)
-{
-    return nk_i2c_write(dev, 1, &val);
-}
 
 // Command line
 

@@ -1,5 +1,5 @@
 #include "nkcli.h"
-#include "nkspi.h"
+#include "nkdriver_max6675.h"
 
 const nkspi_device_t max6675_bus =
 {
@@ -15,21 +15,11 @@ const nkspi_device_t max6675_bus =
 #endif
 };
 
-int nk_max6675_read_temp(float *val)
-{
-    uint8_t buf[2];
-    uint16_t v;
-    int rtn = nk_spi_transfer(&max6675_bus, buf, 2);
-    v = (buf[0] << 8) + buf[1];
-    *val = (float)(v >> 3) * .25f;
-    return rtn;
-}
-
 static int cmd_max6675(nkinfile_t *args)
 {
     if (nk_fscan(args, "")) {
         float val;
-        int rtn = nk_max6675_read_temp(&val);
+        int rtn = nk_max6675_read_temp(&max6675_bus, &val);
         if (rtn) {
             nk_printf("Couldn't access MAX6675\n");
         } else {

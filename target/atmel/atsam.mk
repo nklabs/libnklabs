@@ -68,7 +68,15 @@ nkdatetime.o \
 nkdbase.o \
 nkdectab.o \
 nkdriver_ds3231.o \
+nkdriver_ina219.o \
+nkdriver_lm75.o \
+nkdriver_max6675.o \
+nkdriver_mcp23017.o \
+nkdriver_mcp9808.o \
+nkdriver_pca9685.o \
 nkdriver_pcf8523.o \
+nkdriver_pcf8574.o \
+nkdriver_pcf8575.o \
 nkdriver_rtc_atsam.o \
 nki2c.o \
 nki2c_atsam.o \

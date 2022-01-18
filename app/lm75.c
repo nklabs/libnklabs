@@ -1,28 +1,13 @@
 #include "nkcli.h"
-#include "nki2c.h"
+#include "nkdriver_lm75.h"
 #include "i2c.h"
 
 const nk_i2c_device_t lm75 =
 {
     .i2c_bus = &ard_i2c_bus,
-    .i2c_addr = 0x48
+    .i2c_addr = LM75_I2C_ADDR
 };
 
-int nk_lm75_read_temp(const nk_i2c_device_t *dev, float *val)
-{
-    int rtn;
-    uint16_t rdata = 0;
-    int16_t v;
-    rtn = nk_i2c_get_beshort(dev, 0, &rdata);
-    v = (int16_t)rdata;
-    if (v < 0) {
-        // Avoid signed right shift
-        *val = -((-v >> 7)) * 0.5f;
-    } else {
-        *val = (v >> 7) * 0.5f;
-    }
-    return rtn;
-}
 static int cmd_lm75(nkinfile_t *args)
 {
     if (nk_fscan(args, "")) {
