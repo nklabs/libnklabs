@@ -1,45 +1,71 @@
-# I2C device driver
+# I2C bus driver
 
-A wrapper for the MCU vendor's I2C driver.  This driver is usable by I2C bus
-device drivers, such as [nki2c_eepom](nki2c_eeprom.md) and [nkrtc](nkrtc.md).
+This abstraction layer sits between I2C device drivers and MCU vendor's
+hardware I2C bus driver.  It allows I2C device drivers to access devices
+which exist on buses other than the ones directly supported by the MCU
+hardware- for example, you could have an I2C bus using bitbang software
+utilities or one that exists on an FPGA that is accessible over a SPI
+interface.
+
+To use this driver, you provide an nk_i2c_bus_t filled in with pointers to
+functions that perform the bus transactions.  The first argument (a void
+pointer) which is passed to these functions when they are called is also
+provided in i2c_ptr.
+
+To use the MCU's hardware, use nk_hal_i2c_write, nk_hal_i2c_write_nostop and
+nk_hal_i2c_read for the functions, and a vendor handle for i2c_ptr (for
+example, this should be a (I2C_HandleTypeDef *) for STM32 or (struct
+i2c_m_sync_desc *) for ATSAM.
+
+Each I2C device should have an nk_i2c_device_t.  This should be filled in
+with a pointer to the nk_i2c_bus_t and with the I2C address of this device.
 
 ## Files
 
 [nki2c.h](../inc/nki2c.h), [nki2c.c](../src/nki2c.c),
 [nki2c_atsam.c](../src/nki2c_atsam.c), [nki2c_stm.c](../src/nki2c_stm.c)
 
+~~~c
+// Generic access to a specific I2C bus
+
+typedef struct {
+    // I2C bus access functions
+    int (*i2c_write)(void *i2c_ptr, uint8_t addr, size_t len, const uint8_t *buf);
+    int (*i2c_write_nostop)(void *i2c_ptr, uint8_t addr, size_t len, const uint8_t *buf);
+    int (*i2c_read)(void *i2c_ptr, uint8_t addr, size_t len, uint8_t *buf);
+
+    // First argument for above functions
+    void *i2c_ptr;
+} nk_i2c_bus_t;
+
+// Generic access to a specific I2C device
+
+typedef struct {
+    // The bus the device is on
+    const nk_i2c_bus_t *i2c_bus;
+
+    // The device's I2C address
+    uint8_t i2c_addr;
+} nk_i2c_device_t;
+~~~
+
 ## Direct driver
 
-These functions are simple wrappers around the MCU vendor's HAL I2C device driver.
-
-The __port__ argument for these functions is the address of the HAL driver's
-handle:
-
-For ATSAM devices, this should be:
-
-~~~c
-struct i2c_m_sync_desc *
-~~~
-
-For STM32 devices, this should be:
-
-~~~c
-I2C_HandleTypeDef *
-~~~
+These perform low level I2C transaction- they just call the function you
+provide in the nk_i2c_bus_t.
 
 ### nk_i2c_write
 
 ~~~c
-int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf);
+int nk_i2c_write(const nk_i2c_device_t *device, size_t len, const uint8_t *buf);
 ~~~
 
-Write __len__ bytes from byte array __buf__ to the I2C device with 7-bit
-address __addr__.  __port__ has the handle to the I2C bus.
+Write __len__ bytes from byte array __buf__ to the I2C device.
 
 ### nk_i2c_write_nostop
 
 ~~~c
-int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf);
+int nk_i2c_write_nostop(const nk_i2c_device_t *device, size_t len, const uint8_t *buf);
 ~~~
 
 This is the same as nk_i2c_write, except that the I2C stop condition isn't
@@ -50,26 +76,10 @@ nk_i2c_write_nostop is equivalent to nk_i2c_write.
 ### nk_i2c_read
 
 ~~~c
-int nk_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf);
+int nk_i2c_read(const nk_i2c_device_t *device, size_t len, uint8_t *buf);
 ~~~
 
-Read __len__ bytes to byte array __buf__ from the I2C device with 7-bit
-address __addr__.  __port__ has the handle to the I2C bus.
-
-## Bitbang driver
-
-If the bitbang I2C driver is used, then you must provide the following
-functions:
-
-~~~c
-void nk_i2c_scl_low(void *port); // Drive SCL line low
-void nk_i2c_scl_high(void *port); // Release SCL line
-int nk_i2c_scl_peek(void *port); // Read SCL line
-
-void nk_i2c_sda_low(void *port); // Drive SDA line low
-void nk_i2c_sda_high(void *port); // Release SDA line
-int nk_i2c_sda_peek(void *port); // Read SDA line
-~~~
+Read __len__ bytes to byte array __buf__ from the I2C device.
 
 ## Register interface
 
@@ -83,28 +93,28 @@ endian long (32-bit word).
 ~~~c
 // Register interface on top of direct access
 
-int nk_i2c_put_byte(void *port, uint8_t addr, uint8_t ofst, uint8_t data);
-int nk_i2c_get_byte(void *port, uint8_t addr, uint8_t ofst, uint8_t *data);
+int nk_i2c_put_byte(nk_i2c_device_t *dev, uint8_t ofst, uint8_t data);
+int nk_i2c_get_byte(nk_i2c_device_t *dev, uint8_t ofst, uint8_t *data);
 
-int nk_i2c_put2_byte(void *port, uint8_t addr, uint16_t ofst, uint8_t data);
-int nk_i2c_get2_byte(void *port, uint8_t addr, uint16_t ofst, uint8_t *data);
+int nk_i2c_put2_byte(nk_i2c_device_t *dev, uint16_t ofst, uint8_t data);
+int nk_i2c_get2_byte(nk_i2c_device_t *dev, uint16_t ofst, uint8_t *data);
 
-int nk_i2c_put_leshort(void *port, uint8_t addr, uint8_t ofst, uint16_t data);
-int nk_i2c_get_leshort(void *port, uint8_t addr, uint8_t ofst, uint16_t *data);
+int nk_i2c_put_leshort(nk_i2c_device_t *dev, uint8_t ofst, uint16_t data);
+int nk_i2c_get_leshort(nk_i2c_device_t *dev, uint8_t ofst, uint16_t *data);
 
-int nk_i2c_put2_leshort(void *port, uint8_t addr, uint16_t ofst, uint16_t data);
-int nk_i2c_get2_leshort(void *port, uint8_t addr, uint16_t ofst, uint16_t *data);
+int nk_i2c_put2_leshort(nk_i2c_device_t *dev, uint16_t ofst, uint16_t data);
+int nk_i2c_get2_leshort(nk_i2c_device_t *dev, uint16_t ofst, uint16_t *data);
 
-int nk_i2c_put_beshort(void *port, uint8_t addr, uint8_t ofst, uint16_t data);
-int nk_i2c_get_beshort(void *port, uint8_t addr, uint8_t ofst, uint16_t *data);
+int nk_i2c_put_beshort(nk_i2c_device_t *dev, uint8_t ofst, uint16_t data);
+int nk_i2c_get_beshort(nk_i2c_device_t *dev, uint8_t ofst, uint16_t *data);
 
-int nk_i2c_put2_beshort(void *port, uint8_t addr, uint16_t ofst, uint16_t data);
-int nk_i2c_get2_beshort(void *port, uint8_t addr, uint16_t ofst, uint16_t *data);
+int nk_i2c_put2_beshort(nk_i2c_device_t *dev, uint16_t ofst, uint16_t data);
+int nk_i2c_get2_beshort(nk_i2c_device_t *dev, uint16_t ofst, uint16_t *data);
 
-int nk_i2c_put2_le24(void *port, uint8_t addr, uint16_t ofst, uint32_t data);
-int nk_i2c_get2_le24(void *port, uint8_t addr, uint16_t ofst, uint32_t *data);
+int nk_i2c_put2_le24(nk_i2c_device_t *dev, uint16_t ofst, uint32_t data);
+int nk_i2c_get2_le24(nk_i2c_device_t *dev, uint16_t ofst, uint32_t *data);
 
-int nk_i2c_put2_melong(void *port, uint8_t addr, uint16_t ofst, uint32_t data);
+int nk_i2c_put2_melong(nk_i2c_device_t *dev, uint16_t ofst, uint32_t data);
 ~~~
 
 key:
@@ -128,7 +138,7 @@ The register size is indicated by the function name:
 ## nk_i2c_command
 
 ~~~c
-int nk_i2c_command(void *port, nkinfile_t *args);
+int nk_i2c_command(nk_i2c_bus_t *bus, nkinfile_t *args);
 ~~~
 
 Generic command line user interface to an I2C bus.  __args__ is
