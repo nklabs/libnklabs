@@ -63,8 +63,6 @@ Add more MCU peripheral drivers:
 
 Add more common external peripheral drivers:
 
-  ADS1115    16-bit ADC
-  MCP4725    12-bit DAC
   TCA9548A   i2c mux
   lcd1602 using AIP31068 + PCA9633
   SSD1306    OLED display

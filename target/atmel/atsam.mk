@@ -30,6 +30,7 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 
 # Add out source files
 OBJS += \
+ads1115.o \
 app_main.o \
 at25df081.o \
 basic_cmds.o \
@@ -68,6 +69,7 @@ nkcrclib.o \
 nkdatetime.o \
 nkdbase.o \
 nkdectab.o \
+nkdriver_ads1115.o \
 nkdriver_ds3231.o \
 nkdriver_ina219.o \
 nkdriver_lm75.o \
