@@ -48,6 +48,7 @@ $(NK_APP)/m95256.c \
 $(NK_APP)/m95m04.c \
 $(NK_APP)/max6675.c \
 $(NK_APP)/mcp23017.c \
+$(NK_APP)/mcp4725.c \
 $(NK_APP)/mcp9808.c \
 $(NK_APP)/nkymodem_cmd.c \
 $(NK_APP)/pca9685.c \
@@ -71,6 +72,7 @@ $(NK_SRC)/nkdriver_ina219.c \
 $(NK_SRC)/nkdriver_lm75.c \
 $(NK_SRC)/nkdriver_max6675.c \
 $(NK_SRC)/nkdriver_mcp23017.c \
+$(NK_SRC)/nkdriver_mcp4725.c \
 $(NK_SRC)/nkdriver_mcp9808.c \
 $(NK_SRC)/nkdriver_pca9685.c \
 $(NK_SRC)/nkdriver_pcf8523.c \
