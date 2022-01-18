@@ -3,6 +3,7 @@
 NK_SRC = ../../../src
 NK_APP = ../../../app
 NK_INC = ../../../inc
+NK_APP_INC = ../../../app_inc
 NK_CONFIG = ../../../config
 NK_ARCHCONFIG = ../../../config_stm32
 
@@ -94,6 +95,7 @@ C_INCLUDES += \
 -I$(NK_ARCHCONFIG) \
 -I$(NK_CONFIG) \
 -I$(NK_INC) \
+-I$(NK_APP_INC) \
 
 CFLAGS += -D$(NK_PLATFORM) -DNK_PLATFORM=\"$(NK_PLATFORM)\" -DNK_VERSION_MAJOR=$(NK_VERSION_MAJOR)  -DNK_VERSION_MINOR=$(NK_VERSION_MINOR) -DNK_YEAR=$(NK_YEAR) -DNK_MONTH=$(NK_MONTH) -DNK_DAY=$(NK_DAY) -DNK_HOUR=$(NK_HOUR) -DNK_MINUTE=$(NK_MINUTE) -DNK_GIT_REV=$(NK_GIT_REV)
 

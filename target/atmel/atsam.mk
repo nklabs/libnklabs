@@ -3,6 +3,7 @@
 NK_SRC := ../../../../src
 NK_APP := ../../../../app
 NK_INC := ../../../../inc
+NK_APP_INC := ../../../../app_inc
 NK_CONFIG := ../../../../config
 NK_ARCHCONFIG := ../../../../config_atsam
 
@@ -94,8 +95,9 @@ nkymodem.o \
 # Add our include files
 DIR_INCLUDES +=  \
 -I$(NK_INC) \
+-I$(NK_APP_INC) \
 -I$(NK_CONFIG) \
--I$(NK_ARCHCONFIG)
+-I$(NK_ARCHCONFIG) \
 
 OBJS_AS_ARGS := ${OBJS}
 
