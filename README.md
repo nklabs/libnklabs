@@ -77,6 +77,10 @@ Some basic drivers for common devices are included:
 * SPI and I2C EEPROM
 * Real Time Clock
 
+But an ever growing set of drivers for other common ICs is also included. 
+
+See the [drivers list](doc/drivers.md)
+
 Some foundational libraries are also provided:
 
 * A low memory footprint version of printf that supports floating point (it is smaller than newlib's printf).
