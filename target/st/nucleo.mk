@@ -59,6 +59,7 @@ $(NK_APP)/pcf8575.c \
 $(NK_APP)/pins.c \
 $(NK_APP)/rtc.c \
 $(NK_APP)/test_cmds.c \
+$(NK_APP)/tm1637.c \
 $(NK_APP)/w25q64.c \
 $(NK_APP)/wdt.c \
 $(NK_SRC)/nkarch_stm32.c \
@@ -81,6 +82,7 @@ $(NK_SRC)/nkdriver_pcf8523.c \
 $(NK_SRC)/nkdriver_pcf8574.c \
 $(NK_SRC)/nkdriver_pcf8575.c \
 $(NK_SRC)/nkdriver_rtc_stm32.c \
+$(NK_SRC)/nkdriver_tm1637.c \
 $(NK_SRC)/nki2c.c \
 $(NK_SRC)/nki2c_eeprom.c \
 $(NK_SRC)/nki2c_stm.c \

@@ -47,6 +47,10 @@ breakout boards (look on eBay, Adafruit and Amazon).
 
 * [PCA9685 16-Channel, 12-Bit PWM Fm+ I²C-Bus LED Controller](https://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/ic-led-controllers/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685)
 
+## Display drivers
+
+* [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
+
 # On deck..
 
 * [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
@@ -55,7 +59,6 @@ breakout boards (look on eBay, Adafruit and Amazon).
 * [SSD1306 128 x 64 Dot Matrix OLED/PLED Segment/Common Driver with Controller](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 * [SI5351A PLL clock generator](https://cdn-shop.adafruit.com/datasheets/Si5351.pdf)
 * [RV-8803 Real-Time Clock Module with I2C-Bus / Micro Crystal Switzerland](https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-8803-C7_App-Manual.pdf)
-* [TM1637 7-segment driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 * [AD9954 400 MSPS, 14-Bit, 1.8 V CMOS, Direct Digital Synthesizer](https://www.analog.com/en/products/ad9954.html)
 * [AD9958 2-Channel, 500 MSPS DDS with 10-Bit DACs](https://www.analog.com/en/products/ad9958.html)
 * [DS1391 Low-Voltage SPI/3-Wire RTCs with Trickle Charger](https://www.maximintegrated.com/en/products/analog/real-time-clocks/DS1391.html)
