@@ -36,7 +36,10 @@ uint8_t font[16] =
 
 int nk_tm1637_bit_delay(const nk_tm1637_t *dev)
 {
-    return nk_pin_read(dev->dio);
+    int x;
+    for (x = 0; x != 50; ++x)
+        nk_pin_read(dev->dio);
+    return 0;
 }
 
 int nk_tm1637_init(const nk_tm1637_t *dev)
