@@ -1,3 +1,6 @@
+nk_udelay
+  It's using HAL_delay on STM.. so resolution is 1ms.  We need this to be better..
+
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
   Missing flash size for info

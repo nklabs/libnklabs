@@ -57,6 +57,8 @@ nk_time_t nk_get_time();
 
 // Microsecond delay
 
+extern uint32_t nk_ticks_per_ms;
+
 void nk_udelay(unsigned long usec);
 
 typedef enum reset_cause_e

@@ -55,6 +55,8 @@ static int cmd_info(nkinfile_t *args)
                 nk_printf("Target platform: %s\n", NK_PLATFORM);
 
 #ifdef NK_PLATFORM_STM32
+		nk_udelay(0);
+		nk_printf("Loops per ms = %lu\n", nk_ticks_per_ms);
 	        nk_printf("CPU frequency = %lu\n", HAL_RCC_GetHCLKFreq());
 	        nk_printf("HCLKFreq = %lu\r\n", (unsigned long)HAL_RCC_GetHCLKFreq());
 	        nk_printf("PCLK1Freq = %lu\r\n", (unsigned long)HAL_RCC_GetPCLK1Freq());

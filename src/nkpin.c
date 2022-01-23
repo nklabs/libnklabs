@@ -42,7 +42,7 @@ void hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
     GPIO_InitStruct.Mode = nk_pinmode_table[mode].mode;
     GPIO_InitStruct.Pull = nk_pinmode_table[mode].pull;
     GPIO_InitStruct.Speed = nk_pinmode_table[mode].speed;
-    GPIO_InitStruct.Alternate = 0; // FIXME
+    //GPIO_InitStruct.Alternate = 0; // FIXME
     HAL_GPIO_Init(pin->port, &GPIO_InitStruct);
 #endif
 

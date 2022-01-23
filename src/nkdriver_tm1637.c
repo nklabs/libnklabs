@@ -14,6 +14,8 @@
 #define SEG_G (0x40)
 #define SEG_DP (0x80)
 
+// Convert hexadecimal to 7-segment
+
 uint8_t font[16] =
 {
     SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F,
@@ -33,6 +35,9 @@ uint8_t font[16] =
     SEG_A | SEG_F | SEG_G | SEG_E | SEG_D,
     SEG_A | SEG_F | SEG_G | SEG_E
 };
+
+// Some displays have large capacitors on the SDA / SCK lines,
+// so rising edge is quite slow.
 
 int nk_tm1637_bit_delay(const nk_tm1637_t *dev)
 {

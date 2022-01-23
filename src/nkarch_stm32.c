@@ -48,22 +48,46 @@ nk_time_t nk_get_time()
 }
 
 // Busy loop delay
+// STM32 has no convenient usec delay so we calibrate a delay loop
+
+uint32_t nk_ticks_per_ms;
 
 void nk_udelay(unsigned long usec)
 {
-	uint32_t msec = (usec / 1000);
-	if (!msec)
-		msec = 1;
+	if (!nk_ticks_per_ms)
+	{
+		// Calibrate delay loop
+		nk_time_t start;
+		nk_time_t next;
+		uint32_t x = 0;
 
-	// Just use the HAL one...
-	HAL_Delay(msec);
-#if 0
-	// Generic implementation
-	nk_time_t old = nk_get_time();
-	nk_time_t clocks = msec * NK_TIME_COUNTS_PER_SECOND / 1000;
-	// nk_time_t clocks = usec * NK_TIME_COUNTS_PER_SECOND / 1000000;
-	while ((nk_get_time() - old) < clocks);
-#endif
+		// Synchronize with start of a millisecond
+		for (next = start = nk_get_time(); next == start; next = nk_get_time());
+		start = next + 10;
+		// Count no. calls to nk_get_time() to get 10 ms
+		while (nk_get_time() < start) ++x;
+		// ticks_per_usec must not be be larger than 2^31/1000 = 2147483 to avoid overflow in multiply below
+		nk_ticks_per_ms = x / 10;
+	}
+
+	// First remove long delays in 1ms chunks
+	while (usec >= 1000)
+	{
+		uint32_t stop = nk_ticks_per_ms;
+		uint32_t x;
+		for (x = 0; x != stop; ++x)
+			nk_get_time();
+		usec -= 1000;
+	}
+
+	// Now any remaining short delay
+	if (usec)
+	{
+		uint32_t stop = (nk_ticks_per_ms * usec) / 1000;
+		uint32_t x;
+		for (x = 0; x != stop; ++x)
+			nk_get_time();
+	}
 }
 
 //void _exit()
@@ -74,8 +98,6 @@ void reboot()
 {
 	NVIC_SystemReset();
 }
-
-
 
 int nk_init_mcuflash()
 {
