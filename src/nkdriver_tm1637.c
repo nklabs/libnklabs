@@ -42,18 +42,20 @@ uint8_t font[17] =
 
 int nk_tm1637_init(const nk_tm1637_t *dev)
 {
-    nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
-    nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
     nk_pin_write(dev->clk, 0);
     nk_pin_write(dev->dio, 0);
+    nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
+    nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
     return 0;
 }
 
 int nk_tm1637_start(const nk_tm1637_t *dev)
 {
     nk_pin_setmode(dev->dio, NK_PINMODE_OUTPUT);
+    nk_pin_write(dev->dio, 0);
     nk_udelay(dev->tfall + 1);
     nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
+    nk_pin_write(dev->clk, 0);
     nk_udelay(dev->tfall + 1);
     return 0;
 }
@@ -61,6 +63,7 @@ int nk_tm1637_start(const nk_tm1637_t *dev)
 int nk_tm1637_stop(const nk_tm1637_t *dev)
 {
     nk_pin_setmode(dev->dio, NK_PINMODE_OUTPUT);
+    nk_pin_write(dev->dio, 0);
     nk_udelay(dev->tfall + 1);
     nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
     nk_udelay(dev->trise + 1);
@@ -88,6 +91,7 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
         else
         {
             nk_pin_setmode(dev->dio, NK_PINMODE_OUTPUT);
+            nk_pin_write(dev->dio, 0);
             if (prev)
                 nk_udelay(dev->tfall + 1);
             else
@@ -97,6 +101,7 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
         nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
         nk_udelay(dev->trise + 1);
         nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
+        nk_pin_write(dev->clk, 0);
         nk_udelay(dev->tfall + 1);
         byte >>= 1;
     }
@@ -113,6 +118,7 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
 
     rtn = nk_pin_read(dev->dio);
     nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
+    nk_pin_write(dev->clk, 0);
 
     nk_udelay(dev->tfall + 1);
 
