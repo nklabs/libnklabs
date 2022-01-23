@@ -381,9 +381,9 @@ int nk_snprintf(char *dest, size_t len, const char *fmt, ...)
 	va_start (ap, fmt);
 
 	nkoutfile_open_mem(&f, dest, len - 1);
+	f.ptr[len - 1] =0;
 
 	status = nk_vprintf(&f, fmt, ap);
-	*f.ptr = 0;
 
 	va_end(ap);
 	return status;

@@ -1,5 +1,6 @@
-nk_udelay
-  It's using HAL_delay on STM.. so resolution is 1ms.  We need this to be better..
+nkprintf
+  nk_snprintf / nk_sfprintf are not correct.  It's ambiguous if you print
+exactly the field length because nk_putc wraps
 
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
