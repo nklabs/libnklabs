@@ -48,7 +48,9 @@ struct nkoutfile
 // Returns return value of block_write or 0 if no flushing was needed.
 // Argument c is accessed only once, safe to used code with side-effects.
 // Argument f is accessed multiple times, not safe to use code with side-effects.
-#define nk_fputc(f, c) (*(f)->ptr++ = (c), (f)->ptr == (f)->end ? (f)->block_write((f)->block_write_ptr, (f)->ptr = (f)->start, (f)->size) : 0)
+int _nk_flush_and_putc(nkoutfile_t *f, unsigned char c);
+
+#define nk_fputc(f, c) ((f)->ptr == (f)->end ? _nk_flush_and_putc((f), (c)) : ((*(f)->ptr++ = (c)), 0))
 
 // Flush buffered output.  Returns return value of block_write().
 // Note that block_write() is called with a length of 0 if there is no data to flush.

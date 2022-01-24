@@ -46,19 +46,58 @@ nkoutfile_t *nkoutfile_open(
 
 int nk_fflush(nkoutfile_t *f)
 {
+    int rtn;
     size_t len = f->ptr - f->start;
     f->ptr = f->start;
     // Round write up to granularity
-    len = (len + (f->granularity - 1)) & ~(f->granularity - 1);
-    return f->block_write(f->block_write_ptr, f->start, len);
-}
-
-static int block_write_overflow(void *ptr, unsigned char *buffer, size_t len)
-{
-    return -1;
+    len = ((len + (f->granularity - 1)) & ~(f->granularity - 1));
+    if (f->block_write)
+    {
+        rtn = f->block_write(f->block_write_ptr, f->start, len);
+    }
+    else
+    {
+        // No flush function
+        rtn = -1;
+    }
+    if (!rtn)
+    {
+        // Flush was successful, reset buffer
+        f->ptr = f->start;
+    }
+    return rtn;
 }
 
 nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, char *mem, size_t size)
 {
-    return nkoutfile_open(f, block_write_overflow, NULL, (unsigned char *)mem, size, 1);
+    // We have a buffer, but not output function
+    return nkoutfile_open(f, NULL, NULL, (unsigned char *)mem, size, 1);
+}
+
+// This is called when we try to write to a full output buffer
+
+int _nk_flush_and_putc(nkoutfile_t *f, unsigned char c)
+{
+    if (f->size)
+    {
+        // Normal case, we have a buffer
+        int rtn = nk_fflush(f);
+        if (!rtn)
+        {
+            // Flush was successful, save latest character
+            *f->ptr++ = c;
+        }
+        return rtn;
+    }
+    else if (f->block_write)
+    {
+        // Special case: no buffering, just call output function directly
+        // If granularity is not 1, we write junk after &c on the stack
+        return f->block_write(f->block_write_ptr, &c, f->granularity);
+    }
+    else
+    {
+        // No buffer and no output function?
+        return -1;
+    }
 }

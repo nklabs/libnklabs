@@ -16,16 +16,13 @@ int main(int argc, char *argv[])
     for (x = 0; x != 256; ++x)
         test_data[x] = x;
 
-    nkinfile_t f[1];
-    nkinfile_open_mem(f, test_data, 256);
+    nk_byte_hex_dump(test_data, 0, 0, 256);
 
-    nk_byte_hex_dump(0, 256, f);
+    nk_byte_hex_dump(test_data, 0, 7, 242);
 
-    nk_byte_hex_dump(7, 242, f);
+    nk_byte_hex_dump(test_data, 0, 9, 238);
 
-    nk_byte_hex_dump(9, 238, f);
-
-    nk_byte_hex_dump(7, 4, f);
+    nk_byte_hex_dump(test_data, 0, 7, 4);
 
     // nk_printf
 

@@ -381,9 +381,10 @@ int nk_snprintf(char *dest, size_t len, const char *fmt, ...)
 	va_start (ap, fmt);
 
 	nkoutfile_open_mem(&f, dest, len - 1);
-	f.ptr[len - 1] =0;
 
 	status = nk_vprintf(&f, fmt, ap);
+
+	*f.ptr = 0;
 
 	va_end(ap);
 	return status;
@@ -420,33 +421,25 @@ static int outc(void *ptr, unsigned char *buf, size_t len)
 	return 0;
 }
 
-static unsigned char nkstdoutbuf;
-static unsigned char nkstdnullbuf;
-
 static nkoutfile_t __nkstdout =
 {
-	.ptr = &nkstdoutbuf,
-	.start = &nkstdoutbuf,
-	.end = 1 + &nkstdoutbuf,
-	.size = 1,
+	.ptr = 0,
+	.start = 0,
+	.end = 0,
+	.size = 0,
 	.block_write_ptr = 0,
 	.block_write = outc,
 	.granularity = 1
 };
 
-static int outnull(void *ptr, unsigned char *buf, size_t len)
-{
-	return 0;
-}
-
 static nkoutfile_t __nkstdnull =
 {
-	.ptr = &nkstdnullbuf,
-	.start = &nkstdnullbuf,
-	.end = 1 + &nkstdnullbuf,
-	.size = 1,
+ 	.ptr = 0,
+	.start = 0,
+	.end = 0,
+	.size = 0,
 	.block_write_ptr = 0,
-	.block_write = outnull,
+	.block_write = 0,
 	.granularity = 1
 };
 

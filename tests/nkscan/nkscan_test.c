@@ -536,9 +536,7 @@ int main(int argc, char *argv[])
     n = nk_fscan(&f, "%w", buf, sizeof(buf));
     printf("status = %d\n", n);
 
-    nkinfile_t g[1];
-    nkinfile_open_string(g, buf);
-    nk_byte_hex_dump(0, strlen(buf), g);
+    nk_byte_hex_dump(buf, 0, 0, strlen(buf));
 
     // Try all fscan formats
     {

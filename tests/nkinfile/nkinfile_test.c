@@ -2,7 +2,7 @@
 #include <string.h>
 #include "nkinfile.h"
 
-size_t my_block_read_1(void *block_read_ptr, unsigned char *buffer, size_t offset)
+size_t my_block_read_1(void *block_read_ptr, size_t offset, unsigned char *buffer, size_t size)
 {
     char *t = (char *)block_read_ptr;
     int l = strlen(t);
@@ -18,7 +18,7 @@ size_t my_block_read_1(void *block_read_ptr, unsigned char *buffer, size_t offse
     }
 }
 
-size_t my_block_read_2(void *block_read_ptr, unsigned char *buffer, size_t offset)
+size_t my_block_read_2(void *block_read_ptr, size_t offset, unsigned char *buffer, size_t size)
 {
     char *t = (char *)block_read_ptr;
     int l = strlen(t);
