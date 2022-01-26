@@ -23,11 +23,9 @@
 #include "nkrtc.h"
 #include "nkdriver_rv8803.h"
 
-#define RV8803_VALID_CODE 0x5A
-
 int nk_rv8803_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
 {
-    uint8_t buf[9];
+    uint8_t buf[17];
 
     buf[0] = 0; // Starting write address
     buf[1 + RV8803_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10);
@@ -37,7 +35,16 @@ int nk_rv8803_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     buf[1 + RV8803_REG_DATE] = (((datetime->day + 1) / 10) << 4) + ((datetime->day + 1) % 10);
     buf[1 + RV8803_REG_MONTH] = (((datetime->month + 1) / 10) << 4) + ((datetime->month + 1) % 10); // Bit 7 is century on some of them
     buf[1 + RV8803_REG_YEAR] = (((datetime->year - 2000) / 10) << 4) + ((datetime->year - 2000) % 10);
-    buf[1 + RV8803_REG_RAM] = RV8803_VALID_CODE;
+
+    buf[1 + RV8803_REG_RAM] = 0;
+    buf[1 + RV8803_REG_AL1_MINUTES] = 0;
+    buf[1 + RV8803_REG_AL1_HOURS] = 0;
+    buf[1 + RV8803_REG_AL1_DAY] = 0;
+    buf[1 + RV8803_REG_TIMER0] = 0;
+    buf[1 + RV8803_REG_TIMER1] = 0;
+    buf[1 + RV8803_REG_EXTENSION] = 0;
+    buf[1 + RV8803_REG_FLAGS] = 0; // Clear low voltage flags
+    buf[1 + RV8803_REG_CONTROL] = 0;
 
     return nk_i2c_write(dev, sizeof(buf), buf);
 }
@@ -53,60 +60,59 @@ uint8_t onehot_to_bin(uint8_t v)
     return 0;
 }
 
+static int nk_rv8803_read(nk_i2c_device_t *dev, uint8_t *buf, int len)
+{
+    int rtn = 0;
+    int retry;
+
+    memset(buf, 0, len);
+
+    // Some versions of rv8803 have a read bug, so we need to retry here
+    for (retry = 0; retry != 2; ++retry)
+    {
+        uint8_t addr = 0;
+        rtn = nk_i2c_write(dev, 1, &addr);
+
+        if (!rtn)
+        {
+            rtn = nk_i2c_read(dev, len, buf);
+            if (!rtn)
+                break;
+        }
+    }
+
+    return rtn;
+}
+
 int nk_rv8803_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
 {
-    uint8_t buf_2[8];
-    uint8_t buf[8];
+    uint8_t buf[15];
+    uint8_t buf_2[15];
     int rtn;
 
     nk_datetime_clear(datetime);
+
+    rtn = nk_rv8803_read(dev, buf, sizeof(buf));
     
-    buf_2[0] = 0; // Set starting address
-    rtn = nk_i2c_write(dev, 1, buf_2);
-
     if (rtn)
         return rtn;
 
-    memset(buf_2, 0, sizeof(buf_2));
-
-    // Read date/time and status
-    rtn = nk_i2c_read(dev, 8, buf_2);
-
-    if (rtn)
-        return rtn;
-
-
-    buf[0] = 0; // Set starting address
-    rtn = nk_i2c_write(dev, 1, buf);
-
-    if (rtn)
-        return rtn;
-
-    memset(buf, 0, sizeof(buf));
-
-    // Read date/time and status a second time
-    rtn = nk_i2c_read(dev, 8, buf);
-
-    if (rtn)
-        return rtn;
-
-
-    if (buf[RV8803_REG_SECONDS] != buf_2[RV8803_REG_SECONDS])
+    if ((0x7F & buf[RV8803_REG_SECONDS]) == 0x59)
     {
-        // Not in the same second? Read one more time...
-        buf[0] = 0; // Set starting address
-        rtn = nk_i2c_write(dev, 1, buf);
+        rtn = nk_rv8803_read(dev, buf_2, sizeof(buf_2));
 
         if (rtn)
             return rtn;
 
-        memset(buf, 0, sizeof(buf));
-
-        // Read date/time and status a third time
-        rtn = nk_i2c_read(dev, 8, buf);
-
-        if (rtn)
-            return rtn;
+        if ((0x7F & buf_2[RV8803_REG_SECONDS]) == 0x59)
+        {
+            // Wrap did not happen, so first reading was good
+        }
+        else
+        {
+            // Yup, we wrapped.  Use second reading
+            memcpy(buf, buf_2, sizeof(buf));
+        }
     }
 
     datetime->sec = (0x0F & buf[RV8803_REG_SECONDS]) + ((0x7 & (buf[RV8803_REG_SECONDS] >> 4)) * 10);
@@ -124,7 +130,8 @@ int nk_rv8803_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
         return NK_ERROR_TIME_LOST;
     }
 
-    if (buf[RV8803_REG_RAM] != RV8803_VALID_CODE)
+    // Invalidate if low voltage flags are set
+    if (buf[RV8803_REG_FLAGS] & (RV8803_V2F_BIT | RV8803_V1F_BIT))
     {
         return NK_ERROR_TIME_LOST;
     }

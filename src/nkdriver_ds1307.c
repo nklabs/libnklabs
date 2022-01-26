@@ -25,7 +25,7 @@
 
 int nk_ds1307_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
 {
-    uint8_t buf[8];
+    uint8_t buf[9];
 
     buf[0] = 0; // Starting write address
     buf[1 + DS1307_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10); // Clear CH bit
@@ -35,6 +35,7 @@ int nk_ds1307_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     buf[1 + DS1307_REG_DATE] = (((datetime->day + 1) / 10) << 4) + ((datetime->day + 1) % 10);
     buf[1 + DS1307_REG_MONTH] = (((datetime->month + 1) / 10) << 4) + ((datetime->month + 1) % 10); // Bit 7 is century on some of them
     buf[1 + DS1307_REG_YEAR] = (((datetime->year - 2000) / 10) << 4) + ((datetime->year - 2000) % 10);
+    buf[1 + DS1307_REG_CTRL] = DS1307_REG_OUT_BIT; // No SQWE, leave output at hi-z for lowest possible power
 
     return nk_i2c_write(dev, sizeof(buf), buf);
 }
