@@ -1,0 +1,46 @@
+// PCA9633 PWM LED modulator
+//  This appears on one of the LCD1602 displays to control the backlight
+//  On that board: Blue is PWM0, Green is PWM1 and Red is PWM2.  PWM3 is unused.
+
+#include "nkdriver_pca9633.h"
+
+// To set PWM frequency 
+
+int nk_pca9633_setup(const nk_i2c_device_t *dev)
+{
+    int rtn;
+
+    // Enable it
+    rtn = nk_i2c_put_byte(dev, PCA9633_REG_MODE1, 0);
+
+    // Allow PWM and GRP to control each LED
+    rtn |= nk_i2c_put_byte(dev, PCA9633_REG_LEDOUT,
+        (PCA9633_LDR_PWM << 0) |
+        (PCA9633_LDR_PWM << 2) |
+        (PCA9633_LDR_PWM << 4) |
+        (PCA9633_LDR_PWM << 6)
+    );
+
+    return rtn;
+}
+
+// Set PWM fraction for a channel.  PWM should be between 0.0 and 1.0
+
+int nk_pca9633_set(const nk_i2c_device_t *dev, int led, float pwm)
+{
+    uint8_t val = (pwm * 255.9f);
+    return nk_i2c_put_byte(dev, PCA9633_REG_PWM0 + led, val);
+}
+
+// Read PWM fraction from a channel
+
+int nk_pca9633_get(const nk_i2c_device_t *dev, int led, float *pwm)
+{
+    uint8_t val;
+    int rtn;
+    
+    rtn = nk_i2c_get_byte(dev, PCA9633_REG_PWM0 + led, &val);
+    *pwm = (float)val / 255.0f;
+
+    return rtn;
+}

@@ -59,6 +59,7 @@ pcf8574.o \
 pcf8575.o \
 pins.o \
 rtc.o \
+rv8803.o \
 test_cmds.o \
 tm1637.o \
 w25q64.o \
@@ -83,6 +84,7 @@ nkdriver_pcf8523.o \
 nkdriver_pcf8574.o \
 nkdriver_pcf8575.o \
 nkdriver_rtc_atsam.o \
+nkdriver_rv8803.o \
 nkdriver_tm1637.o \
 nki2c.o \
 nki2c_atsam.o \
