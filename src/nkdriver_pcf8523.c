@@ -59,9 +59,10 @@ int nk_pcf8523_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
 
 int nk_pcf8523_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
 {
-    uint8_t buf[20];
+    uint8_t buf[10];
     int rtn = 0;
-    
+
+    nk_datetime_clear(datetime);
 
     buf[0] = 0; // Set starting address
     rtn = nk_i2c_write(dev, 1, buf);

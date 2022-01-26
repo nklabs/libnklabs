@@ -96,7 +96,7 @@ int nk_datetime_sanity(nkdatetime_t *datetime)
     return rtn;
 }
 
-void nk_clear_datetime(nkdatetime_t *datetime)
+void nk_datetime_clear(nkdatetime_t *datetime)
 {
     datetime->sec = 0;
     datetime->min = 0;

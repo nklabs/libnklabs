@@ -13,8 +13,17 @@ breakout boards (look on eBay, Adafruit and Amazon).
 
 ## Real time clocks
 
+* [DS1307 64 x 8, Serial, I²C Real-Time Clock](https://www.maximintegrated.com/en/products/analog/real-time-clocks/DS1307.html)
+
+5V only, on older Adafruit Data Logging Shield
+
 * [DS3231 Extremely Accurate I²C-Integrated RTC/TCXO/Crystal](https://www.maximintegrated.com/en/products/analog/real-time-clocks/DS3231.html)
+
 * [PCF8523 100 NA Real-Time Clock/Calendar with Battery Backup](https://www.nxp.com/products/peripherals-and-logic/signal-chain/real-time-clocks/rtcs-with-ic-bus/100-na-real-time-clock-calendar-with-battery-backup:PCF8523)
+
+On newer Adafruit Data Logging Shield.
+
+* [RV-8803 Real-Time Clock Module with I2C-Bus / Micro Crystal Switzerland](https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-8803-C7_App-Manual.pdf)
 
 ## GPIO expanders
 
@@ -45,7 +54,13 @@ breakout boards (look on eBay, Adafruit and Amazon).
 
 ## PWM controller for RC Servos and LEDs
 
+* [PCA9633 4-Bit Fm+ I²C-Bus LED Driver](https://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/ic-led-controllers/4-bit-fm-plus-ic-bus-led-driver:PCA9633)
+
+For LEDs only- some LCD1603 modules use this chip.
+
 * [PCA9685 16-Channel, 12-Bit PWM Fm+ I²C-Bus LED Controller](https://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/ic-led-controllers/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685)
+
+Good for LEDs or RC servos.
 
 ## Display drivers
 
@@ -54,11 +69,9 @@ breakout boards (look on eBay, Adafruit and Amazon).
 # On deck..
 
 * [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
-* [PCA9633 4-Bit Fm+ I²C-Bus LED Driver](https://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/ic-led-controllers/4-bit-fm-plus-ic-bus-led-driver:PCA9633)
 * [AIP31068 40 SEG / 16 COM Driver & Controller for Dot Matrix LCD](https://www.newhavendisplay.com/resources_dataFiles/datasheets/LCDs/AiP31068.pdf)
 * [SSD1306 128 x 64 Dot Matrix OLED/PLED Segment/Common Driver with Controller](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 * [SI5351A PLL clock generator](https://cdn-shop.adafruit.com/datasheets/Si5351.pdf)
-* [RV-8803 Real-Time Clock Module with I2C-Bus / Micro Crystal Switzerland](https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-8803-C7_App-Manual.pdf)
 * [AD9954 400 MSPS, 14-Bit, 1.8 V CMOS, Direct Digital Synthesizer](https://www.analog.com/en/products/ad9954.html)
 * [AD9958 2-Channel, 500 MSPS DDS with 10-Bit DACs](https://www.analog.com/en/products/ad9958.html)
 * [DS1391 Low-Voltage SPI/3-Wire RTCs with Trickle Charger](https://www.maximintegrated.com/en/products/analog/real-time-clocks/DS1391.html)

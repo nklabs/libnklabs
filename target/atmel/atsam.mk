@@ -36,6 +36,7 @@ at25df081.o \
 basic_cmds.o \
 button.o \
 database.o \
+ds1307.o \
 ds3231.o \
 i2c.o \
 ina219.o \
@@ -53,6 +54,7 @@ mcp23017.o \
 mcp4725.o \
 mcp9808.o \
 nkymodem_cmd.o \
+pca9633.o \
 pca9685.o \
 pcf8523.o \
 pcf8574.o \
@@ -72,6 +74,7 @@ nkdatetime.o \
 nkdbase.o \
 nkdectab.o \
 nkdriver_ads1115.o \
+nkdriver_ds1307.o \
 nkdriver_ds3231.o \
 nkdriver_ina219.o \
 nkdriver_lm75.o \
@@ -79,6 +82,7 @@ nkdriver_max6675.o \
 nkdriver_mcp23017.o \
 nkdriver_mcp4725.o \
 nkdriver_mcp9808.o \
+nkdriver_pca9633.o \
 nkdriver_pca9685.o \
 nkdriver_pcf8523.o \
 nkdriver_pcf8574.o \
