@@ -89,7 +89,10 @@
 #define DS3231_REG_TEMP_HIGH 0x11 // Upper 8 bits.  10 bit signed temperature, LSB = .25 C
 #define DS3231_REG_TEMP_LOW 0x12 // Lower 2 bits in MSBs (Lower 6 bits unused)
 
-int nk_ds3231_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime);
-int nk_ds3231_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime);
+int nk_ds3231_set_datetime(const nk_i2c_device_t *dev, const nkdatetime_t *datetime);
+int nk_ds3231_get_datetime(const nk_i2c_device_t *dev, nkdatetime_t *datetime);
+
+// Read temperature from DS3231
+int nk_ds3231_get_temp(const nk_i2c_device_t *dev, float *temp);
 
 #endif

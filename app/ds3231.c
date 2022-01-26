@@ -17,12 +17,25 @@ const nk_rtc_t ds3231 =
 
 int cmd_ds3231(nkinfile_t *args)
 {
-    return nk_rtc_command(&ds3231, args);
+    if (nk_fscan(args, "temp "))
+    {
+        float temp;
+        if (nk_ds3231_get_temp(&ds3231_device, &temp))
+            nk_printf("I2C error\n");
+        else
+            nk_printf("%g C\n", temp);
+        return 0;
+    }
+    else
+    {
+        return nk_rtc_command(&ds3231, args);
+    }
 }
 
 COMMAND(cmd_ds3231,
 	">ds3231                    External RTC access\n"
         "-ds3231                    Show date/time\n"
+        "-ds3231 temp               Show DS3231 temperature\n"
         "-ds3231 YYYY-MM-DD HH:MM:SS\n"
         "-                          Set date/time\n"
 )

@@ -23,9 +23,9 @@
 #include "nkrtc.h"
 #include "nkdriver_ds3231.h"
 
-int nk_ds3231_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
+int nk_ds3231_set_datetime(const nk_i2c_device_t *dev, const nkdatetime_t *datetime)
 {
-    uint8_t buf[8];
+    uint8_t buf[17];
 
     buf[0] = 0; // Starting write address
     buf[1 + DS3231_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10);
@@ -36,10 +36,46 @@ int nk_ds3231_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     buf[1 + DS3231_REG_MONTH] = (((datetime->month + 1) / 10) << 4) + ((datetime->month + 1) % 10); // Bit 7 is century on some of them
     buf[1 + DS3231_REG_YEAR] = (((datetime->year - 2000) / 10) << 4) + ((datetime->year - 2000) % 10);
 
+    buf[1 + DS3231_REG_AL1_SECONDS] = 0;
+    buf[1 + DS3231_REG_AL1_MINUTES] = 0;
+    buf[1 + DS3231_REG_AL1_HOUR] = 0;
+    buf[1 + DS3231_REG_AL1_DAY] = 0;
+    buf[1 + DS3231_REG_AL2_MINUTES] = 0;
+    buf[1 + DS3231_REG_AL2_HOUR] = 0;
+    buf[1 + DS3231_REG_AL2_DAY] = 0;
+    buf[1 + DS3231_REG_CONTROL] = DS3231_REG_CONTROL_INTCN_BIT; // Route interrupt to out pin, disable square wave for min. power
+    buf[1 + DS3231_REG_STATUS] = 0; // Clear OSF bit
+
     return nk_i2c_write(dev, sizeof(buf), buf);
 }
 
-int nk_ds3231_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
+int nk_ds3231_get_temp(const nk_i2c_device_t *dev, float *temp)
+{
+    int16_t t;
+    uint8_t buf[2];
+    int rtn;
+    buf[0] = 0x11; // Set starting address
+
+    rtn = nk_i2c_write(dev, 1, buf);
+    if (rtn)
+        return rtn;
+
+    memset(buf, 0, sizeof(buf));
+
+    // Read date/time and status
+    rtn = nk_i2c_read(dev, sizeof(buf), buf);
+
+    if (rtn)
+        return rtn;
+
+    t = (buf[0] << 8) + buf[1];
+
+    *temp = (float)t * .00390625f; // .25 C / 64
+
+    return 0;
+}
+
+int nk_ds3231_get_datetime(const nk_i2c_device_t *dev, nkdatetime_t *datetime)
 {
     uint8_t buf[16];
     int rtn;

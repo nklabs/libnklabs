@@ -32,10 +32,10 @@ int nk_pcf8523_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     memset(buf, 0, sizeof(buf));
 
     buf[0] = 0; // Starting write address
-    buf[1 + PCF8523_REG_CONTROL_1] = 0x00;
+    buf[1 + PCF8523_REG_CONTROL_1] = 0x00; // 7 pF
     buf[1 + PCF8523_REG_CONTROL_2] = 0x00;
     buf[1 + PCF8523_REG_CONTROL_3] = 0x00;
-    buf[1 + PCF8523_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10);
+    buf[1 + PCF8523_REG_SECONDS] = ((datetime->sec / 10) << 4) + (datetime->sec % 10); // Clear OS bit
     buf[1 + PCF8523_REG_MINUTES] = ((datetime->min / 10) << 4) + (datetime->min % 10);
     buf[1 + PCF8523_REG_HOURS] = ((datetime->hour / 10) << 4) + (datetime->hour % 10);
     buf[1 + PCF8523_REG_DATE] = (((datetime->day + 1) / 10) << 4) + ((datetime->day + 1) % 10);
@@ -47,12 +47,11 @@ int nk_pcf8523_set_datetime(nk_i2c_device_t *dev, const nkdatetime_t *datetime)
     buf[1 + PCF8523_REG_AL_DATE] = 0x00;
     buf[1 + PCF8523_REG_AL_WEEKDAY] = 0x00;
     buf[1 + PCF8523_REG_OFFSET] = 0x00;
-    buf[1 + PCF8523_REG_CLKOUT] = 0x00; // CLKOUT is 32 KHz
+    buf[1 + PCF8523_REG_CLKOUT] = (7 << PCF8523_COF_SHIFT); // CLKOUT is Hi-Z
     buf[1 + PCF8523_REG_TMRA_FREQ] = 0x00;
     buf[1 + PCF8523_REG_TMRA] = 0x00;
     buf[1 + PCF8523_REG_TMRB_FREQ] = 0x00;
     buf[1 + PCF8523_REG_TMRB] = 0x00;
-    
 
     return nk_i2c_write(dev, sizeof(buf), buf);
 }
@@ -73,7 +72,7 @@ int nk_pcf8523_get_datetime(nk_i2c_device_t *dev, nkdatetime_t *datetime)
     memset(buf, 0, sizeof(buf));
 
     // Read everything
-    rtn = nk_i2c_read(dev, 20, buf);
+    rtn = nk_i2c_read(dev, sizeof(buf), buf);
 
     if (rtn)
         return rtn;
