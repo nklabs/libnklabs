@@ -40,6 +40,7 @@ $(NK_APP)/ds3231.c \
 $(NK_APP)/i2c.c \
 $(NK_APP)/ina219.c \
 $(NK_APP)/info_cmd.c \
+$(NK_APP)/lcd8574.c \
 $(NK_APP)/led.c \
 $(NK_APP)/lm75.c \
 $(NK_APP)/m24256.c \
@@ -75,7 +76,9 @@ $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkdriver_ads1115.c \
 $(NK_SRC)/nkdriver_ds1307.c \
 $(NK_SRC)/nkdriver_ds3231.c \
+$(NK_SRC)/nkdriver_hd44780.c \
 $(NK_SRC)/nkdriver_ina219.c \
+$(NK_SRC)/nkdriver_lcd8574.c \
 $(NK_SRC)/nkdriver_lm75.c \
 $(NK_SRC)/nkdriver_max6675.c \
 $(NK_SRC)/nkdriver_mcp23017.c \

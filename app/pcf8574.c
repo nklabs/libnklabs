@@ -11,7 +11,7 @@
 const nk_i2c_device_t pcf8574 =
 {
     .i2c_bus = &ard_i2c_bus, // Which bus it's on
-    .i2c_addr = 0x20 // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
+    .i2c_addr = PCF8574_ADDR + 0 // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
 };
 
 // Command line
