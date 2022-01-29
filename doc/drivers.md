@@ -68,6 +68,8 @@ Good for LEDs or RC servos.
 
 [HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
 
+Through [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf):
+
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 * "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)
 
