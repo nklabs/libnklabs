@@ -66,9 +66,11 @@ typedef struct {
     int (*send_command)(void *ptr, uint8_t command); // Send command byte or command nibble (upper half)
     int (*send_data)(void *ptr, uint8_t *data, int len); // Send data bytes or data nibbles (upper half)
     void *ptr; // First argument for above functions
-    int width; // 
     bool f_bit; // Font select bit
     bool n_bit; // Number of lines select bit
+    uint8_t width; // Width of display
+    uint8_t height; // Height of display
+    uint8_t offsets[4]; // RAM address of each line
 } nk_hd44780_t;
 
 // Setup

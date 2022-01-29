@@ -41,6 +41,7 @@ ds3231.o \
 i2c.o \
 ina219.o \
 info_cmd.o \
+lcd8574.o \
 led.o \
 lm75.o \
 m24256.o \
@@ -76,7 +77,9 @@ nkdectab.o \
 nkdriver_ads1115.o \
 nkdriver_ds1307.o \
 nkdriver_ds3231.o \
+nkdriver_hd44780.o \
 nkdriver_ina219.o \
+nkdriver_lcd8574.o \
 nkdriver_lm75.o \
 nkdriver_max6675.o \
 nkdriver_mcp23017.o \

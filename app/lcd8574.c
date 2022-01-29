@@ -28,15 +28,21 @@ const nk_hd44780_t lcd_hd44780 =
     .send_command = (int (*)(void *, uint8_t cmd))nk_lcd8574_send_command,
     .send_data = (int (*)(void *, uint8_t *data, int len))nk_lcd8574_send_data,
     .ptr = &lcd8574,
-    .width = 40,
     .f_bit = false,
-    .n_bit = true
+    .n_bit = true,
+    .width = 20,
+    .height = 4,
+    // This works for both 1602 and 2004
+    .offsets = { 0, 40, 20, 84 }
+    // This probably makes more sense for 2004..
+    // { 0, 64, 20, 84 }
 };
 
 static int cmd_lcd8574(nkinfile_t *args)
 {
     int rtn;
     int row;
+    int col;
     char buf[32];
     if (nk_fscan(args, "init ")) {
         rtn = nk_lcd8574_init(&lcd8574, true, lcd_hd44780.f_bit, lcd_hd44780.n_bit);
@@ -48,8 +54,37 @@ static int cmd_lcd8574(nkinfile_t *args)
         if (rtn) {
             nk_printf("Pin access error\n");
         }
+    } else if (nk_fscan(args, "cursor on ")) {
+        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, true, false);
+        if (rtn) {
+            nk_printf("Pin access error\n");
+        }
+    } else if (nk_fscan(args, "cursor off ")) {
+        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, false, false);
+        if (rtn) {
+            nk_printf("Pin access error\n");
+        }
+    } else if (nk_fscan(args, "cursor blink ")) {
+        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, true, true);
+        if (rtn) {
+            nk_printf("Pin access error\n");
+        }
+    } else if (nk_fscan(args, "cursor %d %d ", &row, &col)) {
+        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row] + col);
+        if (rtn) {
+            nk_printf("Pin access error\n");
+        } else {
+            nk_printf("Cursor set to row %d col %d\n", row, col);
+        }
+    } else if (nk_fscan(args, "cursor %d ", &row)) {
+        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row]);
+        if (rtn) {
+            nk_printf("Pin access error\n");
+        } else {
+            nk_printf("Cursor set to row %d col 0\n", row);
+        }
     } else if (nk_fscan(args, "w %d %w ", &row, buf, sizeof(buf))) {
-        rtn = nk_hd44780_pos(&lcd_hd44780, row * lcd_hd44780.width);
+        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row]);
         if (rtn) {
             nk_printf("Pin access error\n");
         } else {
@@ -70,5 +105,7 @@ COMMAND(cmd_lcd8574,
     ">lcd8574                   TM1637 commands\n"
     "-lcd8574 init              Setup GPIO\n"
     "-lcd8574 cls               Clear screen\n"
-    "-lcd8574 w <row> \"message\" Write string to row\n"
+    "-lcd8574 cursor on|off|blink|<row>|<row> <col>\n"
+    "-                          Control cursor\n"
+    "-lcd8574 w <row> \"message\" Write string to row 0..3\n"
 )

@@ -12,6 +12,8 @@ typedef struct
     uint8_t regval; // Latest register write value
 } nk_lcd8574_t;
 
+// Many boards have the HD44780 connected this way:
+
 #define LCD8574_RS 0x01
 #define LCD8574_RW 0x02
 #define LCD8574_E 0x04
@@ -21,13 +23,24 @@ typedef struct
 #define LCD8574_D6 0x40
 #define LCD8574_D7 0x80
 
+// Just the upper four data bits are connected, so you have to use the HD44780
+// in 4-bit mode
+
 #define LCD8574_MASK 0xF0
+
+// Initialize HD44780 connected to a PCF8574
 
 int nk_lcd8574_init(nk_lcd8574_t *dev, bool backlight, bool f_bit, bool n_bit);
 
+// Control backlight
+
 int nk_lcd8574_backlight(nk_lcd8574_t *dev, bool on);
 
+// Send a command byte
+
 int nk_lcd8574_send_command(nk_lcd8574_t *dev, uint8_t cmd);
+
+// Send data bytes
 
 int nk_lcd8574_send_data(nk_lcd8574_t *dev, uint8_t *data, int len);
 

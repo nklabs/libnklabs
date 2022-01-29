@@ -66,6 +66,11 @@ Good for LEDs or RC servos.
 
 * [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 
+[HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
+
+* "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
+* "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)
+
 # On deck..
 
 * [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
