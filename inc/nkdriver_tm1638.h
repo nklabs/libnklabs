@@ -34,13 +34,24 @@ int nk_tm1638_init(const nk_tm1638_t *dev);
 
 // Write 8 digits to TM1638
 // This writes directly to the TM1638 refresh registers seguentially as is
-// Bright should be 0 - 7
-int nk_tm1638_display_raw(const nk_tm1638_t *dev, uint8_t bright, const uint16_t *digits);
+int nk_tm1638_display_raw(const nk_tm1638_t *dev, const uint16_t *digits);
 
 // Use built-in font to convert ASCII to 7-segments:
 // ASCII 0 - 9, A - F, a - F, space and - are converted
 // Otherwise use lower four bits for hexadecimal
 // Digits are remapped through digit_map, so the display order is up to you
-int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t bright, const uint8_t *digits);
+// dp is a bitmap of which decimal points to illuminate (SEG8) 
+// extra1 is a bitmap of which extra segments to illuminate (SEG9)
+// extra2 is a bitmap of which extra segments to illuminate (SEG10)
+int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t dp, uint8_t extra1, uint8_t extra2, const uint8_t *digits);
+
+// Turn display on with brightness 0..7
+int nk_tm1638_display_on(const nk_tm1638_t *dev, uint8_t brightness);
+
+// Turn display off
+int nk_tm1638_display_off(const nk_tm1638_t *dev);
+
+// Scan keypad: returns a single 32-bit word bitmap
+int nk_tm1638_keyscan(const nk_tm1638_t *dev, uint32_t *data);
 
 #endif

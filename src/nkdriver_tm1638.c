@@ -16,7 +16,7 @@
 
 // Convert hexadecimal to 7-segment
 
-uint16_t tm1638_font[17] =
+uint8_t tm1638_font[17] =
 {
     SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F, // 0
     SEG_B | SEG_C, // 1
@@ -68,7 +68,6 @@ int nk_tm1638_stop(const nk_tm1638_t *dev)
 
 int nk_tm1638_write_byte(const nk_tm1638_t *dev, uint8_t byte)
 {
-    int rtn;
     int x;
     int prev = 0;
     for (x = 0; x != 8; ++x)
@@ -103,6 +102,35 @@ int nk_tm1638_write_byte(const nk_tm1638_t *dev, uint8_t byte)
     return 0;
 }
 
+int nk_tm1638_read_byte(const nk_tm1638_t *dev, uint8_t *byte)
+{
+    int x;
+    uint8_t val = 0;
+
+    nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
+    nk_udelay(dev->trise + 1);
+
+    for (x = 0; x != 8; ++x)
+    {
+        val >>= 1;
+
+        nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
+        nk_pin_write(dev->clk, 0);
+        nk_udelay(dev->tfall + 1); // Delay for clock to fall
+
+        nk_udelay(dev->trise + 1); // Delay for data to rise
+
+        if (nk_pin_read(dev->dio)) // Check input
+            val |= 0x80;
+
+        nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
+        nk_udelay(dev->trise + 1);
+    }
+
+    *byte = val;
+    return 0;
+}
+
 int nk_tm1638_write(const nk_tm1638_t *dev, uint8_t *data, int len)
 {
     int rtn = 0;
@@ -117,7 +145,23 @@ int nk_tm1638_write(const nk_tm1638_t *dev, uint8_t *data, int len)
     return rtn;
 }
 
-int nk_tm1638_display_raw(const nk_tm1638_t *dev, uint8_t bright, const uint16_t *digits)
+int nk_tm1638_read(const nk_tm1638_t *dev, uint8_t cmd, uint8_t *data, int len)
+{
+    int rtn = 0;
+    nk_tm1638_start(dev);
+    rtn |= nk_tm1638_write_byte(dev, cmd);
+
+    while (len)
+    {
+        rtn |= nk_tm1638_read_byte(dev, data);
+        ++data;
+        --len;
+    }
+    nk_tm1638_stop(dev);
+    return rtn;
+}
+
+int nk_tm1638_display_raw(const nk_tm1638_t *dev, const uint16_t *digits)
 {
     int x;
     uint8_t data[17];
@@ -131,12 +175,10 @@ int nk_tm1638_display_raw(const nk_tm1638_t *dev, uint8_t bright, const uint16_t
         data[1 + x*2 + 1] = (digits[x] >> 8);
     }
     rtn |= nk_tm1638_write(dev, data, 17);
-    data[0] = TM1638_DISP_ON + bright;
-    rtn |= nk_tm1638_write(dev, data, 1);
     return rtn;
 }
 
-int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t bright, const uint8_t *digits)
+int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t dp, uint8_t extra1, uint8_t extra2, const uint8_t *digits)
 {
     uint16_t data[8];
     int x;
@@ -153,7 +195,37 @@ int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t bright, const uint8_t *dig
             val = tm1638_font[digits[x] - 'a' + 10];
         else
             val = tm1638_font[digits[x] & 0x0F];
+        // Decimal point
+        if (dp & (1 << x))
+            val |= 0x80;
+        // Extra segments
+        if (extra1 & (1 << x))
+            val |= 0x100;
+        if (extra2 & (1 << x))
+            val |= 0x200;
         data[dev->digit_map[x]] = val;
     }
-    return nk_tm1638_display_raw(dev, bright, data);
+    return nk_tm1638_display_raw(dev, data);
+}
+
+int nk_tm1638_display_off(const nk_tm1638_t *dev)
+{
+    uint8_t data[1];
+    data[0] = TM1638_DISP_OFF;
+    return nk_tm1638_write(dev, data, 1);
+}
+
+int nk_tm1638_display_on(const nk_tm1638_t *dev, uint8_t brightness)
+{
+    uint8_t data[1];
+    data[0] = TM1638_DISP_ON + brightness;
+    return nk_tm1638_write(dev, data, 1);
+}
+
+int nk_tm1638_keyscan(const nk_tm1638_t *dev, uint32_t *data)
+{
+    uint8_t val[4];
+    int rtn = nk_tm1638_read(dev, TM1638_MODE_READ, val, 4);
+    *data = val[0] + (val[1] << 8) + (val[2] << 16) + (val[3] << 24);
+    return rtn;
 }
