@@ -67,7 +67,7 @@ PCA9633 is for LEDs only- some LCD1602 modules use this chip for the backlight.
 
 PCA9685 is good for both LEDs and RC servos.
 
-## Display drivers
+## LED display drivers
 
 * [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 
@@ -87,7 +87,9 @@ on a shared pin).  It can drive up to eight common cathode LED digits (up to
 TM1638 is a 5V part, but uses open-drain drivers.  It is compatible with
 3.3V MCUs with 5V tolerant inputs as long a pull-ups to 5V are used.
 
-https://www.futurashop.it/image/catalog/data/Download/TM1638_V1.3_EN.pdf[HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
+## LCD display drivers
+
+[HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
 
 HD44780 natively uses a parallel interface, but can be used on I2C through
 this [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf). 
