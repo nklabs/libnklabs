@@ -25,6 +25,10 @@ On newer Adafruit Data Logging Shield.
 
 * [RV-8803 Real-Time Clock Module with I2C-Bus / Micro Crystal Switzerland](https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-8803-C7_App-Manual.pdf)
 
+## I2C Bus Switch
+
+* [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
+
 ## GPIO expanders
 
 * [MCP23017 16-Bit I2C I/O Expander with Serial Interface](https://www.microchip.com/en-us/product/mcp23017)
@@ -81,7 +85,6 @@ For example, as found on this display: [Waveshare LCD1602RGB](https://www.wavesh
 
 # On deck..
 
-* [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
 * [SSD1306 128 x 64 Dot Matrix OLED/PLED Segment/Common Driver with Controller](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 * [SI5351A PLL clock generator](https://cdn-shop.adafruit.com/datasheets/Si5351.pdf)
 * [AD9954 400 MSPS, 14-Bit, 1.8 V CMOS, Direct Digital Synthesizer](https://www.analog.com/en/products/ad9954.html)

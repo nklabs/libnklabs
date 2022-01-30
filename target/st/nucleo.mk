@@ -63,6 +63,7 @@ $(NK_APP)/pcf8575.c \
 $(NK_APP)/pins.c \
 $(NK_APP)/rtc.c \
 $(NK_APP)/rv8803.c \
+$(NK_APP)/tca9548a.c \
 $(NK_APP)/test_cmds.c \
 $(NK_APP)/tm1637.c \
 $(NK_APP)/w25q64.c \
@@ -93,6 +94,7 @@ $(NK_SRC)/nkdriver_pcf8574.c \
 $(NK_SRC)/nkdriver_pcf8575.c \
 $(NK_SRC)/nkdriver_rtc_stm32.c \
 $(NK_SRC)/nkdriver_rv8803.c \
+$(NK_SRC)/nkdriver_tca9548a.c \
 $(NK_SRC)/nkdriver_tm1637.c \
 $(NK_SRC)/nki2c.c \
 $(NK_SRC)/nki2c_eeprom.c \
