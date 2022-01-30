@@ -1,7 +1,8 @@
 # Drivers for common ICs
 
-We focused on providing drivers for ICs that are widely available on
-breakout boards (look on eBay, Adafruit and Amazon).
+Most of the devices referenced here are widely available on breakout boards
+designed around the Arduino and Raspberry-PI ecosystems (look on eBay,
+Adafruit, Amazon, etc.).
 
 ## SPI-Flash ICs
 
