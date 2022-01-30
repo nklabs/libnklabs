@@ -73,7 +73,7 @@ PCA9685 is good for both LEDs and RC servos.
 
 TM1637 uses a two-wire serial interface, but is not I2C (dedicated GPIOs
 must be used).  It can drive up to six common cathode LED digits (up to 8
-segments each).
+segments each).  It can also scan a 16-key keypad.
 
 TM1637 is a 5V part, but uses open-drain drivers.  It is compatible with
 3.3V MCUs with 5V tolerant inputs as long a pull-ups to 5V are used.
@@ -82,7 +82,7 @@ TM1637 is a 5V part, but uses open-drain drivers.  It is compatible with
 
 TM1638 uses a three-wire serial interface, but is not SPI (MISO and MOSI are
 on a shared pin).  It can drive up to eight common cathode LED digits (up to
-10 segments each).
+10 segments each).  It can also scan a 24-key keypad.
 
 TM1638 is a 5V part, but uses open-drain drivers.  It is compatible with
 3.3V MCUs with 5V tolerant inputs as long a pull-ups to 5V are used.

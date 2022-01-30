@@ -13,6 +13,8 @@
 #define SEG_F (0x20)
 #define SEG_G (0x40)
 #define SEG_DP (0x80)
+#define SEG_EXTRA1 (0x100)
+#define SEG_EXTRA2 (0x200)
 
 // Convert hexadecimal to 7-segment
 
@@ -197,12 +199,12 @@ int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t dp, uint8_t extra1, uint8_
             val = tm1638_font[digits[x] & 0x0F];
         // Decimal point
         if (dp & (1 << x))
-            val |= 0x80;
+            val |= SEG_DP;
         // Extra segments
         if (extra1 & (1 << x))
-            val |= 0x100;
+            val |= SEG_EXTRA1;
         if (extra2 & (1 << x))
-            val |= 0x200;
+            val |= SEG_EXTRA2;
         data[dev->digit_map[x]] = val;
     }
     return nk_tm1638_display_raw(dev, data);

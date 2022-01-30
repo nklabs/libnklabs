@@ -33,12 +33,41 @@ int nk_tm1637_init(const nk_tm1637_t *dev);
 // Write 6 digits to TM1637
 // This writes directly to the TM1637 refresh registers seguentially as is
 // Bright should be 0 - 7
-int nk_tm1637_display_raw(const nk_tm1637_t *dev, uint8_t bright, const uint8_t *digits);
+int nk_tm1637_display_raw(const nk_tm1637_t *dev, const uint8_t *digits);
 
 // Use built-in font to convert ASCII to 7-segments:
 // ASCII 0 - 9, A - F, a - F, space and - are converted
 // Otherwise use lower four bits for hexadecimal
 // Digits are remapped through digit_map, so the display order is up to you
-int nk_tm1637_display(const nk_tm1637_t *dev, uint8_t bright, const uint8_t *digits);
+// dp is a bitmap of which decimal points to illuminate (SEG8) 
+// 'digits' should be 6 bytes
+int nk_tm1637_display(const nk_tm1637_t *dev, uint8_t dp, const uint8_t *digits);
+
+// Turn display on with brightness 0..7
+int nk_tm1637_display_on(const nk_tm1637_t *dev, uint8_t brightness);
+
+// Turn display off
+int nk_tm1637_display_off(const nk_tm1637_t *dev);
+
+// Scan keypad: returns a single 8-bit word bitmap
+int nk_tm1637_keyscan(const nk_tm1637_t *dev, uint8_t *data);
+
+// Scan codes: (SG1:K1 means switch between K1 and SEG1/KS1 is closed)
+// SG1:K1	0xF7
+// SG1:K2	0xEF
+// SG2:K1	0xF6
+// SG2:K2	0xEE
+// SG3:K1	0xF5
+// SG3:K2	0xED
+// SG4:K1	0xF4
+// SG4:K2	0xEC
+// SG5:K1	0xF3
+// SG5:K2	0xEB
+// SG6:K1	0xF2
+// SG6:K2	0xEA
+// SG7:K1	0xF1
+// SG7:K2	0xE9
+// SG8:K1	0xF0
+// SG8:K2	0xE8
 
 #endif

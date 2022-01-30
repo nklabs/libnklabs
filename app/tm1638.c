@@ -45,7 +45,7 @@ static int cmd_tm1638(nkinfile_t *args)
         if (rtn) {
             nk_printf("No ack\n");
         } else {
-            nk_printf("Wrote %lu bytes\n", write_len);
+            nk_printf("Wrote %lu bytes\n", write_len + 1);
         }
     } else if (nk_fscan(args, "count ")) {
         rtn = nk_tm1638_init(&tm1638);
