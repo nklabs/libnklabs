@@ -20,8 +20,8 @@ void tm1638_count(void *data)
 {
     uint8_t buf[9];
     nk_snprintf((char *)buf, 9, "%6d--", tm1638_counter);
-    ++tm1638_counter;
     nk_tm1638_display(&tm1638, (1 << (tm1638_counter & 7)), (0x80 >> (tm1638_counter & 7)), 0, buf);
+    ++tm1638_counter;
     nk_sched(tm1638_tid, tm1638_count, NULL, 1000, "TM1638 counter");
 }
 
