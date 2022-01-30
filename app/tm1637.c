@@ -7,8 +7,12 @@ const nk_tm1637_t tm1637 =
 {
     .clk = &nk_pin_table[PIN_IDX_ARD_D2],
     .dio = &nk_pin_table[PIN_IDX_ARD_D3],
+    // With .1 pF capacitors (some boards have these by mistake):
     .trise = 200,
     .tfall = 3,
+    // With 100pF capacitors:
+    //.trise = 2,
+    //.tfall = 1,
     .digit_map = { 2, 1, 0, 5, 4, 3 } // Map so that digit[0] is left-mode
 };
 

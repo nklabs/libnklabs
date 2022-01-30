@@ -66,6 +66,7 @@ rv8803.o \
 tca9548a.o \
 test_cmds.o \
 tm1637.o \
+tm1638.o \
 w25q64.o \
 wdt.o \
 nkarch_atsam.o \
@@ -95,6 +96,7 @@ nkdriver_rtc_atsam.o \
 nkdriver_rv8803.o \
 nkdriver_tca9548a.o \
 nkdriver_tm1637.o \
+nkdriver_tm1638.o \
 nki2c.o \
 nki2c_atsam.o \
 nki2c_eeprom.o \

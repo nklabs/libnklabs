@@ -3,9 +3,11 @@
 
 #include "nkpin.h"
 
-#define TM1637_MODE 0x40 // Set mode to digit update
+#define TM1637_MODE_LOAD 0x40 // Set data mode to load digits
+#define TM1637_MODE_READ 0x42 // Set data mode to read keyboard
 #define TM1637_ADDR 0xC0 // Set starting write address to 0
-#define TM1637_DISP 0x88 // Enable display, set brightness
+#define TM1637_DISP_ON 0x88 // Display on, set brightness 0 - 7
+#define TM1637_DISP_OFF 0x80 // Display off
 
 typedef struct {
     const nk_pin_t *clk;

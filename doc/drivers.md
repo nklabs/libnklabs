@@ -71,11 +71,27 @@ PCA9685 is good for both LEDs and RC servos.
 
 * [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 
-[HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
+TM1637 uses a two-wire serial interface, but is not I2C (dedicated GPIOs
+must be used).  It can drive up to six common cathode LED digits (up to 8
+segments each).
+
+TM1637 is a 5V part, but uses open-drain drivers.  It is compatible with
+3.3V MCUs with 5V tolerant inputs as long a pull-ups to 5V are used.
+
+* [TM1638 Special Circuit for LED drive control](https://www.futurashop.it/image/catalog/data/Download/TM1638_V1.3_EN.pdf)
+
+TM1638 uses a three-wire serial interface, but is not SPI (MISO and MOSI are
+on a shared pin).  It can drive up to eight common cathode LED digits (up to
+10 segments each).
+
+TM1638 is a 5V part, but uses open-drain drivers.  It is compatible with
+3.3V MCUs with 5V tolerant inputs as long a pull-ups to 5V are used.
+
+https://www.futurashop.it/image/catalog/data/Download/TM1638_V1.3_EN.pdf[HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
 
 HD44780 natively uses a parallel interface, but can be used on I2C through
 this [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf). 
-Here are some LCD display modules based on these chips:
+https://www.futurashop.it/image/catalog/data/Download/TM1638_V1.3_EN.pdfHere are some LCD display modules based on these chips:
 
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 * "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)

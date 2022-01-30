@@ -1,9 +1,9 @@
-// TM1637 7-segment display driver
+// TM1638 7-segment display driver
 
 // This is not I2C: bits are backwards and there is no address byte
 
 #include <string.h>
-#include "nkdriver_tm1637.h"
+#include "nkdriver_tm1638.h"
 
 #define SEG_A (0x01)
 #define SEG_B (0x02)
@@ -16,7 +16,7 @@
 
 // Convert hexadecimal to 7-segment
 
-uint8_t font[17] =
+uint16_t tm1638_font[17] =
 {
     SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F, // 0
     SEG_B | SEG_C, // 1
@@ -40,39 +40,33 @@ uint8_t font[17] =
 // Some displays have large capacitors on the SDA / SCK lines,
 // so rising edge is quite slow.
 
-int nk_tm1637_init(const nk_tm1637_t *dev)
+int nk_tm1638_init(const nk_tm1638_t *dev)
 {
-    nk_pin_write(dev->clk, 0);
-    nk_pin_write(dev->dio, 0);
+    nk_pin_write(dev->clk, 1);
+    nk_pin_write(dev->dio, 1);
+    nk_pin_write(dev->stb, 1);
     nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
     nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
+    nk_pin_setmode(dev->stb, NK_PINMODE_INPUT_PULLUP);
     return 0;
 }
 
-int nk_tm1637_start(const nk_tm1637_t *dev)
+int nk_tm1638_start(const nk_tm1638_t *dev)
 {
-    nk_pin_setmode(dev->dio, NK_PINMODE_OUTPUT);
-    nk_pin_write(dev->dio, 0);
-    nk_udelay(dev->tfall + 1);
-    nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
-    nk_pin_write(dev->clk, 0);
+    nk_pin_setmode(dev->stb, NK_PINMODE_OUTPUT);
+    nk_pin_write(dev->stb, 0);
     nk_udelay(dev->tfall + 1);
     return 0;
 }
 
-int nk_tm1637_stop(const nk_tm1637_t *dev)
+int nk_tm1638_stop(const nk_tm1638_t *dev)
 {
-    nk_pin_setmode(dev->dio, NK_PINMODE_OUTPUT);
-    nk_pin_write(dev->dio, 0);
-    nk_udelay(dev->tfall + 1);
-    nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
-    nk_udelay(dev->trise + 1);
-    nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
+    nk_pin_setmode(dev->stb, NK_PINMODE_INPUT_PULLUP);
     nk_udelay(dev->trise + 1);
     return 0;
 }
 
-int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
+int nk_tm1638_write_byte(const nk_tm1638_t *dev, uint8_t byte)
 {
     int rtn;
     int x;
@@ -98,84 +92,68 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
                 nk_udelay(1); // Previous bit was low, so save time
             prev = 0;
         }
-        nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
-        nk_udelay(dev->trise + 1);
         nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
         nk_pin_write(dev->clk, 0);
         nk_udelay(dev->tfall + 1);
+        nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
+        nk_udelay(dev->trise + 1);
         byte >>= 1;
     }
 
-    // Check for ACK
-    nk_pin_setmode(dev->dio, NK_PINMODE_INPUT_PULLUP);
-    if (prev)
-        nk_udelay(dev->tfall + 1); // Previous bit was high, so save time: but wait fall for tm1637 to drive ack
-    else
-        nk_udelay(dev->trise + 1);
-
-    nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
-    nk_udelay(dev->trise + 1);
-
-    rtn = nk_pin_read(dev->dio);
-    nk_pin_setmode(dev->clk, NK_PINMODE_OUTPUT);
-    nk_pin_write(dev->clk, 0);
-
-    nk_udelay(dev->tfall + 1);
-
-    // Should be low for ACK..
-    return rtn;
+    return 0;
 }
 
-int nk_tm1637_write(const nk_tm1637_t *dev, uint8_t *data, int len)
+int nk_tm1638_write(const nk_tm1638_t *dev, uint8_t *data, int len)
 {
     int rtn = 0;
-    nk_tm1637_start(dev);
+    nk_tm1638_start(dev);
     while (len)
     {
-        rtn |= nk_tm1637_write_byte(dev, *data);
+        rtn |= nk_tm1638_write_byte(dev, *data);
         ++data;
         --len;
     }
-    nk_tm1637_stop(dev);
+    nk_tm1638_stop(dev);
     return rtn;
 }
 
-int nk_tm1637_display_raw(const nk_tm1637_t *dev, uint8_t bright, const uint8_t *digits)
+int nk_tm1638_display_raw(const nk_tm1638_t *dev, uint8_t bright, const uint16_t *digits)
 {
     int x;
-    uint8_t data[7];
+    uint8_t data[17];
     int rtn;
-    data[0] = TM1637_MODE_LOAD;
-    rtn = nk_tm1637_write(dev, data, 1);
-    data[0] = TM1637_ADDR;
-    for (x = 0; x != 6; ++x)
+    data[0] = TM1638_MODE_LOAD;
+    rtn = nk_tm1638_write(dev, data, 1);
+    data[0] = TM1638_ADDR;
+    for (x = 0; x != 8; ++x)
     {
-        data[x + 1] = digits[x];
+        data[1 + x*2] = digits[x];
+        data[1 + x*2 + 1] = (digits[x] >> 8);
     }
-    rtn |= nk_tm1637_write(dev, data, 7);
-    data[0] = TM1637_DISP_ON + bright;
-    rtn |= nk_tm1637_write(dev, data, 1);
+    rtn |= nk_tm1638_write(dev, data, 17);
+    data[0] = TM1638_DISP_ON + bright;
+    rtn |= nk_tm1638_write(dev, data, 1);
     return rtn;
 }
 
-int nk_tm1637_display(const nk_tm1637_t *dev, uint8_t bright, const uint8_t *digits)
+int nk_tm1638_display(const nk_tm1638_t *dev, uint8_t bright, const uint8_t *digits)
 {
-    uint8_t data[6];
+    uint16_t data[8];
     int x;
-    for (x = 0; x != 6; ++x)
+    for (x = 0; x != 8; ++x)
     {
-        uint8_t val;
+        uint16_t val;
         if (digits[x] == '-')
-            val = font[16];
+            val = tm1638_font[16];
         else if (digits[x] == ' ')
             val = 0; // All off
         else if (digits[x] >= 'A' && digits[x] <= 'F')
-            val = font[digits[x] - 'A' + 10];
+            val = tm1638_font[digits[x] - 'A' + 10];
         else if (digits[x] >= 'a' && digits[x] <= 'f')
-            val = font[digits[x] - 'a' + 10];
+            val = tm1638_font[digits[x] - 'a' + 10];
         else
-            val = font[digits[x] & 0x0F];
+            val = tm1638_font[digits[x] & 0x0F];
         data[dev->digit_map[x]] = val;
     }
-    return nk_tm1637_display_raw(dev, bright, data);
+    return nk_tm1638_display_raw(dev, bright, data);
 }
