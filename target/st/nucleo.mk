@@ -31,6 +31,7 @@ NK_GIT_REV := \"$(shell git rev-parse HEAD)-$(shell if git diff-index --quiet HE
 # Our soruce files..
 C_SOURCES += \
 $(NK_APP)/ads1115.c \
+$(NK_APP)/aip31068.c \
 $(NK_APP)/app_main.c \
 $(NK_APP)/basic_cmds.c \
 $(NK_APP)/button.c \
@@ -74,6 +75,7 @@ $(NK_SRC)/nkdatetime.c \
 $(NK_SRC)/nkdbase.c \
 $(NK_SRC)/nkdectab.c \
 $(NK_SRC)/nkdriver_ads1115.c \
+$(NK_SRC)/nkdriver_aip31068.c \
 $(NK_SRC)/nkdriver_ds1307.c \
 $(NK_SRC)/nkdriver_ds3231.c \
 $(NK_SRC)/nkdriver_hd44780.c \

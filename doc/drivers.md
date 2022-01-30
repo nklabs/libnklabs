@@ -73,10 +73,15 @@ Through [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pd
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 * "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)
 
+Some ICs have and I2C interface built-in:
+
+* [AIP31068 40 SEG / 16 COM Driver & Controller for Dot Matrix LCD](https://www.newhavendisplay.com/resources_dataFiles/datasheets/LCDs/AiP31068.pdf)
+
+For example, as found on this display: [Waveshare LCD1602RGB](https://www.waveshare.com/lcd1602-rgb-module.htm)
+
 # On deck..
 
 * [TCA9548A 8-channel 1.65- to 5.5-V I2C/SMBus switch with reset & voltage translation](https://www.ti.com/product/TCA9548A)
-* [AIP31068 40 SEG / 16 COM Driver & Controller for Dot Matrix LCD](https://www.newhavendisplay.com/resources_dataFiles/datasheets/LCDs/AiP31068.pdf)
 * [SSD1306 128 x 64 Dot Matrix OLED/PLED Segment/Common Driver with Controller](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 * [SI5351A PLL clock generator](https://cdn-shop.adafruit.com/datasheets/Si5351.pdf)
 * [AD9954 400 MSPS, 14-Bit, 1.8 V CMOS, Direct Digital Synthesizer](https://www.analog.com/en/products/ad9954.html)
