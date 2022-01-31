@@ -98,7 +98,7 @@ Here are some LCD display modules based on these chips:
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 * "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)
 
-Some LCD display ICs have and I2C interface built-in:
+Some LCD display ICs have an I2C interface built-in:
 
 * [AIP31068 40 SEG / 16 COM Driver & Controller for Dot Matrix LCD](https://www.newhavendisplay.com/resources_dataFiles/datasheets/LCDs/AiP31068.pdf)
 
