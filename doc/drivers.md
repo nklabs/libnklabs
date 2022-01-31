@@ -93,7 +93,7 @@ TM1638 is a 5V part, but uses open-drain drivers.  It is compatible with
 
 HD44780 natively uses a parallel interface, but can be used on I2C through
 this [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf). 
-https://www.futurashop.it/image/catalog/data/Download/TM1638_V1.3_EN.pdfHere are some LCD display modules based on these chips:
+Here are some LCD display modules based on these chips:
 
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 * "2004A" (4 line, 20 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC2004A-01](https://cdn-shop.adafruit.com/datasheets/TC2004A-01.pdf)
