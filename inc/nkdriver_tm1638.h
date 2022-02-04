@@ -1,6 +1,7 @@
 #ifndef _Inkdriver_tm1638
 #define _Inkdriver_tm1638
 
+#include <stdbool.h>
 #include "nkpin.h"
 
 #define TM1638_MODE_LOAD 0x40 // Set data mode to load digits
@@ -27,7 +28,9 @@ typedef struct {
     // Segments seem to be connected consistently between units,
     // but digits are not.  Here is a mapping:
 
-    uint8_t digit_map[8];
+    uint8_t digit_map[10];
+
+    bool ca; // True for common anode (10 digits) instead of common cathode (8 digits)
 } nk_tm1638_t;
 
 int nk_tm1638_init(const nk_tm1638_t *dev);

@@ -98,6 +98,7 @@ $(NK_SRC)/nkdriver_rv8803.c \
 $(NK_SRC)/nkdriver_tca9548a.c \
 $(NK_SRC)/nkdriver_tm1637.c \
 $(NK_SRC)/nkdriver_tm1638.c \
+$(NK_SRC)/nkfont_7seg.c \
 $(NK_SRC)/nki2c.c \
 $(NK_SRC)/nki2c_eeprom.c \
 $(NK_SRC)/nki2c_stm.c \
