@@ -54,7 +54,7 @@ const uint8_t nkfont_7seg[128] =
     /* 0x1F     */ 0,
 
     /* 0x20 SPC */ 0,
-    /* 0x21 !   */ SEG_B | SEG_C | SEG_DP,
+    /* 0x21 !   */ SEG_B | SEG_DP,
     /* 0x22 "   */ SEG_F | SEG_B,
     /* 0x23 #   */ 0,
     /* 0x24 $   */ 0,

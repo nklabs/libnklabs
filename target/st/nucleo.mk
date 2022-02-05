@@ -38,6 +38,7 @@ $(NK_APP)/button.c \
 $(NK_APP)/database.c \
 $(NK_APP)/ds1307.c \
 $(NK_APP)/ds3231.c \
+$(NK_APP)/ht16k33.c \
 $(NK_APP)/i2c.c \
 $(NK_APP)/ina219.c \
 $(NK_APP)/info_cmd.c \
@@ -81,6 +82,7 @@ $(NK_SRC)/nkdriver_aip31068.c \
 $(NK_SRC)/nkdriver_ds1307.c \
 $(NK_SRC)/nkdriver_ds3231.c \
 $(NK_SRC)/nkdriver_hd44780.c \
+$(NK_SRC)/nkdriver_ht16k33.c \
 $(NK_SRC)/nkdriver_ina219.c \
 $(NK_SRC)/nkdriver_lcd8574.c \
 $(NK_SRC)/nkdriver_lm75.c \
@@ -98,6 +100,7 @@ $(NK_SRC)/nkdriver_rv8803.c \
 $(NK_SRC)/nkdriver_tca9548a.c \
 $(NK_SRC)/nkdriver_tm1637.c \
 $(NK_SRC)/nkdriver_tm1638.c \
+$(NK_SRC)/nkfont_14seg.c \
 $(NK_SRC)/nkfont_7seg.c \
 $(NK_SRC)/nki2c.c \
 $(NK_SRC)/nki2c_eeprom.c \
