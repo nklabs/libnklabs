@@ -12,141 +12,160 @@
 //    EL  M  NC
 //     DDDDDDD   DP
 
+/*
+ *  Project     Segmented LED Display - ASCII Library
+ *  @author     David Madison
+ *  @link       github.com/dmadison/Segmented-LED-Display-ASCII
+ *  @license    MIT - Copyright (c) 2017 David Madison
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+ 
 const uint16_t nkfont_14seg[128] =
 {
-    /* 0x00 NUL */ SEG14_A | SEG14_B | SEG14_C | SEG14_D | SEG14_E | SEG14_F,
-    /* 0x01     */ SEG14_B | SEG14_C,
-    /* 0x02     */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x03     */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x04     */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_B | SEG14_C,
-    /* 0x05     */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x06     */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D | SEG14_C,
-    /* 0x07     */ SEG14_A | SEG14_B | SEG14_C,
-    /* 0x08     */ SEG14_A | SEG14_B | SEG14_C | SEG14_D | SEG14_E | SEG14_F | SEG14_G1 | SEG14_G2,
-    /* 0x09     */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_F | SEG14_C,
-    /* 0x0A     */ SEG14_A | SEG14_B | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_E,
-    /* 0x0B     */ SEG14_F | SEG14_E | SEG14_D | SEG14_C | SEG14_G1 | SEG14_G2,
-    /* 0x0C     */ SEG14_A | SEG14_F | SEG14_E | SEG14_D,
-    /* 0x0D     */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D | SEG14_B,
-    /* 0x0E     */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x0F     */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E,
-
-    /* 0x10     */ 0,
-    /* 0x11     */ 0,
-    /* 0x12     */ 0,
-    /* 0x13     */ 0,
-    /* 0x14     */ 0,
-    /* 0x15     */ 0,
-    /* 0x16     */ 0,
-    /* 0x17     */ 0,
-    /* 0x18     */ 0,
-    /* 0x19     */ 0,
-    /* 0x1A     */ 0,
-    /* 0x1B     */ 0,
-    /* 0x1C     */ 0,
-    /* 0x1D     */ 0,
-    /* 0x1E     */ 0,
-    /* 0x1F     */ 0,
-
-    /* 0x20 SPC */ 0,
-    /* 0x21 !   */ SEG14_B | SEG14_DP,
-    /* 0x22 "   */ SEG14_F | SEG14_B,
-    /* 0x23 #   */ 0,
-    /* 0x24 $   */ 0,
-    /* 0x25 %   */ 0,
-    /* 0x26 &   */ 0,
-    /* 0x27 '   */ SEG14_F,
-    /* 0x28 (   */ 0,
-    /* 0x29 )   */ 0,
-    /* 0x2A *   */ 0,
-    /* 0x2B +   */ 0,
-    /* 0x2C ,   */ SEG14_E,
-    /* 0x2D -   */ SEG14_G1 | SEG14_G2,
-    /* 0x2E .   */ SEG14_DP,
-    /* 0x2F /   */ SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E,
-
-    /* 0x30 0   */ SEG14_A | SEG14_B | SEG14_C | SEG14_D | SEG14_E | SEG14_F,
-    /* 0x31 1   */ SEG14_B | SEG14_C,
-    /* 0x32 2   */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x33 3   */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x34 4   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_B | SEG14_C,
-    /* 0x35 5   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x36 6   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D | SEG14_C,
-    /* 0x37 7   */ SEG14_A | SEG14_B | SEG14_C,
-    /* 0x38 8   */ SEG14_A | SEG14_B | SEG14_C | SEG14_D | SEG14_E | SEG14_F | SEG14_G1 | SEG14_G2,
-    /* 0x39 9   */ SEG14_A | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_F | SEG14_C,
-    /* 0x3A :   */ 0,
-    /* 0x3B ;   */ 0,
-    /* 0x3C <   */ 0,
-    /* 0x3D =   */ SEG14_G1 | SEG14_G2 | SEG14_D,
-    /* 0x3E >   */ 0,
-    /* 0x3F ?   */ SEG14_F | SEG14_A | SEG14_B | SEG14_C | SEG14_DP,
-
-    /* 0x40 @   */ 0,
-    /* 0x41 A   */ SEG14_A | SEG14_B | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_E,
-    /* 0x42 B   */ SEG14_F | SEG14_E | SEG14_D | SEG14_C | SEG14_G1 | SEG14_G2,
-    /* 0x43 C   */ SEG14_A | SEG14_F | SEG14_E | SEG14_D,
-    /* 0x44 D   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D | SEG14_B,
-    /* 0x45 E   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x46 F   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x47 G   */ SEG14_A | SEG14_F | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x48 H   */ SEG14_F | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C,
-    /* 0x49 I   */ SEG14_B | SEG14_C,
-    /* 0x4A J   */ SEG14_B | SEG14_C | SEG14_D,
-    /* 0x4B K   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x4C L   */ SEG14_F | SEG14_E | SEG14_D,
-    /* 0x4D M   */ 0,
-    /* 0x4E N   */ SEG14_E | SEG14_G1 | SEG14_G2 | SEG14_C,
-    /* 0x4F O   */ SEG14_A | SEG14_G1 | SEG14_G2 | SEG14_B | SEG14_E | SEG14_C | SEG14_D,
-
-    /* 0x50 P   */ SEG14_A | SEG14_F | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x51 Q   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D | SEG14_DP,
-    /* 0x52 R   */ SEG14_E | SEG14_G1 | SEG14_G2,
-    /* 0x53 S   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x54 T   */ SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C,
-    /* 0x55 U   */ SEG14_E | SEG14_D | SEG14_C | SEG14_F | SEG14_B,
-    /* 0x56 V   */ 0,
-    /* 0x57 W   */ 0,
-    /* 0x58 X   */ 0,
-    /* 0x59 Y   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_B | SEG14_C | SEG14_D,
-    /* 0x5A Z   */ 0,
-    /* 0x5B [   */ 0,
-    /* 0x5C \   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C,
-    /* 0x5D ]   */ 0,
-    /* 0x5E ^   */ 0,
-    /* 0x5F _   */ SEG14_D,
-
-    /* 0x60 `   */ SEG14_B,
-    /* 0x61 a   */ SEG14_A | SEG14_B | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_E,
-    /* 0x62 b   */ SEG14_F | SEG14_E | SEG14_D | SEG14_C | SEG14_G1 | SEG14_G2,
-    /* 0x63 c   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x64 d   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D | SEG14_B,
-    /* 0x65 e   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_D,
-    /* 0x66 f   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x67 g   */ SEG14_A | SEG14_F | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x68 h   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C,
-    /* 0x69 i   */ SEG14_C,
-    /* 0x6A j   */ SEG14_B | SEG14_C | SEG14_D,
-    /* 0x6B k   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x6C l   */ SEG14_F | SEG14_E,
-    /* 0x6D m   */ 0,
-    /* 0x6E n   */ SEG14_E | SEG14_G1 | SEG14_G2 | SEG14_C,
-    /* 0x6F o   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D,
-
-    /* 0x70 p   */ SEG14_A | SEG14_F | SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_E,
-    /* 0x71 q   */ SEG14_G1 | SEG14_G2 | SEG14_E | SEG14_C | SEG14_D | SEG14_DP,
-    /* 0x72 r   */ SEG14_E | SEG14_G1 | SEG14_G2,
-    /* 0x73 s   */ SEG14_A | SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_C | SEG14_D,
-    /* 0x74 t   */ SEG14_B | SEG14_G1 | SEG14_G2 | SEG14_C,
-    /* 0x75 u   */ SEG14_E | SEG14_D | SEG14_C,
-    /* 0x76 v   */ 0,
-    /* 0x77 w   */ 0,
-    /* 0x78 x   */ 0,
-    /* 0x79 y   */ SEG14_F | SEG14_G1 | SEG14_G2 | SEG14_B | SEG14_C | SEG14_D,
-    /* 0x7A z   */ 0,
-    /* 0x7B {   */ 0,
-    /* 0x7C |   */ 0,
-    /* 0x7D }   */ 0,
-    /* 0x7E ~   */ 0,
-    /* 0x7F DEL */ 0
+	0b000110000111111, /* 0 */
+	0b000010000000110, /* 1 */
+	0b000000011011011, /* 2 */
+	0b000000010001111, /* 3 */
+	0b000000011100110, /* 4 */
+	0b010000001101001, /* 5 */
+	0b000000011111101, /* 6 */
+	0b000000000000111, /* 7 */
+	0b000000011111111, /* 8 */
+	0b000000011101111, /* 9 */
+	0b000000011110111, /* A */
+	0b001001010001111, /* B */
+	0b000000000111001, /* C */
+	0b001001000001111, /* D */
+	0b000000001111001, /* E */
+	0b000000001110001, /* F */
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0b000000000000000, /* (space) */
+	0b100000000000110, /* ! */
+	0b000001000000010, /* " */
+	0b001001011001110, /* # */
+	0b001001011101101, /* $ */
+	0b011111111100100, /* % */
+	0b010001101011001, /* & */
+	0b000001000000000, /* ' */
+	0b010010000000000, /* ( */
+	0b000100100000000, /* ) */
+	0b011111111000000, /* * */
+	0b001001011000000, /* + */
+	0b000100000000000, /* , */
+	0b000000011000000, /* - */
+	0b100000000000000, /* . */
+	0b000110000000000, /* / */
+	0b000110000111111, /* 0 */
+	0b000010000000110, /* 1 */
+	0b000000011011011, /* 2 */
+	0b000000010001111, /* 3 */
+	0b000000011100110, /* 4 */
+	0b010000001101001, /* 5 */
+	0b000000011111101, /* 6 */
+	0b000000000000111, /* 7 */
+	0b000000011111111, /* 8 */
+	0b000000011101111, /* 9 */
+	0b001001000000000, /* : */
+	0b000101000000000, /* ; */
+	0b010010001000000, /* < */
+	0b000000011001000, /* = */
+	0b000100110000000, /* > */
+	0b101000010000011, /* ? */
+	0b000001010111011, /* @ */
+	0b000000011110111, /* A */
+	0b001001010001111, /* B */
+	0b000000000111001, /* C */
+	0b001001000001111, /* D */
+	0b000000001111001, /* E */
+	0b000000001110001, /* F */
+	0b000000010111101, /* G */
+	0b000000011110110, /* H */
+	0b001001000001001, /* I */
+	0b000000000011110, /* J */
+	0b010010001110000, /* K */
+	0b000000000111000, /* L */
+	0b000010100110110, /* M */
+	0b010000100110110, /* N */
+	0b000000000111111, /* O */
+	0b000000011110011, /* P */
+	0b010000000111111, /* Q */
+	0b010000011110011, /* R */
+	0b000000011101101, /* S */
+	0b001001000000001, /* T */
+	0b000000000111110, /* U */
+	0b000110000110000, /* V */
+	0b010100000110110, /* W */
+	0b010110100000000, /* X */
+	0b000000011101110, /* Y */
+	0b000110000001001, /* Z */
+	0b000000000111001, /* [ */
+	0b010000100000000, /* \ */
+	0b000000000001111, /* ] */
+	0b010100000000000, /* ^ */
+	0b000000000001000, /* _ */
+	0b000000100000000, /* ` */
+	0b001000001011000, /* a */
+	0b010000001111000, /* b */
+	0b000000011011000, /* c */
+	0b000100010001110, /* d */
+	0b000100001011000, /* e */
+	0b001010011000000, /* f */
+	0b000010010001110, /* g */
+	0b001000001110000, /* h */
+	0b001000000000000, /* i */
+	0b000101000010000, /* j */
+	0b011011000000000, /* k */
+	0b000000000110000, /* l */
+	0b001000011010100, /* m */
+	0b001000001010000, /* n */
+	0b000000011011100, /* o */
+	0b000000101110000, /* p */
+	0b000010010000110, /* q */
+	0b000000001010000, /* r */
+	0b010000010001000, /* s */
+	0b000000001111000, /* t */
+	0b000000000011100, /* u */
+	0b000100000010000, /* v */
+	0b010100000010100, /* w */
+	0b010110100000000, /* x */
+	0b000001010001110, /* y */
+	0b000100001001000, /* z */
+	0b000100101001001, /* { */
+	0b001001000000000, /* | */
+	0b010010010001001, /* } */
+	0b000110011000000, /* ~ */
+	0b000000000000000 /* (del) */
 };
