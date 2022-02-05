@@ -107,7 +107,7 @@ COMMAND(cmd_tm1638,
     "-tm1638 on <brightness>    Display on with brightness 0 - 7\n"
     "-tm1638 off                Display off\n"
     "-tm1638 scan               Keyscan\n"
-    "-tm1638 w ff ff ..         Write hex bytes, translate ASCII to 7-segment\n"
+    "-tm1638 w <ascii>          Write ASCII to 7-segment\n"
     "-tm1638 raw ffff ffff ..   Write 8 16-bit words to TM1638 memory\n"
     "-tm1638 count              Start counter\n"
 )

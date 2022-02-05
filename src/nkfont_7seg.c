@@ -102,7 +102,7 @@ const uint8_t nkfont_7seg[128] =
     /* 0x4C L   */ SEG_F | SEG_E | SEG_D,
     /* 0x4D M   */ 0,
     /* 0x4E N   */ SEG_E | SEG_G | SEG_C,
-    /* 0x4F O   */ SEG_A | SEG_G | SEG_B | SEG_E | SEG_C | SEG_D,
+    /* 0x4F O   */ SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F,
 
     /* 0x50 P   */ SEG_A | SEG_F | SEG_B | SEG_G | SEG_E,
     /* 0x51 Q   */ SEG_G | SEG_E | SEG_C | SEG_D | SEG_DP,

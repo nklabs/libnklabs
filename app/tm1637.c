@@ -37,6 +37,7 @@ void tm1637_count(void *data)
 
 static int cmd_tm1637(nkinfile_t *args)
 {
+    uint8_t buf[12];
     int rtn;
     int bright;
     if (nk_fscan(args, "init ")) {
@@ -45,17 +46,14 @@ static int cmd_tm1637(nkinfile_t *args)
         if (rtn) {
             nk_printf("Pin access error\n");
         }
-    } else if (nk_fscan(args, "w %e")) {
+    } else if (nk_fscan(args, "w %w", buf, sizeof(buf))) {
 	uint8_t write_array[6];
-	uint32_t write_len = 0;
-        while (nk_fscan(args, "%hhx %e", &write_array[write_len]))
-            if (write_len != 5)
-	        ++write_len;
+	nk_sfprintf((char *)write_array, sizeof(write_array), "%s", buf);
         rtn = nk_tm1637_display(&tm1637, 0, write_array);
         if (rtn) {
             nk_printf("No ack\n");
         } else {
-            nk_printf("Wrote %lu bytes\n", write_len + 1);
+            nk_printf("Wrote '%s'\n", buf);
         }
     } else if (nk_fscan(args, "count ")) {
         rtn = nk_tm1637_init(&tm1637);
@@ -97,6 +95,7 @@ COMMAND(cmd_tm1637,
     "-tm1637 on <brightness>    Display on with brightness 0 - 7\n"
     "-tm1637 off                Display off\n"
     "-tm1637 scan               Keyscan\n"
-    "-tm1637 w ff ff ..         Write bytes\n"
+    "-tm1637 w <ascii>          Write ASCII to 7-segment\n"
+    "-tm1637 raw ff ff ..       Write 6 8-bit words to TM1637 memory\n"
     "-tm1637 count              Start counter\n"
 )
