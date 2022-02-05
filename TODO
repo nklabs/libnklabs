@@ -1,3 +1,12 @@
+displays:
+  link multiple displays together as one
+  nkoutfile_t for them? maybe vt100 emul..
+
+get rid of old hex dump address.. not really needed
+
+try to reduce size, don't use float for any driver..
+
+
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
   Missing flash size for info
@@ -29,6 +38,7 @@ arduino:
   attachInterrupt, detachInterrupt
   analogRead, analogReference,
   analogWrite
+  pwm out, pulse in
 
 mcuflash:
 
@@ -60,17 +70,6 @@ Add more MCU peripheral drivers:
   CAN, ADC, DAC, etc..
 
   fat filesystem + sdio?
-
-Add more common external peripheral drivers:
-
-  TCA9548A   i2c mux
-  lcd1602 using AIP31068 + PCA9633
-  SSD1306    OLED display
-  si5351a    PLL clock generator
-  TM1637/TM1638     7-segment driver
-  SC16IS750  I2C serial port
-  AD9954     DDS
-  74HC595    SPI output port
 
 event driven:
 

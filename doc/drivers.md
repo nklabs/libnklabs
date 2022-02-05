@@ -69,6 +69,10 @@ PCA9685 is good for both LEDs and RC servos.
 
 ## LED display drivers
 
+* [HT16K33 I2C 16x8 LED drive with keyscan](https://cdn-shop.adafruit.com/datasheets/ht16K33v110.pdf)
+
+HT16K33 is use on [Adafruit 14-segment LED Alphanumeric Backpack](https://www.adafruit.com/product/1910)
+
 * [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 
 TM1637 uses a two-wire serial interface, but is not I2C (dedicated GPIOs
