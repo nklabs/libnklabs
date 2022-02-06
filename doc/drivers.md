@@ -73,6 +73,11 @@ PCA9685 is good for both LEDs and RC servos.
 
 HT16K33 is use on [Adafruit 14-segment LED Alphanumeric Backpack](https://www.adafruit.com/product/1910)
 
+* [MAX7219/MAX7221 Serially Interfaced, 8-Digit LED Display Drivers](https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf)
+
+MAX7219 is found on a number of 8-digit LED display boards.  MAX7219 is
+serially cascadable.
+
 * [TM1637 7-segment LED display driver](https://www.mcielectronics.cl/website_MCI/static/documents/Datasheet_TM1637.pdf)
 
 TM1637 uses a two-wire serial interface, but is not I2C (dedicated GPIOs

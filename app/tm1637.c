@@ -1,3 +1,4 @@
+#include <string.h>
 #include "nkcli.h"
 #include "nksched.h"
 #include "nkdriver_tm1637.h"
@@ -54,6 +55,19 @@ static int cmd_tm1637(nkinfile_t *args)
             nk_printf("No ack\n");
         } else {
             nk_printf("Wrote '%s'\n", buf);
+        }
+    } else if (nk_fscan(args, "raw %e")) {
+	uint8_t write_array[6];
+	uint32_t write_len = 0;
+	memset(write_array, 0, sizeof(write_array));
+        while (nk_fscan(args, "%hx %e", &write_array[write_len]))
+            if (write_len != 5)
+	        ++write_len;
+        rtn = nk_tm1637_display_raw(&tm1637, write_array);
+        if (rtn) {
+            nk_printf("No ack\n");
+        } else {
+            nk_printf("Wrote %lu bytes\n", write_len + 1);
         }
     } else if (nk_fscan(args, "count ")) {
         rtn = nk_tm1637_init(&tm1637);
