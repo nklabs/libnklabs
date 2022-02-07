@@ -34,11 +34,9 @@ const struct nk_spiflash_info m95256 =
     .n_erase_options = 0
 };
 
-uint32_t m95256_old_addr;
-
 static int cmd_m95256(nkinfile_t *args)
 {
-    return nk_spiflash_command(&m95256, args, &m95256_old_addr);
+    return nk_spiflash_command(&m95256, args);
 }
 
 COMMAND(cmd_m95256,
@@ -47,7 +45,6 @@ COMMAND(cmd_m95256,
     "-m95256   wr <addr> <val>  Write word\n"
     "-m95256   hd <addr> <len>  Hex dump memory\n"
     "-m95256   hd <addr>        Hex dump 256 bytes\n"
-    "-m95256   hd               Hex dump next 256 bytes\n"
     "-m95256   crc <addr> <len> Calculate CRC of memory\n"
     "-m95256   erase <addr> <len>\n"
     "-                          Erase memory\n"

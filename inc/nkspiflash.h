@@ -100,6 +100,6 @@ void nk_spiflash_hex_dump(const struct nk_spiflash_info *info, uint32_t addr, ui
 uint32_t nk_spiflash_crc(const struct nk_spiflash_info *info, uint32_t addr, uint32_t len);
 
 // Generic user interface to SPI-flash or EEPROM
-int nk_spiflash_command(const struct nk_spiflash_info *info, nkinfile_t *args, uint32_t *old_addr);
+int nk_spiflash_command(const struct nk_spiflash_info *info, nkinfile_t *args);
 
 #endif

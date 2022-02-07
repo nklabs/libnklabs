@@ -26,11 +26,9 @@ const struct nk_i2c_eeprom_info m24256 =
 	.addr_size = 2
 };
 
-uint32_t m24256_old_addr;
-
 static int cmd_m24256(nkinfile_t *args)
 {
-    return nk_i2c_eeprom_command(&m24256, args, &m24256_old_addr);
+    return nk_i2c_eeprom_command(&m24256, args);
 }
 
 COMMAND(cmd_m24256,
@@ -39,7 +37,6 @@ COMMAND(cmd_m24256,
     "-m24256   wr <addr> <val>  Write word\n"
     "-m24256   hd <addr> <len>  Hex dump memory\n"
     "-m24256   hd <addr>        Hex dump 256 bytes\n"
-    "-m24256   hd               Hex dump next 256 bytes\n"
     "-m24256   crc <addr> <len> Calculate CRC of memory\n"
     "-m24256   fill <addr> <len>\n"
     "-                          Fill memory with pattern\n"

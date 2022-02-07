@@ -1,11 +1,13 @@
 displays:
   link multiple displays together as one
   nkoutfile_t for them? maybe vt100 emul..
+  displays: share CLI code: maybe include display size in struct for this
 
-get rid of old hex dump address.. not really needed
+use nkpin for nkspi
+
+f103: need to hold reset button to program
 
 try to reduce size, don't use float for any driver..
-
 
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..

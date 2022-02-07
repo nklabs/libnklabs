@@ -35,7 +35,6 @@ static int cmd_ht16k33(nkinfile_t *args)
         }
     } else if (nk_fscan(args, "w %w", buf, sizeof(buf))) {
 	uint8_t write_array[8];
-	uint32_t write_len = 0;
 	nk_sfprintf((char *)write_array, sizeof(write_array), "%s", buf);
         rtn = nk_ht16k33_display(&ht16k33, 0, write_array);
         if (rtn) {

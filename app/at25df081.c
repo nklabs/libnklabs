@@ -32,11 +32,9 @@ const struct nk_spiflash_info at25df081 =
     }
 };
 
-uint32_t at25df081_old_addr;
-
 static int cmd_at25df081(nkinfile_t *args)
 {
-    return nk_spiflash_command(&at25df081, args, &at25df081_old_addr);
+    return nk_spiflash_command(&at25df081, args);
 }
 
 COMMAND(cmd_at25df081,
@@ -45,7 +43,6 @@ COMMAND(cmd_at25df081,
     "-at25df081 wr <addr> <val>  Write word\n"
     "-at25df081 hd <addr> <len>  Hex dump memory\n"
     "-at25df081 hd <addr>        Hex dump 256 bytes\n"
-    "-at25df081 hd               Hex dump next 256 bytes\n"
     "-at25df081 crc <addr> <len> Calculate CRC of memory\n"
     "-at25df081 erase <addr> <len>\n"
     "-                           Erase memory\n"

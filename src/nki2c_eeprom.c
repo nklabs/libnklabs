@@ -161,34 +161,39 @@ uint32_t nk_i2c_eeprom_crc(const struct nk_i2c_eeprom_info *info, uint32_t addr,
     return crc;
 }
 
-int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *args, uint32_t *old_i2c_eeprom_addr)
+int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *args)
 {
     int status = 0;
     uint32_t addr;
     uint32_t len;
     uint32_t val;
-    if (facmode && nk_fscan(args, "rd %lx ", &addr)) {
+    if (facmode && nk_fscan(args, "rd %lx ", &addr))
+    {
         status |= nk_i2c_eeprom_read(info, addr, (uint8_t *)&val, 4);
         nk_printf("[%lx] has %lx\n", addr, val);
-    } else if (facmode && nk_fscan(args, "wr %lx %lx ", &addr, &val)) {
+    }
+    else if (facmode && nk_fscan(args, "wr %lx %lx ", &addr, &val))
+    {
         status |= nk_i2c_eeprom_write(info, addr, (uint8_t *)&val, 4);
         nk_printf("Wrote %lx to [%lx]\n", val, addr);
-    } else if (facmode && nk_fscan(args, "hd %lx %x ", old_i2c_eeprom_addr, &len)) {
-        nk_i2c_eeprom_hex_dump(info, *old_i2c_eeprom_addr, len);
-	*old_i2c_eeprom_addr += len;
-    } else if (facmode && nk_fscan(args, "hd %lx ", old_i2c_eeprom_addr)) {
+    }
+    else if (facmode && nk_fscan(args, "hd %lx %x ", &addr, &len))
+    {
+        nk_i2c_eeprom_hex_dump(info, addr, len);
+    }
+    else if (facmode && nk_fscan(args, "hd %lx ", &addr))
+    {
     	len = 0x100;
-        nk_i2c_eeprom_hex_dump(info, *old_i2c_eeprom_addr, len);
-	*old_i2c_eeprom_addr += len;
-    } else if (facmode && nk_fscan(args, "hd ")) {
-    	len = 0x100;
-        nk_i2c_eeprom_hex_dump(info, *old_i2c_eeprom_addr, len);
-	*old_i2c_eeprom_addr += len;
-    } else if (facmode && nk_fscan(args, "crc %lx %lu ", &addr, &len)) {
+        nk_i2c_eeprom_hex_dump(info, addr, len);
+    }
+    else if (facmode && nk_fscan(args, "crc %lx %lu ", &addr, &len))
+    {
         nk_printf("Calculate CRC of %lx - %lx\n", addr, addr + len);
         val = nk_i2c_eeprom_crc(info, addr, len);
         nk_printf("CRC is %lx\n", val);
-    } else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len)) {
+    }
+    else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len))
+    {
     	uint8_t buf[16];
     	uint8_t x = 0x10;
         nk_printf("Writing %lu bytes...\n", len);
@@ -209,7 +214,9 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
 		addr += th;
     	}
         nk_printf("done.\n");
-    } else if (facmode && nk_fscan(args, "fill %lx %x %x ", &addr, &len, &val)) {
+    }
+    else if (facmode && nk_fscan(args, "fill %lx %x %x ", &addr, &len, &val))
+    {
     	uint8_t buf[16];
     	memset(buf, val, sizeof(buf));
         nk_printf("Writing %lu bytes...\n", len);
@@ -227,7 +234,9 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
 		addr += th;
     	}
         nk_printf("done.\n");
-    } else {
+    }
+    else
+    {
         nk_printf("Syntax error\n");
     }
     if (status)

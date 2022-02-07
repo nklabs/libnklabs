@@ -46,8 +46,7 @@ static int cmd_tm1638(nkinfile_t *args)
         }
     } else if (nk_fscan(args, "w %w", buf, sizeof(buf))) {
 	uint8_t write_array[10];
-	uint32_t write_len = 0;
-	nk_sfprintf(write_array, sizeof(write_array), "%s", buf);
+	nk_sfprintf((char *)write_array, sizeof(write_array), "%s", buf);
         rtn = nk_tm1638_display(&tm1638, 0, 0, 0, write_array);
         if (rtn) {
             nk_printf("No ack\n");

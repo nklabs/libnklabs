@@ -51,6 +51,6 @@ void nk_i2c_eeprom_hex_dump(const struct nk_i2c_eeprom_info *info, uint32_t addr
 uint32_t nk_i2c_eeprom_crc(const struct nk_i2c_eeprom_info *info, uint32_t addr, uint32_t len);
 
 // Generic user interface to EEPROM
-int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *args, uint32_t *old_addr);
+int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *args);
 
 #endif

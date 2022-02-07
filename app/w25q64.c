@@ -39,11 +39,9 @@ const struct nk_spiflash_info w25q64 =
     }
 };
 
-uint32_t w25q64_old_addr;
-
 static int cmd_w25q64(nkinfile_t *args)
 {
-    return nk_spiflash_command(&w25q64, args, &w25q64_old_addr);
+    return nk_spiflash_command(&w25q64, args);
 }
 
 COMMAND(cmd_w25q64,
@@ -52,7 +50,6 @@ COMMAND(cmd_w25q64,
     "-w25q64   wr <addr> <val>  Write word\n"
     "-w25q64   hd <addr> <len>  Hex dump memory\n"
     "-w25q64   hd <addr>        Hex dump 256 bytes\n"
-    "-w25q64   hd               Hex dump next 256 bytes\n"
     "-w25q64   crc <addr> <len> Calculate CRC of memory\n"
     "-w25q64   erase <addr> <len>\n"
     "-                          Erase memory\n"
