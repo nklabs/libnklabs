@@ -93,12 +93,12 @@ static int cmd_ht16k33(nkinfile_t *args)
 }
 
 COMMAND(cmd_ht16k33,
-    ">ht16k33                    HT16K33 commands\n"
-    "-ht16k33 init               Setup GPIO\n"
-    "-ht16k33 on <brightness>    Display on with brightness 0 - 7\n"
-    "-ht16k33 off                Display off\n"
-    "-ht16k33 scan               Keyscan\n"
-    "-ht16k33 w ff ff ..         Write hex bytes, translate ASCII to 7-segment\n"
-    "-ht16k33 raw ffff ffff ..   Write 8 16-bit words to HT16K33 memory\n"
-    "-ht16k33 count              Start counter\n"
+    ">ht16k33                   HT16K33 commands\n"
+    "-ht16k33 init              Setup GPIO\n"
+    "-ht16k33 on <brightness>   Display on with brightness 0 - 7\n"
+    "-ht16k33 off               Display off\n"
+    "-ht16k33 scan              Keyscan\n"
+    "-ht16k33 w ff ff ..        Write hex bytes, translate ASCII to 7-segment\n"
+    "-ht16k33 raw ffff ffff ..  Write 8 16-bit words to HT16K33 memory\n"
+    "-ht16k33 count             Start counter\n"
 )
