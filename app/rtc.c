@@ -2,7 +2,7 @@
 
 #ifdef NK_PLATFORM_STM32
 #include "nkdriver_rtc_stm32.h"
-extern RTC_HandleTypeDef *hrtc;
+extern RTC_HandleTypeDef hrtc;
 #endif
 
 #ifdef NK_PLATFORM_ATSAM

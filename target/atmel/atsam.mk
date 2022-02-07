@@ -38,6 +38,7 @@ button.o \
 database.o \
 ds1307.o \
 ds3231.o \
+ht16k33.o \
 i2c.o \
 ina219.o \
 info_cmd.o \
@@ -51,6 +52,7 @@ m95040.o \
 m95256.o \
 m95m04.o \
 max6675.o \
+max7219.o \
 mcp23017.o \
 mcp4725.o \
 mcp9808.o \
@@ -77,13 +79,16 @@ nkdatetime.o \
 nkdbase.o \
 nkdectab.o \
 nkdriver_ads1115.o \
+nkdriver_aip31068.o \
 nkdriver_ds1307.o \
 nkdriver_ds3231.o \
 nkdriver_hd44780.o \
+nkdriver_ht16k33.o \
 nkdriver_ina219.o \
 nkdriver_lcd8574.o \
 nkdriver_lm75.o \
 nkdriver_max6675.o \
+nkdriver_max7219.o \
 nkdriver_mcp23017.o \
 nkdriver_mcp4725.o \
 nkdriver_mcp9808.o \
@@ -97,6 +102,8 @@ nkdriver_rv8803.o \
 nkdriver_tca9548a.o \
 nkdriver_tm1637.o \
 nkdriver_tm1638.o \
+nkfont_7seg.o \
+nkfont_14seg.o \
 nki2c.o \
 nki2c_atsam.o \
 nki2c_eeprom.o \
