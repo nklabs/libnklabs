@@ -100,8 +100,9 @@ TM1638 is a 5V part, but uses open-drain drivers.  It is compatible with
 
 [HD44780](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf) (and clones such as [ST7066U](https://www.newhavendisplay.com/app_notes/ST7066U.pdf)) based LCD text displays are supported:
 
-HD44780 natively uses a parallel interface, but can be used on I2C through
-this [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf). 
+HD44780 natively uses a parallel interface, for example on this [OSEPP LCD DISLAY / KEYPAD Shield](https://www.osepp.com/electronic-modules/shields/45-16-2-lcd-display-keypad-shield)./
+
+But it can also be used through an I2C GPIO expander, for exampe one of these: [I2C Adapter](http://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf). 
 Here are some LCD display modules based on these chips:
 
 * "1602A" (2 line, 16 column LCD display with backlight) connected to a PCF8574-based I2C adapter [TC1602A-01T](https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
