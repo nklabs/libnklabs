@@ -12,18 +12,19 @@
 #include "nkcli.h"
 #include "pins.h"
 
-bool hal_pin_read(const nk_pin_t *pin)
+int hal_pin_read(const nk_pin_t *pin, bool *val)
 {
 #ifdef NK_PLATFORM_STM32
-    return GPIO_PIN_SET == HAL_GPIO_ReadPin(pin->port, pin->pin);
+    *val = (GPIO_PIN_SET == HAL_GPIO_ReadPin(pin->port, pin->pin));
 #endif
 
 #ifdef NK_PLATFORM_ATSAM
-    return true == gpio_get_pin_level(pin->pin);
+    *val = (true == gpio_get_pin_level(pin->pin));
 #endif
+    return 0;
 }
 
-void hal_pin_write(const nk_pin_t *pin, bool val)
+int hal_pin_write(const nk_pin_t *pin, bool val)
 {
 #ifdef NK_PLATFORM_STM32
     HAL_GPIO_WritePin(pin->port, pin->pin, val ? GPIO_PIN_SET : GPIO_PIN_RESET);
@@ -32,9 +33,10 @@ void hal_pin_write(const nk_pin_t *pin, bool val)
 #ifdef NK_PLATFORM_ATSAM
     gpio_set_pin_level(pin->pin, val ? true : false);
 #endif
+    return 0;
 }
 
-void hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
+int hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
 {
 #ifdef NK_PLATFORM_STM32
     GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -50,11 +52,13 @@ void hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
     gpio_set_pin_direction(pin->pin, nk_pinmode_table[mode].mode);
     gpio_set_pin_pull_mode(pin->pin, nk_pinmode_table[mode].pull);
 #endif
+    return 0;
 }
 
-nk_pinmode_t hal_pin_getmode(const nk_pin_t *pin)
+int hal_pin_getmode(const nk_pin_t *pin, nk_pinmode_t *pinmode)
 {
     // HAL does not provide this..
+    *pinmode = 0;
     return 0;
 }
 
@@ -108,7 +112,8 @@ int cmd_pin(nkinfile_t *args)
     char pin_mode[20];
     if (nk_fscan(args, "")) {
     	for (pin_idx = 0; pin_idx != PIN_COUNT; ++pin_idx) {
-	    int val = nk_pin_read(&nk_pin_table[pin_idx]);
+	    bool val;
+	    nk_pin_read(&nk_pin_table[pin_idx], &val);
 	    nk_printf("%s = %d\n", nk_pin_table[pin_idx].name, val);
     	}
     } else if (nk_fscan(args, "set %w ", pin_name, sizeof(pin_name))) {

@@ -6,6 +6,8 @@ NK_INC = ../../../inc
 NK_APP_INC = ../../../app_inc
 NK_CONFIG = ../../../config
 NK_ARCHCONFIG = ../../../config_stm32
+NK_STM32PROGRAMMER = /opt/STM32CubeProgrammer
+NK_OPENOCD = /usr/local/bin/openocd
 
 # A define for the platform
 NK_PLATFORM := NK_PLATFORM_STM32
@@ -57,6 +59,7 @@ $(NK_APP)/mcp23017.c \
 $(NK_APP)/mcp4725.c \
 $(NK_APP)/mcp9808.c \
 $(NK_APP)/nkymodem_cmd.c \
+$(NK_APP)/parlcd.c \
 $(NK_APP)/pca9633.c \
 $(NK_APP)/pca9685.c \
 $(NK_APP)/pcf8523.c \
@@ -92,6 +95,7 @@ $(NK_SRC)/nkdriver_max7219.c \
 $(NK_SRC)/nkdriver_mcp23017.c \
 $(NK_SRC)/nkdriver_mcp4725.c \
 $(NK_SRC)/nkdriver_mcp9808.c \
+$(NK_SRC)/nkdriver_parlcd.c \
 $(NK_SRC)/nkdriver_pca9633.c \
 $(NK_SRC)/nkdriver_pca9685.c \
 $(NK_SRC)/nkdriver_pcf8523.c \
@@ -140,9 +144,14 @@ $(BUILD_DIR)/version.o: $(OBJECTS) $(NK_APP)/VERSION_MAJOR $(NK_APP)/VERSION_MIN
 
 # Program Nucleo board
 
+# Flash using STM32_Programmer
 flash:
-	/opt/STM32CubeProgrammer/bin/STM32_Programmer_CLI -c port=swd -e all -d build/${TARGET}.elf -v -rst
-  
+	$(NK_STM32PROGRAMMER)/bin/STM32_Programmer_CLI -c port=swd -e all -d build/$(TARGET).elf -v -rst
+
+# Flash using openocd
+stlink:
+	IMAGE=build/$(TARGET).hex FAMILYCFG=$(FAMILYCFG) CHIPNAME=$(CHIPNAME) openocd --file ../stlink.cfg
+
 # Bump version numbers...
 
 bump_minor:

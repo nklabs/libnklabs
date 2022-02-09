@@ -1,94 +1,89 @@
 #include <string.h>
-#include "nkdriver_lcd8574.h"
-#include "nkdriver_hd44780.h"
+#include "nkdriver_parlcd.h"
 #include "nkcli.h"
-#include "i2c.h"
+#include "pins.h"
 
-// PCF8574 device
+// HD44780 connected directly to Arduino pins
 
-const nk_i2c_device_t pcf8574_for_lcd =
+const nk_parlcd_t parlcd =
 {
-    .i2c_bus = &ard_i2c_bus, // Which bus it's on
-    .i2c_addr = PCF8574_ADDR + 7 // I2C address of device: 0x20 - 0x27 depending on A0 - A2 inputs
-};
-
-// HD44780 connected to PCF8574 driver
-// This needs to be in RAM, not const
-
-nk_lcd8574_t lcd8574 =
-{
-    .pcf8574 = &pcf8574_for_lcd,
-    .regval = 0
+    .d4 = &nk_pin_table[PIN_IDX_ARD_D4],
+    .d5 = &nk_pin_table[PIN_IDX_ARD_D5],
+    .d6 = &nk_pin_table[PIN_IDX_ARD_D6],
+    .d7 = &nk_pin_table[PIN_IDX_ARD_D7],
+    .e = &nk_pin_table[PIN_IDX_ARD_D9],
+    .rs = &nk_pin_table[PIN_IDX_ARD_D8],
+    .backlight = &nk_pin_table[PIN_IDX_ARD_D10]
 };
 
 // HD44780 driver
 
-const nk_hd44780_t lcd_hd44780 =
+const nk_hd44780_t parlcd_hd44780 =
 {
-    .send_command = (int (*)(void *, uint8_t cmd))nk_lcd8574_send_command,
-    .send_data = (int (*)(void *, uint8_t *data, int len))nk_lcd8574_send_data,
-    .ptr = &lcd8574,
+    .send_command = (int (*)(void *, uint8_t cmd))nk_parlcd_send_command,
+    .send_data = (int (*)(void *, uint8_t *data, int len))nk_parlcd_send_data,
+    .ptr = &parlcd,
     .f_bit = false,
     .n_bit = true,
-    .width = 20,
-    .height = 4,
+    .width = 16,
+    .height = 2,
     // This works for both 1602 and 2004
     .offsets = { 0, 40, 20, 84 }
     // This probably makes more sense for 2004..
     // { 0, 64, 20, 84 }
 };
 
-static int cmd_lcd8574(nkinfile_t *args)
+static int cmd_parlcd(nkinfile_t *args)
 {
     int rtn;
     int row;
     int col;
     char buf[32];
     if (nk_fscan(args, "init ")) {
-        rtn = nk_lcd8574_init(&lcd8574, true, lcd_hd44780.f_bit, lcd_hd44780.n_bit);
+        rtn = nk_parlcd_init(&parlcd, true, parlcd_hd44780.f_bit, parlcd_hd44780.n_bit);
         if (rtn) {
             nk_printf("Pin access error\n");
         }
     } else if (nk_fscan(args, "cls ")) {
-        rtn = nk_hd44780_cls(&lcd_hd44780);
+        rtn = nk_hd44780_cls(&parlcd_hd44780);
         if (rtn) {
             nk_printf("Pin access error\n");
         }
     } else if (nk_fscan(args, "cursor on ")) {
-        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, true, false);
+        rtn = nk_hd44780_display_mode(&parlcd_hd44780, true, true, false);
         if (rtn) {
             nk_printf("Pin access error\n");
         }
     } else if (nk_fscan(args, "cursor off ")) {
-        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, false, false);
+        rtn = nk_hd44780_display_mode(&parlcd_hd44780, true, false, false);
         if (rtn) {
             nk_printf("Pin access error\n");
         }
     } else if (nk_fscan(args, "cursor blink ")) {
-        rtn = nk_hd44780_display_mode(&lcd_hd44780, true, true, true);
+        rtn = nk_hd44780_display_mode(&parlcd_hd44780, true, true, true);
         if (rtn) {
             nk_printf("Pin access error\n");
         }
     } else if (nk_fscan(args, "cursor %d %d ", &row, &col)) {
-        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row] + col);
+        rtn = nk_hd44780_pos(&parlcd_hd44780, parlcd_hd44780.offsets[row] + col);
         if (rtn) {
             nk_printf("Pin access error\n");
         } else {
             nk_printf("Cursor set to row %d col %d\n", row, col);
         }
     } else if (nk_fscan(args, "cursor %d ", &row)) {
-        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row]);
+        rtn = nk_hd44780_pos(&parlcd_hd44780, parlcd_hd44780.offsets[row]);
         if (rtn) {
             nk_printf("Pin access error\n");
         } else {
             nk_printf("Cursor set to row %d col 0\n", row);
         }
     } else if (nk_fscan(args, "w %d %w ", &row, buf, sizeof(buf))) {
-        rtn = nk_hd44780_pos(&lcd_hd44780, lcd_hd44780.offsets[row]);
+        rtn = nk_hd44780_pos(&parlcd_hd44780, parlcd_hd44780.offsets[row]);
         if (rtn) {
             nk_printf("Pin access error\n");
         } else {
-            rtn = nk_hd44780_write(&lcd_hd44780, (uint8_t *)buf, strlen(buf));
+            rtn = nk_hd44780_write(&parlcd_hd44780, (uint8_t *)buf, strlen(buf));
             if (rtn) {
                 nk_printf("Pin access error\n");
             } else {
@@ -101,11 +96,11 @@ static int cmd_lcd8574(nkinfile_t *args)
     return 0;
 }
 
-COMMAND(cmd_lcd8574,
-    ">lcd8574                   LCD on PCF8574 commands\n"
-    "-lcd8574 init              Setup GPIO\n"
-    "-lcd8574 cls               Clear screen\n"
-    "-lcd8574 cursor on|off|blink|<row>|<row> <col>\n"
+COMMAND(cmd_parlcd,
+    ">parlcd                    Parallel LCD commands\n"
+    "-parlcd init               Setup GPIO\n"
+    "-parlcd cls                Clear screen\n"
+    "-parlcd cursor on|off|blink|<row>|<row> <col>\n"
     "-                          Control cursor\n"
-    "-lcd8574 w <row> \"message\" Write string to row 0..3\n"
+    "-parlcd w <row> \"message\" Write string to row 0..3\n"
 )

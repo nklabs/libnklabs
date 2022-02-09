@@ -14,6 +14,9 @@
 # target
 ######################################
 TARGET = sfxcli_dev_071
+# For OpenOCD
+FAMILYCFG = stm32g0x
+CHIPNAME = stm32g071
 
 ######################################
 # building variables

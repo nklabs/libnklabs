@@ -48,10 +48,10 @@ struct nk_pin {
 // Pin functions
 
 struct nk_pin_func {
-    bool (*pin_read)(const nk_pin_t *pin);
-    void (*pin_write)(const nk_pin_t *pin, bool val);
-    void (*pin_setmode)(const nk_pin_t *pin, nk_pinmode_t mode);
-    nk_pinmode_t (*pin_getmode)(const nk_pin_t *pin);
+    int (*pin_read)(const nk_pin_t *pin, bool *val);
+    int (*pin_write)(const nk_pin_t *pin, bool val);
+    int (*pin_setmode)(const nk_pin_t *pin, nk_pinmode_t mode);
+    int (*pin_getmode)(const nk_pin_t *pin, nk_pinmode_t *pinmode);
 };
 
 extern const nk_pin_func_t nk_pin_funcs;
@@ -63,7 +63,7 @@ extern const nk_pin_t nk_pin_table[];
 // User functions
 
 // Read pin
-#define nk_pin_read(pin) (pin)->func->pin_read(pin)
+#define nk_pin_read(pin, val) (pin)->func->pin_read((pin), (val))
 
 // Write pin
 #define nk_pin_write(pin, val) (pin)->func->pin_write((pin), (val))

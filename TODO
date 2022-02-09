@@ -3,6 +3,8 @@ displays:
   nkoutfile_t for them? maybe vt100 emul..
   displays: share CLI code: maybe include display size in struct for this
 
+<tab> shows help?
+
 use nkpin for nkspi
 
 f103: need to hold reset button to program

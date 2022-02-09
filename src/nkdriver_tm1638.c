@@ -76,6 +76,7 @@ int nk_tm1638_write_byte(const nk_tm1638_t *dev, uint8_t byte)
 
 int nk_tm1638_read_byte(const nk_tm1638_t *dev, uint8_t *byte)
 {
+    bool pinv;
     int x;
     uint8_t val = 0;
 
@@ -92,7 +93,8 @@ int nk_tm1638_read_byte(const nk_tm1638_t *dev, uint8_t *byte)
 
         nk_udelay(dev->trise + 1); // Delay for data to rise
 
-        if (nk_pin_read(dev->dio)) // Check input
+        nk_pin_read(dev->dio, &pinv); // Check input
+        if (pinv)
             val |= 0x80;
 
         nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);

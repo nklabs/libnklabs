@@ -55,6 +55,7 @@ int nk_tm1637_init(const nk_tm1637_t *dev)
 
 int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
 {
+    bool pinv;
     int rtn;
     int x;
     int prev = 2; // DIO is in unknown state
@@ -106,7 +107,8 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
         nk_udelay(dev->trise + 1); // Wait for DIO to rise
 
     // Check for ACK
-    rtn = nk_pin_read(dev->dio);
+    nk_pin_read(dev->dio, &pinv);
+    rtn = pinv;
 
     // Raise clock
     nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);
@@ -118,6 +120,7 @@ int nk_tm1637_write_byte(const nk_tm1637_t *dev, uint8_t byte)
 
 int nk_tm1637_read_byte(const nk_tm1637_t *dev, uint8_t *byte)
 {
+    bool pinv;
     int rtn;
     int x;
     uint8_t val = 0;
@@ -135,7 +138,8 @@ int nk_tm1637_read_byte(const nk_tm1637_t *dev, uint8_t *byte)
         nk_udelay(dev->trise + 1); // Wait rise time for TM1637 driving DIO
 
         // Check input
-        if (nk_pin_read(dev->dio))
+        nk_pin_read(dev->dio, &pinv);
+        if (pinv)
             val |= 0x80;
 
         // Raise clock
@@ -154,7 +158,8 @@ int nk_tm1637_read_byte(const nk_tm1637_t *dev, uint8_t *byte)
     nk_udelay(dev->trise + 1); // DIO rise time
 
     // Check for ACK
-    rtn = nk_pin_read(dev->dio);
+    nk_pin_read(dev->dio, &pinv);
+    rtn = pinv;
 
     // Raise clock
     nk_pin_setmode(dev->clk, NK_PINMODE_INPUT_PULLUP);

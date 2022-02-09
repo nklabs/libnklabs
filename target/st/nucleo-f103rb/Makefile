@@ -14,6 +14,9 @@
 # target
 ######################################
 TARGET = nucleo-f103rb
+# For OpenOCD
+FAMILYCFG = stm32f1x
+CHIPNAME = stm32f103
 
 ######################################
 # building variables
