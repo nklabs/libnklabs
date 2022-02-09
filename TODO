@@ -3,11 +3,7 @@ displays:
   nkoutfile_t for them? maybe vt100 emul..
   displays: share CLI code: maybe include display size in struct for this
 
-<tab> shows help?
-
 use nkpin for nkspi
-
-f103: need to hold reset button to program
 
 try to reduce size, don't use float for any driver..
 
@@ -54,6 +50,7 @@ bootloader:
 
 Add more targets:
 
+  PICO-PI
   Add RISCV
   Add Xilinx
   Add TI

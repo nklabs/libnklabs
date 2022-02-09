@@ -64,7 +64,7 @@ static int name_match(const char *table, const char *cmd, int partial, int allow
 
 // Find a command in the command table: return index to it or -1 if not found
 
-static struct console_cmd *find_cmd(char *s)
+static struct console_cmd *find_cmd(const char *s)
 {
     struct console_cmd *x;
     for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
@@ -149,6 +149,20 @@ static void specific_help(const char *t)
     }
 }
 
+// Print help for a specifc command
+
+int nk_help(const char *name)
+{
+    struct console_cmd *x;
+    x = find_cmd(name);
+    if (x) {
+        specific_help(skip_help(x->text));
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 // Help command
 
 static int cmd_help(nkinfile_t *args)
@@ -166,10 +180,7 @@ static int cmd_help(nkinfile_t *args)
             }
         }
     } else if (nk_fscan(args, "%w ", buf, sizeof(buf))) {
-        x = find_cmd(buf);
-        if (x) {
-            specific_help(skip_help(x->text));
-        } else
+        if (nk_help(buf))
             nk_puts("Unknown command\n");
     } else if (nk_fscan(args, "")) {
         nk_printf("help <name> for help with a specific command\n\n");

@@ -58,4 +58,7 @@ void nk_cli_disable();
 
 extern int nk_cli_tid;
 
+// Print help for a specific command
+int nk_help(const char *name);
+
 #endif

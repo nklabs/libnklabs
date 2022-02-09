@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nkuart.h"
+#include "nkcli.h"
 #include "nkreadline.h"
 
 // Console line editor buffer
@@ -311,27 +312,38 @@ void prompt_task(void *data)
 			if (ch >= 32 && ch <= 126) {
 				typech((char)ch);
 			} else if (ch == 9) { // TAB completion
-				for (;;) {
-					tty_buf[tty_len] = 0;
-					if (tab_count) {
-						console_putchar('\n');
-					}
-					ch = nk_complete(tty_buf, tab_count);
-					if (tab_count) {
-						redraw();
-					}
-					if (ch == -1) { // No matches
+				if (tty_len && tty_buf[tty_len - 1] == ' ') {
+					console_putchar('\n');
+					tty_buf[tty_len - 1] = 0;
+					if (nk_help(tty_buf)) {
 						console_putchar(7);
-						break;
-					} else if (ch == -2) { // Multiple matches
-						if (!tab_count)
+					}
+					tty_buf[tty_len - 1] = ' ';
+					redraw();
+				} else {
+					for (;;) {
+						tty_buf[tty_len] = 0;
+						if (tab_count) {
+							console_putchar('\n');
+						}
+						// Get next character
+						ch = nk_complete(tty_buf, tab_count);
+						if (tab_count) {
+							redraw();
+						}
+						if (ch == -1) { // No matches
 							console_putchar(7);
-						tab_count = 2;
-						break;
-					} else {
-						typech((char)ch);
-						if (ch == ' ')
 							break;
+						} else if (ch == -2) { // Multiple matches
+							if (!tab_count)
+								console_putchar(7);
+							tab_count = 2;
+							break;
+						} else {
+							typech((char)ch);
+							if (ch == ' ')
+								break;
+						}
 					}
 				}
 			} else if ((ch == 8 || ch == 127)) { // ^H, DEL

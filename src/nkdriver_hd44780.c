@@ -1,3 +1,4 @@
+#include "nkarch.h"
 #include "nkdriver_hd44780.h"
 
 // Set display mode
