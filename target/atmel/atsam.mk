@@ -57,6 +57,7 @@ mcp23017.o \
 mcp4725.o \
 mcp9808.o \
 nkymodem_cmd.o \
+parlcd.o \
 pca9633.o \
 pca9685.o \
 pcf8523.o \
@@ -92,6 +93,7 @@ nkdriver_max7219.o \
 nkdriver_mcp23017.o \
 nkdriver_mcp4725.o \
 nkdriver_mcp9808.o \
+nkdriver_parlcd.o \
 nkdriver_pca9633.o \
 nkdriver_pca9685.o \
 nkdriver_pcf8523.o \
