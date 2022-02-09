@@ -15,7 +15,9 @@ int nk_hd44780_display_mode(const nk_hd44780_t *dev, bool display_on, bool curso
 // Clear screen
 int nk_hd44780_cls(const nk_hd44780_t *dev)
 {
-    return dev->send_command(dev->ptr, HD44780_CLS);
+    int rtn = dev->send_command(dev->ptr, HD44780_CLS);
+    nk_udelay(1530);
+    return rtn;
 }
 
 // Home cursor

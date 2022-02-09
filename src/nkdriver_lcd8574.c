@@ -9,6 +9,7 @@ int nk_lcd8574_pulse(nk_lcd8574_t *dev)
     // nk_udelay(1); // Min. pulse width is 450 ns
     rtn |= pcf8574_write(dev->pcf8574, dev->regval);
     // nk_udelay(39); // Min. delay before checking busy is 80us.  Most commands require 39us to complete.
+    // Not needed because I2C at 100 KHz is longer
     return rtn;
 }
 
