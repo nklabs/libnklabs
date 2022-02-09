@@ -3,15 +3,20 @@ displays:
   nkoutfile_t for them? maybe vt100 emul..
   displays: share CLI code: maybe include display size in struct for this
 
-use nkpin for nkspi
+tab complete sub-commands
+  Now it just prints help, but completion would be better
 
-try to reduce size, don't use float for any driver..
+very small systems:
+  f030: try to reduce size, don't use float for any driver..
+  maybe have a reduced nucleo.mx that doesn't include everything
 
 STM32:
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
   Missing flash size for info
 
   low power modes?  We need lpuart..
+
+  get openocd to work for all stm32s
 
 Atmel:
   i2c not working well on atsame70 (crash during i2c scan), but ok on others

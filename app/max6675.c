@@ -1,18 +1,11 @@
 #include "nkcli.h"
 #include "nkdriver_max6675.h"
+#include "pins.h"
 
 const nkspi_device_t max6675_bus =
 {
-#ifdef NK_PLATFORM_STM32
-    .cs_port = ARD_D10_GPIO_Port,
-    .cs_pin = ARD_D10_Pin,
+    .cs_pin = &nk_pin_table[PIN_IDX_ARD_D10],
     .hspi = &ARD_SPI
-#endif
-
-#ifdef NK_PLATFORM_ATSAM
-    .cs_pin = ARD_D10,
-    .hspi = &ARD_SPI
-#endif
 };
 
 static int cmd_max6675(nkinfile_t *args)

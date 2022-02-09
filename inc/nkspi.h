@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include "nkarch.h"
+#include "nkpin.h"
 
 #ifdef NK_PLATFORM_STM32
 
@@ -13,8 +14,7 @@ void shared_gpio_setup_for_spi(void); // For STM32 boards where USER_LED is on t
 void shared_gpio_setup_for_led(void); // For STM32 boards...
 
 typedef struct {
-    GPIO_TypeDef *cs_port; // Port of CS_L line
-    uint16_t cs_pin; // Pin of CS_L line
+    const nk_pin_t *cs_pin; // Pin of CS_L line
     SPI_HandleTypeDef *hspi; // SPI driver handle
 } nkspi_device_t;
 
@@ -23,7 +23,7 @@ typedef struct {
 #ifdef NK_PLATFORM_ATSAM
 
 typedef struct {
-    uint8_t cs_pin; // Pin of CS_L line
+    const nk_pin_t *cs_pin; // Pin of CS_L line
     struct spi_m_sync_descriptor *hspi; // SPI device handle
 } nkspi_device_t;
 

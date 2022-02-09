@@ -4,6 +4,7 @@
 #include "led.h"
 #include "nkspi.h"
 #include "nkspiflash.h"
+#include "pins.h"
 
 extern uint8_t spi_buffer[];
 
@@ -11,16 +12,8 @@ extern uint8_t spi_buffer[];
 
 const nkspi_device_t m95040_bus =
 {
-#ifdef NK_PLATFORM_STM32
-    .cs_port = ARD_D2_GPIO_Port,
-    .cs_pin = ARD_D2_Pin,
+    .cs_pin = &nk_pin_table[PIN_IDX_ARD_D2],
     .hspi = &ARD_SPI
-#endif
-
-#ifdef NK_PLATFORM_ATSAM
-    .cs_pin = ARD_D2,
-    .hspi = &ARD_SPI
-#endif
 };
 
 const struct nk_spiflash_info m95040 =
