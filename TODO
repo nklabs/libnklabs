@@ -26,6 +26,10 @@ Atmel:
 
 missing documentation:
   target descriptions
+  nkpin
+  nkcrclib
+  nkmcuflash?
+  nkdisplay when we do it
 
 nkymodem:
   document options, move them to a config file
@@ -44,6 +48,12 @@ arduino:
   analogRead, analogReference,
   analogWrite
   pwm out, pulse in
+
+Add more MCU peripheral drivers:
+
+  CAN, ADC, DAC, etc..
+
+  fat filesystem + sdio?
 
 mcuflash:
 
@@ -70,12 +80,6 @@ GPIO:
   Pinmode to alternate functions
   A way to read back the current mode
   Include i2c pin expander gpio pins
-
-Add more MCU peripheral drivers:
-
-  CAN, ADC, DAC, etc..
-
-  fat filesystem + sdio?
 
 event driven:
 
