@@ -109,6 +109,8 @@ int nk_init_mcuflash()
 
 int flash_erase(uint32_t address)
 {
+// don't use for nucleo-l073rz dev
+//#if 0
 	int rtn = 0;
 
 	address -= NK_FLASH_BASE_ADDRESS;
@@ -117,7 +119,7 @@ int flash_erase(uint32_t address)
 	FLASH_EraseInitTypeDef erase;
 
 	erase.TypeErase = FLASH_TYPEERASE_PAGES;
-#ifdef FLASH_FLAG_PGAERR // Maybe?
+#if defined(FLASH_FLAG_PGAERR) && !defined(__STM32L0xx_HAL_FLASH_H) // Maybe? // Crude fix for STM32L073RZT6
 	erase.Banks = 0;
 	erase.Page = (address / FLASH_PAGE_SIZE);
 #else
@@ -132,7 +134,7 @@ int flash_erase(uint32_t address)
 		| FLASH_FLAG_WRPERR
 #ifdef FLASH_FLAG_OPERR
 		| FLASH_FLAG_OPERR
-#endif
+#endif	
 #ifdef FLASH_FLAG_PGAERR
 		| FLASH_FLAG_PGAERR
 #endif
@@ -176,6 +178,8 @@ int flash_erase(uint32_t address)
 #endif
 
         return rtn;
+//#endif
+//	return -1;
 }
 
 // Erase a range of space, all pages that touch the space are erased
@@ -216,15 +220,24 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 
 int flash_write(uint32_t address, uint64_t data)
 {
+// don't use for nucleo-l073rz dev
+//#if 0
 	int rtn;
 
 	HAL_FLASH_Unlock();
 
+#ifdef FLASH_TYPEPROGRAM_DOUBLEWORD
 	rtn = (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, address, data));
+#else
+	rtn = (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data));
+#endif
 
 	HAL_FLASH_Lock();
 
 	return rtn;
+//#endif
+
+	return -1;
 }
 
 int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
@@ -233,7 +246,12 @@ int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 
 	address += NK_FLASH_BASE_ADDRESS;
 
+// brute-force check for dealing with STM32L073xx page size
+#ifdef FLASH_TYPEPROGRAM_DOUBLEWORD
 	uint32_t page_size = 8; // Write size
+#else
+	uint32_t page_size = 4; // Write size
+#endif
 
 	// Write a page at a time
 	while (byte_count) {
@@ -246,7 +264,9 @@ int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 		if (page_len != page_size)
 			rtn = 1; // We can only write multiples of pages
 		else
-			rtn = flash_write(address, *(uint64_t *)data);
+
+		rtn = flash_write(address, *(uint64_t *)data);
+			
 
 		if (rtn)
 			break;
