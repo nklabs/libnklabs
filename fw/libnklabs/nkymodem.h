@@ -58,13 +58,13 @@ void nk_ysend_buffer(const char *name, char *buffer, size_t len);
 //   serno octal (0 if no serial number)
 // For xmodem, the name will be "anonymous\0\0"
 
-int ymodem_recv_file_open(char *name);
+int ymodem_recv_file_open(const char *name);
 
 // Called by ymodem_rcv to write data to file
 // The writing will be limited to the exact file size, if it is given in the ymodem filename header
 // Otherwise all 128 or 1024 byte blocks are written.
 
-void ymodem_recv_file_write(unsigned char *buffer, int len);
+void ymodem_recv_file_write(unsigned char *buffer, size_t len);
 
 // Called by ymodem_rcv to close receive file after it has been transferred.
 // Do not print, ymodem protocol still in control.
@@ -98,7 +98,7 @@ enum {
 
 // Processed some received data
 
-int ymodem_rcv(unsigned char *rcvbuf, int len);
+int ymodem_rcv(unsigned char *rcvbuf, size_t len);
 
 // Receive and process a file
 //  This calls ymodem_recv_init and ymodem_rcv.

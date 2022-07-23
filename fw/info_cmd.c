@@ -20,6 +20,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
+#include <inttypes.h>
 #include "version.h"
 #include "nkreadline.h"
 #include "nkcli.h"
@@ -63,8 +64,9 @@ static int cmd_info(nkinfile_t *args)
                 nk_printf("Target platform: %s\n", NK_PLATFORM);
 
 #ifdef NK_PLATFORM_RISCV
-	        nk_printf("CPU frequency = %u\n", reg_cpu_freq);
-	        nk_printf("Current time = %u\n", reg_wallclock);
+	        nk_printf("CPU frequency = %"PRIu32"\n", reg_cpu_freq);
+	        nk_printf("Current time = %"PRIu32"\n", reg_wallclock);
+	        nk_printf("Current bank = %d\n", !!(reg_spictrl & 0x40000000));
 #endif
 
 #ifdef NK_PLATFORM_STM32
@@ -80,8 +82,8 @@ static int cmd_info(nkinfile_t *args)
 #ifdef NK_PLATFORM_ATSAM
 	        nk_printf("CPU frequency = %u\n", CONF_CPU_FREQUENCY);
 #ifdef CHIPID
-	        nk_printf("CHIPID_CIDR = %lx\n", CHIPID->CHIPID_CIDR);
-	        nk_printf("CHIPID_EXID = %lx\n", CHIPID->CHIPID_EXID);
+	        nk_printf("CHIPID_CIDR = %"PRIx32"\n", CHIPID->CHIPID_CIDR);
+	        nk_printf("CHIPID_EXID = %"PRIx32"\n", CHIPID->CHIPID_EXID);
 #endif
 #endif
 

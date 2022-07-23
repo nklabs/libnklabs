@@ -1,5 +1,7 @@
+#include <inttypes.h>
 #include "nkcli.h"
 #include "tunnel_fpga.h"
+#include "basic_cmds.h"
 
 const struct regfield fpga_regtable[]=
 {
@@ -30,7 +32,7 @@ static void pci_recv()
             if (val & EOP_BIT) nk_printf("EOP ");
             if (!(val & (SOP_BIT | EOP_BIT))) nk_printf("    ");
             fpga_rd(FPGAREG_PCIE_FIFO, &val);
-            nk_printf("%8.8lx\n", val);
+            nk_printf("%8.8"PRIx32"\n", val);
         }
         else
         {
@@ -78,7 +80,7 @@ static void pci_send(uint32_t *data, uint32_t len)
             first |= EOP_BIT;
         fpga_wr(FPGAREG_PCIE_FIFO_STATUS, first);
         first = 0;
-        nk_printf(" %8.8lx\n", *data);
+        nk_printf(" %8.8"PRIx32"\n", *data);
         fpga_wr(FPGAREG_PCIE_FIFO, *data++);
         --len;
     }
@@ -191,52 +193,52 @@ static int cmd_pci(nkinfile_t *args)
 
         pci_recv();
     }
-    else if (nk_fscan(args, "ucfg rd %lx ", &addr))
+    else if (nk_fscan(args, "ucfg rd %"PRIx32" ", &addr))
     {
-        nk_printf("UCFG addr = %lx read = %lx\n", addr, ucfg_rd(addr));
+        nk_printf("UCFG addr = %"PRIx32" read = %"PRIx32"\n", addr, ucfg_rd(addr));
     }
-    else if (nk_fscan(args, "ucfg wr %lx %lx ", &addr, &val))
+    else if (nk_fscan(args, "ucfg wr %"PRIx32" %"PRIx32" ", &addr, &val))
     {
         ucfg_wr(addr, val);
-        nk_printf("UCFB addr = %lx write = %lx\n", addr, val);
+        nk_printf("UCFB addr = %"PRIx32" write = %"PRIx32"\n", addr, val);
     }
-    else if (nk_fscan(args, "lmmi rd %lx ", &addr))
+    else if (nk_fscan(args, "lmmi rd %"PRIx32" ", &addr))
     {
-        nk_printf("LMMI addr = %lx read = %lx\n", addr, lmmi_rd(addr));
+        nk_printf("LMMI addr = %"PRIx32" read = %"PRIx32"\n", addr, lmmi_rd(addr));
     }
-    else if (nk_fscan(args, "lmmi wr %lx %lx ", &addr, &val))
+    else if (nk_fscan(args, "lmmi wr %"PRIx32" %"PRIx32" ", &addr, &val))
     {
         lmmi_wr(addr, val);
-        nk_printf("LMMI addr = %lx write = %lx\n", addr, val);
+        nk_printf("LMMI addr = %"PRIx32" write = %"PRIx32"\n", addr, val);
     }
-    else if (nk_fscan(args, "mem rd %lx ", &addr))
+    else if (nk_fscan(args, "mem rd %"PRIx32" ", &addr))
     {
-        nk_printf("MEM addr = %lx read\n", addr);
+        nk_printf("MEM addr = %"PRIx32" read\n", addr);
         mem_rd(addr);
     }
-    else if (nk_fscan(args, "mem wr %lx %lx ", &addr, &val))
+    else if (nk_fscan(args, "mem wr %"PRIx32" %"PRIx32" ", &addr, &val))
     {
-        nk_printf("MEM addr = %lx write = %lx\n", addr, val);
+        nk_printf("MEM addr = %"PRIx32" write = %"PRIx32"\n", addr, val);
         mem_wr(addr, val);
     }
-    else if (nk_fscan(args, "conf0 wr %lx:%lx.%lx %lx %lx ",  &bus, &dev, &func, &addr, &val))
+    else if (nk_fscan(args, "conf0 wr %"PRIx32":%"PRIx32".%"PRIx32" %"PRIx32" %"PRIx32" ",  &bus, &dev, &func, &addr, &val))
     {
-        nk_printf("Conf0 %lx:%lx.%lx addr = %lx write = %lx\n", bus, dev, func, addr, val);
+        nk_printf("Conf0 %"PRIx32":%"PRIx32".%"PRIx32" addr = %"PRIx32" write = %"PRIx32"\n", bus, dev, func, addr, val);
         conf0_wr(bus, func, dev, addr, val);
     }
-    else if (nk_fscan(args, "conf0 rd %lx:%lx.%lx %lx ", &bus, &dev, &func, &addr))
+    else if (nk_fscan(args, "conf0 rd %"PRIx32":%"PRIx32".%"PRIx32" %"PRIx32" ", &bus, &dev, &func, &addr))
     {
-        nk_printf("Conf0 %lx:%lx.%lx addr = %lx read\n", bus, dev, func, addr);
+        nk_printf("Conf0 %"PRIx32":%"PRIx32".%"PRIx32" addr = %"PRIx32" read\n", bus, dev, func, addr);
         conf0_rd(bus, func, dev, addr);
     }
-    else if (nk_fscan(args, "conf1 wr %lx:%lx.%lx %lx %lx ",  &bus, &dev, &func, &addr, &val))
+    else if (nk_fscan(args, "conf1 wr %"PRIx32":%"PRIx32".%"PRIx32" %"PRIx32" %"PRIx32" ",  &bus, &dev, &func, &addr, &val))
     {
-        nk_printf("Conf1 %lx:%lx.%lx addr = %lx write = %lx\n", bus, dev, func, addr, val);
+        nk_printf("Conf1 %"PRIx32":%"PRIx32".%"PRIx32" addr = %"PRIx32" write = %"PRIx32"\n", bus, dev, func, addr, val);
         conf1_wr(bus, func, dev, addr, val);
     }
     else if (nk_fscan(args, "conf1 rd %x:%x.%x %x ", &bus, &dev, &func, &addr))
     {
-        nk_printf("Conf1 %lx:%lx.%lx addr = %lx read\n", bus, dev, func, addr);
+        nk_printf("Conf1 %"PRIx32":%"PRIx32".%"PRIx32" addr = %"PRIx32" read\n", bus, dev, func, addr);
         conf1_rd(bus, func, dev, addr);
     }
     else

@@ -131,6 +131,7 @@ clean:
 
 obj:
 	mkdir obj
+	mkdir obj/libnklabs
 
 # Bump version numbers...
 

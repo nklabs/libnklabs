@@ -42,7 +42,7 @@ COMMAND(cmd_help,
 extern unsigned char __start_COMMAND_TABLE;
 extern unsigned char __stop_COMMAND_TABLE;
 
-static int name_match(const char *table, const char *cmd, int partial, int allow_hidden)
+static int name_match(const char *table, const char *cmd, size_t partial, int allow_hidden)
 {
     if (table[0] == '>' || allow_hidden)
     {
@@ -245,7 +245,7 @@ void nk_cli_enable()
     if (cli_disabled)
     {
         cli_disabled = 0;
-        handle_cmd("");
+        handle_cmd(NULL);
     }
 }
 
@@ -254,12 +254,15 @@ void nk_cli_disable()
     cli_disabled = 1;
 }
 
-int cmd_compare(const void *a, const void *b)
+#if 0
+// For qsort below...
+static int cmd_compare(const void *a, const void *b)
 {
-    const struct console_cmd *x = (struct console_cmd *)a;
-    const struct console_cmd *y = (struct console_cmd *)b;
+    const struct console_cmd *x = (const struct console_cmd *)a;
+    const struct console_cmd *y = (const struct console_cmd *)b;
     return strcmp(x->text, y->text);
 }
+#endif
 
 void nk_init_cli()
 {
@@ -296,5 +299,5 @@ void nk_init_cli()
 	nk_printf("Done\n");
 	// Delay it until startup is completely done
 	nk_cli_tid = nk_alloc_tid();
-	nk_sched(nk_cli_tid, (void (*)(void *))handle_cmd, "", 0, "CLI start");
+	nk_sched(nk_cli_tid, (void (*)(void *))handle_cmd, NULL, 0, "CLI start");
 }

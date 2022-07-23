@@ -72,6 +72,7 @@ static int cmd_mcuflash(nkinfile_t *args)
     uint32_t addr;
     uint32_t len;
     uint64_t val;
+    uint8_t val8;
     if (facmode && nk_fscan(args, "rd %lx ", &addr)) {
         nk_mcuflash_read(NULL, addr, (uint8_t *)&val, 8);
         nk_printf("[%lx] has %llx\n", addr, val);
@@ -108,7 +109,7 @@ static int cmd_mcuflash(nkinfile_t *args)
         nk_printf("Writing %lu bytes...\n", len);
     	while (len)
     	{
-    		int th;
+    		uint32_t th;
     		int n;
     		for (n = 0; n != 16; ++n)
     			buf[n] = x++;
@@ -123,13 +124,13 @@ static int cmd_mcuflash(nkinfile_t *args)
 		addr += th;
     	}
         nk_printf("done.\n");
-    } else if (facmode && nk_fscan(args, "fill %lx %x %x ", &addr, &len, &val)) {
+    } else if (facmode && nk_fscan(args, "fill %lx %x %hhx ", &addr, &len, &val8)) {
     	uint8_t buf[16];
-    	memset(buf, val, sizeof(buf));
+    	memset(buf, val8, sizeof(buf));
         nk_printf("Writing %lu bytes...\n", len);
     	while (len)
     	{
-    		int th;
+    		uint32_t th;
     		if (len >= 16)
     			th = 16;
 		else

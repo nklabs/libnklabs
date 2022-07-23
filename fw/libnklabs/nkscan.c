@@ -35,17 +35,9 @@
 
 #include "nkstring.h"
 
-int isspace(char c)
-{
-	if (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v')
-		return 1;
-	else
-		return 0;
-}
-
 int nk_fscan_ws(nkinfile_t *f)
 {
-	for (int c = nk_fpeek(f); isspace(c); c = nk_fnext_fast(f));
+	for (int c = nk_fpeek(f); nk_isspace(c); c = nk_fnext_fast(f));
 	return 1;
 }
 
@@ -130,12 +122,12 @@ static int _nk_fscan_word(int quash_case, nkinfile_t *f, char *buf, int width, s
 			status = 0;
 		}
 	} else {
-		while (width && c != -1 && !isspace(c)) {
+		while (width && c != -1 && !nk_isspace(c)) {
 			if (buf_size > 1) {
 				if (quash_case)
-					*buf++ = nk_tolower(c);
+					*buf++ = (char)nk_tolower(c);
 				else
-					*buf++ = c;
+					*buf++ = (char)c;
 				--buf_size;
 			}
 			--width;
@@ -190,9 +182,9 @@ static int _nk_fscan_ident(int quash_case, nkinfile_t *f, char *buf, int width, 
 		while (width && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) {
 			if (buf_size > 1) {
 				if (quash_case)
-					*buf++ = nk_tolower(c);
+					*buf++ = (char)nk_tolower(c);
 				else
-					*buf++ = c;
+					*buf++ = (char)c;
 				--buf_size;
 			}
 			--width;
@@ -230,11 +222,11 @@ int nk_fscan_hex(nkinfile_t *f, uint64_t *val, int width)
 	while (width && ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
 		status = 1;
 		if (c >= '0' && c <= '9')
-			v = v * 16 + c - '0';
+			v = v * 16 + (unsigned int)(c - '0');
 		else if (c >= 'a' && c <= 'f')
-			v = v * 16 + c - 'a' + 10;
+			v = v * 16 + (unsigned int)(c - 'a' + 10);
 		else
-			v = v * 16 + c - 'A' + 10;
+			v = v * 16 + (unsigned int)(c - 'A' + 10);
 		--width;
 		c = nk_fnext_fast(f);
 	}
@@ -260,7 +252,7 @@ int nk_fscan_dec(nkinfile_t *f, uint64_t *val, int width)
 	}
 	while (c >= '0' && c <= '9' && width) {
 		status = 1;
-		v = v * 10 + c - '0';
+		v = v * 10 + (unsigned int)(c - '0');
 		--width;
 		c = nk_fnext_fast(f);
 	}
@@ -277,6 +269,8 @@ int nk_fscan_dec(nkinfile_t *f, uint64_t *val, int width)
 int nk_fscan_double(nkinfile_t *f, double *val)
 {
 #ifdef NKSCAN_NOFLOAT
+	(void)f;
+	(void)val;
 	return 0;
 #else
 	return fstrtod(f, val);
@@ -423,7 +417,7 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 			}
 		} else if (ignore_case) {
 			// Case ignoring literal character match
-			if (nk_tolower(nk_fpeek(f)) != nk_tolower(*(unsigned char *)fmt)) {
+			if (nk_tolower(nk_fpeek(f)) != nk_tolower(*(const unsigned char *)fmt)) {
 				goto bye;
 			} else {
 				nk_fnext_fast(f);
@@ -432,7 +426,7 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 		} else {
 			// Literal character match
 			lit:
-			if (nk_fpeek(f) != *(unsigned char *)fmt) {
+			if (nk_fpeek(f) != *(const unsigned char *)fmt) {
 				goto bye;
 			} else {
 				nk_fnext_fast(f);

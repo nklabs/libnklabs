@@ -20,8 +20,10 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
+#include <inttypes.h>
 #include "nkreadline.h"
 #include "nkcli.h"
+#include "basic_cmds.h"
  
 // Control echoing
 
@@ -58,20 +60,20 @@ static int cmd_mem(nkinfile_t *args)
     uint32_t addr;
     uint32_t len;
     uint32_t val;
-    if (facmode && nk_fscan(args, "rd %lx ", &addr))
+    if (facmode && nk_fscan(args, "rd %"PRIx32" ", &addr))
     {
-        nk_printf("[%lx] has %lx\n", addr, *(uint32_t *)addr);
+        nk_printf("[%"PRIx32"] has %"PRIx32"\n", addr, *(uint32_t *)addr);
     }
-    else if (facmode && nk_fscan(args, "wr %lx %x ", &addr, &val))
+    else if (facmode && nk_fscan(args, "wr %"PRIx32" %x ", &addr, &val))
     {
         *(uint32_t *)addr = val;
-        nk_printf("Wrote %lx to [%lx]\n", val, addr);
+        nk_printf("Wrote %"PRIx32" to [%"PRIx32"]\n", val, addr);
     }
-    else if (facmode && nk_fscan(args, "hd %lx %x ", &addr, &len))
+    else if (facmode && nk_fscan(args, "hd %"PRIx32" %x ", &addr, &len))
     {
 	nk_byte_hex_dump((unsigned char *)0, 0, addr, len);
     }
-    else if (facmode && nk_fscan(args, "hd %lx ", &addr))
+    else if (facmode && nk_fscan(args, "hd %"PRIx32" ", &addr))
     {
     	len = 0x100;
 	nk_byte_hex_dump((unsigned char *)0, 0, addr, len);

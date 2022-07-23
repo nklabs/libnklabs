@@ -315,6 +315,7 @@ void nk_sched_loop()
 	nk_startup_message("Begin main loop\n");
 
 	for (;;) {
+		int restart = 0;
 		nk_irq_lock(&sched_lock, irq_flag);
 		// Execute pending work
 		while (queue_not_empty() && (int32_t)(nk_get_sched_time() - queue->next->when) >= 0) {
@@ -328,10 +329,22 @@ void nk_sched_loop()
 			nk_irq_unlock(&sched_lock, irq_flag);
 			func(data);
 			nk_irq_lock(&sched_lock, irq_flag);
+
+			// Force timer restart if we did any work
+			// Suppose there is an interrupt handler that calls nksched for a timeout
+			// If the interrupt happens often (ymodem receiving data...), the calls to nksched will all
+			// be to the same time since nk_get_sched_time doesn't change until timer expires.  But this
+			// causes a problem: we will get the timeout since we keep rescheduling the task
+			// for the same time, but we should not get it.
+			// By forcing a restart of the timer, we put off the timeout.
+			// But this will cause other problems: it delays all waiting tasks that have not been rescheduled.
+			// The real fix is for nk_get_sched_time to actually show the passing of time..
+
+			restart = 1;
 		}
 		// (Re)Start the timer if the earliest work item does not match
 		// the current timeout
-		if (queue_not_empty() && queue->next->when - nk_get_sched_time() != nk_get_sched_timeout()) {
+		if (queue_not_empty() && (restart || (queue->next->when - nk_get_sched_time() != nk_get_sched_timeout()))) {
 			nk_start_sched_timer(queue->next->when - nk_get_sched_time());
 		}
 		nk_irq_unlock_and_wait(&sched_lock, irq_flag, deepness);

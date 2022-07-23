@@ -175,7 +175,6 @@ int nk_mcuflash_erase(const void *info, uint32_t address, uint32_t byte_count)
 	}
 
 	if (byte_count) {
-		nk_printf("ERROR: Invalid erase size\n");
 		return -1;
 	}
 	return 0;
@@ -333,16 +332,6 @@ int memcmp(const void *d, const void *s, size_t n)
 		++t; ++u;
 	}
 	return 0;
-}
-
-int isxdigit(int c)
-{
-	if ((c >= '0' && c <= '9') ||
-	    (c >= 'A' && c <= 'F') ||
-	    (c >= 'a' && c <= 'f'))
-	    	return 1;
-	else
-		return 0;
 }
 
 int atoi(const char *s)

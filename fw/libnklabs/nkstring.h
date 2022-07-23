@@ -27,9 +27,12 @@
 #include <stdlib.h> // For size_t
 
 // Commonly missing string functions
-char nk_tolower(char a);
+int nk_tolower(int a);
 void nk_tolowers(char *s);
 int nk_stricmp(const char *a, const char *b);
 int nk_memicmp(const char *a, const char *b, size_t len);
+
+int nk_isxdigit(int c);
+int nk_isspace(int c);
 
 #endif

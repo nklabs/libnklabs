@@ -60,12 +60,12 @@ int timeout_tid;
 #define NK_YM_CAN 0x18
 
 // Packet lengths including SOH/STX, sequencen number and CRC
-#define NK_YM_SHORT_PACKET_LEN 133
-#define NK_YM_LONG_PACKET_LEN 1029
+#define NK_YM_SHORT_PACKET_LEN 133u
+#define NK_YM_LONG_PACKET_LEN 1029u
 
 // Index into packet_buf for saving multiple packets for debugging
 
-static int last_idx;
+static size_t last_idx;
 
 // Receive buffer
 
@@ -77,7 +77,7 @@ static unsigned char packet_buf[NK_YM_SHORT_PACKET_LEN]; // Enough for SOH 01 FE
 
 // Define size of debug code log
 // Uncomment to disable debug log
-#define NK_YM_DEBUG_LOG_SIZE 20
+#define NK_YM_DEBUG_LOG_SIZE 200
 
 #ifdef NK_YM_DEBUG_LOG_SIZE
 
@@ -115,8 +115,8 @@ static void debug_logit(uint8_t state, uint8_t c)
     {
         debug_log[debug_log_idx].state = state;
         debug_log[debug_log_idx].c = c;
+        ++debug_log_idx;
     }
-    ++debug_log_idx;
 }
 
 static void debug_clrit()
@@ -148,7 +148,7 @@ static char ymodem_first;
 static char ymodem_can;
 static char ymodem_to;
 static char ymodem_xmodem; // Set for Xmodem mode: anonymous file detected
-static char ymodem_nocrc = NK_YM_NOCRC;
+static unsigned char ymodem_nocrc = NK_YM_NOCRC;
 static uint8_t ymodem_old_seq; // Seq. number of previous packet
 static uint8_t ymodem_seq; // Next expected sequence number
 static uint32_t ymodem_file_size; // Exact size of file or 0xffffffff
@@ -165,11 +165,11 @@ static void ymodem_setup_header()
 {
     packet_buf[0] = NK_YM_SOH;
     packet_buf[1] = ymodem_send_seq;
-    packet_buf[2] = ~ymodem_send_seq;
+    packet_buf[2] = (uint8_t)~ymodem_send_seq;
 #ifdef YMODEM_SEND
     unsigned short crc = nk_crc16be_check(packet_buf + 3, 128);
-    packet_buf[131] = (crc >> 8);
-    packet_buf[132] = crc;
+    packet_buf[131] = (uint8_t)(crc >> 8);
+    packet_buf[132] = (uint8_t)crc;
     ymodem_send_block_size = 133;
 #else
     uint8_t cksum = 0;
@@ -199,7 +199,7 @@ static int ymodem_prepare_next(int (*tgetc)(void *file), void *file)
         int c = tgetc(file);
         if (c == -1)
             break;
-        packet_buf[3 + x] = c;
+        packet_buf[3 + x] = (unsigned char)c;
     }
     if (x == 0)
         return 0; // Nothing more to send
@@ -222,12 +222,12 @@ static void ymodem_send_block()
 // Send a file event-
 // Call whenever a character is received
 
-static int nk_ysend_evt(int (*tgetc)(void *), void *file, int c)
+static int nk_ysend_evt(int (*tgetc)(void *), void *file, unsigned char c)
 {
     int status = YMODEM_SEND_STATUS_MORE;
     NK_YM_DEBUG_LOGIT(
-        (ymodem_send_eot << 0) |
-        (ymodem_send_fin << 1),
+        (uint8_t)((ymodem_send_eot << 0) |
+        (ymodem_send_fin << 1)),
         c);
     if (c == 'C' || c == NK_YM_NAK)
     {
@@ -316,10 +316,11 @@ static void (*ysend_tclose)(void *f);
 static void ymodem_send_task(void *data)
 {
     int sta = YMODEM_SEND_STATUS_MORE;
+    (void)data;
     do {
         int c = nk_getc();
         if (c != -1)
-            sta = nk_ysend_evt(ysend_tgetc, ysend_file, c);
+            sta = nk_ysend_evt(ysend_tgetc, ysend_file, (unsigned char)c);
         else
             break;
     } while (sta == YMODEM_SEND_STATUS_MORE);
@@ -423,17 +424,22 @@ static int sdata_eof;
 
 static void *tzopen(const char *name, const char *mode)
 {
+    static char fake[] = "fak";
+    (void)name;
+    (void)mode;
     sdata_offset = 0;
     sdata_eof = 0;
-    return (void *)"fake";
+    return (void *)fake;
 }
 
 static void tzclose(void *f)
 {
+    (void)f;
 }
 
 static int tzgetc(void *file)
 {
+    (void)file;
     if (sdata_offset == sdata_size) {
         sdata_eof = 1;
         return -1;
@@ -447,6 +453,7 @@ static int tzgetc(void *file)
 
 static int tzsize(void *f)
 {
+    (void)f;
     return (int)sdata_size;
 }
 
@@ -477,10 +484,15 @@ void ymodem_recv_init()
     ymodem_xmodem = 0;
     // Poke other end: ask for CRCs
     if (ymodem_nocrc)
+    {
         nk_putc(NK_YM_NAK);
+        NK_YM_DEBUG_LOGIT(0, NK_YM_NAK);
+    }
     else
+    {
         nk_putc('C');
-    
+        NK_YM_DEBUG_LOGIT(0, 'C');
+    }
 }
 
 // Checksum or CRC validation
@@ -488,14 +500,14 @@ void ymodem_recv_init()
 static int crc_count; // Count of CRC packets
 static int cksum_count; // Count of checksum packets
 
-static int ymcrc_check(uint8_t *buf, int len)
+static int ymcrc_check(uint8_t *buf, size_t len)
 {
     if (ymodem_nocrc)
     {
-        int x;
+        size_t x;
         uint8_t cksum = 0;
         for (x = 0; x != len - 2; ++x)
-            cksum += buf[x];
+            cksum = (uint8_t)(cksum + buf[x]);
         if (cksum == buf[x])
         {
             ++cksum_count;
@@ -517,7 +529,7 @@ static int ymcrc_check(uint8_t *buf, int len)
 
 static int long_count; // Count of received long packets- for debugging
 
-int ymodem_rcv(unsigned char *rcvbuf, int len)
+int ymodem_rcv(unsigned char *rcvbuf, size_t len)
 {
     int status = YMODEM_RECV_MORE;
 
@@ -532,9 +544,15 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
         {
             // Timeout- ask for resend
             if (ymodem_nocrc)
+            {
                 nk_putc(NK_YM_NAK); // Use C instead of NAK here to ensure CRC mode
+                NK_YM_DEBUG_LOGIT(1, NK_YM_NAK);
+            }
             else
+            {
                 nk_putc('C'); // Use C instead of NAK here to ensure CRC mode
+                NK_YM_DEBUG_LOGIT(1, 'C');
+            }
             ymodem_purge = 0;
         }
     }
@@ -577,15 +595,16 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 // No more files
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(2, NK_YM_ACK);
                 status = YMODEM_RECV_DONE;
             }
             else
             {
-                int name_len = strlen((char *)rcvbuf + 3);
+                size_t name_len = strlen((char *)rcvbuf + 3);
                 // Get exact file size
                 if (rcvbuf[3 + name_len + 1])
                 {
-                    ymodem_file_size = (uint32_t)atoi(rcvbuf + 3 + name_len + 1);
+                    ymodem_file_size = (uint32_t)atoi((char *)(rcvbuf + 3 + name_len + 1));
                 }
                 else
                 {
@@ -594,6 +613,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 if (!ymodem_recv_file_open((char *)rcvbuf+3))
                 {
                     nk_putc(NK_YM_ACK);
+                    NK_YM_DEBUG_LOGIT(3, NK_YM_ACK);
                     ymodem_old_seq = 0;
                     ymodem_seq = 1;
                     // We are going to send 'C' next: but do it after timeout
@@ -603,7 +623,9 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 else
                 {
                     nk_putc(NK_YM_CAN);
+                    NK_YM_DEBUG_LOGIT(3, NK_YM_CAN);
                     nk_putc(NK_YM_CAN);
+                    NK_YM_DEBUG_LOGIT(3, NK_YM_CAN);
                     status = YMODEM_RECV_OPEN_CANCEL;
                 }
             }
@@ -618,6 +640,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 // No more files
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(4, NK_YM_ACK);
                 status = YMODEM_RECV_DONE;
             }
             else
@@ -626,6 +649,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 if (!ymodem_recv_file_open("anonymous\0"))
                 {
                     nk_putc(NK_YM_ACK);
+                    NK_YM_DEBUG_LOGIT(5, NK_YM_ACK);
                     ymodem_old_seq = 1;
                     ymodem_seq = 2;
                     // We are going to send 'C' next: but do it after timeout
@@ -648,7 +672,9 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 else
                 {
                     nk_putc(NK_YM_CAN);
+                    NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
                     nk_putc(NK_YM_CAN);
+                    NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
                     status = YMODEM_RECV_OPEN_CANCEL;
                 }
             }
@@ -674,13 +700,20 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             if (ymodem_first)
             {
                 if (ymodem_nocrc)
+                {
                     nk_putc(NK_YM_NAK);
+                    NK_YM_DEBUG_LOGIT(7, NK_YM_NAK);
+                }
                 else
+                {
                     nk_putc('C');
+                    NK_YM_DEBUG_LOGIT(7, 'C');
+                }
             }
             else
             {
                 nk_putc(NK_YM_NAK);
+                NK_YM_DEBUG_LOGIT(7, NK_YM_NAK);
             }
         }
         else if (len == 1 && rcvbuf[0] == NK_YM_CAN)
@@ -705,12 +738,15 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 // Missed ACK- ignore data and resend ACK
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(8, NK_YM_ACK);
             }
             else if (rcvbuf[1] != ymodem_seq)
             {
                 // Out of sync
                 nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(8, NK_YM_CAN);
                 nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(8, NK_YM_CAN);
                 ymodem_recv_file_cancel();
                 status = YMODEM_RECV_SYNC_CANCEL;
             }
@@ -732,6 +768,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 ymodem_first = 0;
                 ymodem_old_seq = ymodem_seq++;
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(9, NK_YM_ACK);
             }
         }
 #ifdef NK_YM_ALLOWLONG
@@ -743,12 +780,15 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 // Missed ACK- ignore data and resend ACK
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(10, NK_YM_ACK);
             }
             else if (rcvbuf[1] != ymodem_seq)
             {
                 // Out of sync
                 nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(10, NK_YM_CAN);
                 nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(10, NK_YM_CAN);
                 ymodem_recv_file_cancel();
                 status = YMODEM_RECV_SYNC_CANCEL;
             }
@@ -770,6 +810,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
                 ymodem_first = 0;
                 ymodem_old_seq = ymodem_seq++;
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(10, NK_YM_ACK);
                 ++long_count;
             }
         }
@@ -781,12 +822,14 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 ymodem_recv_file_close();
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(11, NK_YM_ACK);
                 status = YMODEM_RECV_DONE;
             }
             else if (ymodem_got_eot)
             {
                 ymodem_recv_file_close();
                 nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(12, NK_YM_ACK);
                 ymodem_recv_init();
                 ymodem_to = 0;
                 
@@ -795,6 +838,7 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
             {
                 ymodem_got_eot = 1; // We want to see EOT twice
                 nk_putc(NK_YM_NAK);
+                NK_YM_DEBUG_LOGIT(13, NK_YM_NAK);
             }
         }
         else
@@ -811,13 +855,13 @@ int ymodem_rcv(unsigned char *rcvbuf, int len)
 static int laststatus; // Final ymodem receive status- for "ymodem show" command
 
 static int yrecv_mode = 0;
-static int yrecv_len = 0;
+static size_t yrecv_len = 0;
 
 char TIMEOUT[] = "timeout!";
 
 extern nk_checked_t ymodem_file;
 
-int process_full_outer()
+static int process_full_outer()
 {
     int sta = ymodem_rcv(packet_buf + last_idx, yrecv_len);
 #ifdef PROTOLOG
@@ -877,12 +921,13 @@ int process_full_outer()
 
 // Buffer full packet, then call ymodem_rcv
 
-int max_len;
+size_t max_len;
 
-void ymodem_recv_task(void *data)
+static void ymodem_recv_task(void *data)
 {
     if (data == TIMEOUT)
     {
+        NK_YM_DEBUG_LOGIT(20, 0);
         yrecv_len = 0;
         if (process_full_outer())
             return;
@@ -895,7 +940,7 @@ void ymodem_recv_task(void *data)
             int c = nk_getc();
             if (c != -1)
             {
-                packet_buf[last_idx + yrecv_len] = c;
+                packet_buf[last_idx + yrecv_len] = (unsigned char)c;
                 ++yrecv_len;
                 if (yrecv_len > max_len)
                     max_len = yrecv_len;
@@ -988,6 +1033,7 @@ void nk_yrecv()
     long_count = 0;
     cksum_count = 0;
     crc_count = 0;
+    NK_YM_DEBUG_CLRIT();
     ymodem_recv_init();
 
     if (!timeout_tid)
@@ -1002,7 +1048,7 @@ void debug_rcv_status()
     nk_printf("status = %d\n", laststatus);
     nk_printf("long_count = %d\n", long_count);
     nk_printf("crc_count = %d\n", crc_count);
-    nk_printf("max_len = %d\n", max_len);
+    nk_printf("max_len = %zd\n", max_len);
     nk_printf("cksum_count = %d\n", cksum_count);
     NK_YM_DEBUG_LOG_SHOW();
     nk_printf("%p %d\n", debug_log_show, debug_log_idx);

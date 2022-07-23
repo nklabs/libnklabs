@@ -30,7 +30,7 @@ unsigned char nk_crc8(const unsigned char *data, unsigned long length)
     for (x = 0; x != length; ++x)
     {
         unsigned char i = (crc ^ data[x]);
-        crc = i ^ (i >> 7) ^ (i << 1) ^ (i << 2) ^ ((i >> 4) & 0x0C) ^ ((i >> 5) & 0x02) ^ ((i >> 6) & 0x01);
+        crc = (unsigned char)(i ^ (i >> 7) ^ (i << 1) ^ (i << 2) ^ ((i >> 4) & 0x0C) ^ ((i >> 5) & 0x02) ^ ((i >> 6) & 0x01));
     }
     return crc;
 }
@@ -200,9 +200,9 @@ unsigned long nk_crc32le_check(unsigned char *start, unsigned long size)
 
 unsigned short nk_crc16be_update(unsigned short crc, unsigned char ch)
 {
-    unsigned char x = (crc >> 8) ^ ch;
+    unsigned char x = (unsigned char)((crc >> 8) ^ ch);
     x ^= (x >> 4);
-    return (crc << 8) ^ (x << 12) ^ (x << 5) ^ x;
+    return (unsigned short)((crc << 8) ^ (x << 12) ^ (x << 5) ^ x);
 }
 
 unsigned short nk_crc16be_check(const unsigned char* data_p, unsigned long length)
@@ -222,9 +222,9 @@ unsigned short nk_crc16be_check(const unsigned char* data_p, unsigned long lengt
 
 unsigned short nk_crc16le_update(unsigned short crc, unsigned char ch)
 {
-    unsigned char e = (crc ^ ch);
-    unsigned char f = (e ^ (e << 4));
-    return (crc >> 8) ^ (f << 8) ^ (f << 3) ^ (f >> 4);
+    unsigned char e = (unsigned char)(crc ^ ch);
+    unsigned char f = (unsigned char)(e ^ (e << 4));
+    return (unsigned short)((crc >> 8) ^ (f << 8) ^ (f << 3) ^ (f >> 4));
 }
 
 unsigned short nk_crc16le_check(const unsigned char* data_p, unsigned long length)

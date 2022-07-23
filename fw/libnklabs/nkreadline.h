@@ -22,6 +22,7 @@
 #ifndef  _NKREADLINE_H
 #define _NKREADLINE_H
 
+#include <stdbool.h>
 #include "nkreadline_config.h"
 
 // Prompt for line of input, execute callback when we get it
@@ -29,7 +30,7 @@
 
 void nk_readline(int tid, void (*f)(char *line), const char *prompt_text);
 
-int nk_set_echo(int mode);
-int nk_get_echo();
+bool nk_set_echo(bool mode);
+bool nk_get_echo();
 
 #endif    /* _NKREADLINE_H   */

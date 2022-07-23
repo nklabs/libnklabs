@@ -23,6 +23,7 @@
 // Provides receive file handler
 
 #include <string.h>
+#include <inttypes.h>
 #include "nkcrclib.h"
 #include "nkcli.h"
 #include "nkdirect.h"
@@ -75,7 +76,7 @@ const nk_direct_base_t ymodem_file_fw1 =
 
 nk_direct_t ymodem_file;
 
-int ymodem_recv_file_open(char *name)
+int ymodem_recv_file_open(const char *name)
 {
     size_t len;
     strcpy(name_buf, name);
@@ -97,9 +98,9 @@ int ymodem_recv_file_open(char *name)
     }
 }
 
-void ymodem_recv_file_write(unsigned char *buffer, int len)
+void ymodem_recv_file_write(unsigned char *buffer, size_t len)
 {
-    nk_direct_write(&ymodem_file, buffer, (uint32_t)len);
+    nk_direct_write(&ymodem_file, buffer, len);
 }
 
 // Called after a single file has been transferred- do not print anything
@@ -122,7 +123,7 @@ void ymodem_recv_all_done()
 {
     if (dld_done)
     {
-        nk_printf("All done!  filename = '%s', size = %lu, CRC = %lx\n", name_buf, ymodem_file.size, ymodem_file.crc);
+        nk_printf("All done!  filename = '%s', size = %"PRIu32", CRC = %"PRIu32"\n", name_buf, ymodem_file.size, ymodem_file.crc);
         if (ymodem_file.file == &ymodem_file_fw0 || ymodem_file.file == &ymodem_file_fw1) {
             uint32_t buf;
             nk_printf("It's a software image: setting bootloader flag\n");
@@ -150,9 +151,9 @@ static int cmd_ymodem(nkinfile_t *args)
     } else if (nk_fscan(args, "show ")) {
         // State of previous receive
         nk_printf("name = %s\n", name_buf);
-        nk_printf("exact = %lu\n", dld_exact);
-        nk_printf("size = %lu\n", ymodem_file.size);
-        nk_printf("crc = %lx\n", ymodem_file.crc);
+        nk_printf("exact = %"PRIu32"\n", dld_exact);
+        nk_printf("size = %"PRIu32"\n", ymodem_file.size);
+        nk_printf("crc = %"PRIx32"\n", ymodem_file.crc);
         debug_rcv_status();
     } else {
         nk_printf("Syntax error\n");
