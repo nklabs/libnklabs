@@ -121,4 +121,8 @@ uint32_t *irq(uint32_t *regs, uint32_t irqs);
 
 void picorv32_timer_irq();
 
+// Erase size for MCU flash- in this case it's an external SPI flash
+
+#define NK_MCUFLASH_ERASE_SIZE 4096
+
 #endif

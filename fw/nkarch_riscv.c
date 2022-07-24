@@ -50,7 +50,7 @@ void nk_sched_wakeup(nk_time_t when)
 	uint32_t delay;
 
 	nk_time_t now = nk_get_time();
-	if (when <= now)
+	if ((int32_t)(when - now) <= 0)
 		delay = 1;
 	else
 		delay = when - now;

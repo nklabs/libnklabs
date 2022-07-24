@@ -42,7 +42,7 @@ const nk_direct_base_t ymodem_file_fpga =
 {
     .area_size = FLASH_FPGA_BUFFER_SIZE,
     .area_base = FLASH_FPGA_BUFFER_MAIN,
-    .erase_size = 65536,
+    .erase_size = 65536, // Must be at least NK_MCUFLASH_ERASE_SIZE
     .info = NULL,
     .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_mcuflash_read, // info, address, data, byte_count
     .flash_erase = (int (*)(const void *info, uint32_t addr, uint32_t size))nk_mcuflash_erase,
@@ -54,7 +54,7 @@ const nk_direct_base_t ymodem_file_fw0 =
 {
     .area_size = FLASH_FIRMWARE_BUFFER_SIZE,
     .area_base = FLASH_FIRMWARE_BUFFER_0,
-    .erase_size = 65536,
+    .erase_size = 65536, // Must be at least NK_MCUFLASH_ERASE_SIZE
     .info = NULL,
     .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_mcuflash_read, // info, address, data, byte_count
     .flash_erase = (int (*)(const void *info, uint32_t addr, uint32_t size))nk_mcuflash_erase,
@@ -66,7 +66,7 @@ const nk_direct_base_t ymodem_file_fw1 =
 {
     .area_size = FLASH_FIRMWARE_BUFFER_SIZE,
     .area_base = FLASH_FIRMWARE_BUFFER_1,
-    .erase_size = 65536,
+    .erase_size = 65536, // Must be at least NK_MCUFLASH_ERASE_SIZE
     .info = NULL,
     .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_mcuflash_read, // info, address, data, byte_count
     .flash_erase = (int (*)(const void *info, uint32_t addr, uint32_t size))nk_mcuflash_erase,
@@ -128,7 +128,7 @@ void ymodem_recv_all_done()
             uint32_t buf;
             nk_printf("It's a software image: setting bootloader flag\n");
             // Switch to new bank
-            nk_mcuflash_erase(NULL, FLASH_FIRMWARE_FLAG, 65536);
+            nk_mcuflash_erase(NULL, FLASH_FIRMWARE_FLAG, NK_MCUFLASH_ERASE_SIZE);
             if (reg_spictrl & 0x40000000)
                 buf = 0;
             else
