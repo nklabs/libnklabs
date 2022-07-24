@@ -172,6 +172,14 @@ static int cmd_info(nkinfile_t *args)
 		nk_printf("  an address in current text = %p\n", &cmd_info);
 #endif
 
+		nk_printf("  sizeof(bool) = %u\n", sizeof(bool));
+		nk_printf("  sizeof(char) = %u\n", sizeof(char));
+		nk_printf("  sizeof(short) = %u\n", sizeof(short));
+		nk_printf("  sizeof(int) = %u\n", sizeof(int));
+		nk_printf("  sizeof(long) = %u\n", sizeof(long));
+		nk_printf("  sizeof(long long) = %u\n", sizeof(long long));
+		nk_printf("  sizeof(void *) = %u\n", sizeof(void *));
+
 
 	} else {
 		nk_printf("Syntax error\n");

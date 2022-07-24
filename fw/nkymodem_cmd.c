@@ -123,7 +123,7 @@ void ymodem_recv_all_done()
 {
     if (dld_done)
     {
-        nk_printf("All done!  filename = '%s', size = %"PRIu32", CRC = %"PRIu32"\n", name_buf, ymodem_file.size, ymodem_file.crc);
+        nk_printf("All done!  filename = '%s', size = %"PRIu32", CRC = %"PRIx32"\n", name_buf, ymodem_file.size, ymodem_file.crc);
         if (ymodem_file.file == &ymodem_file_fw0 || ymodem_file.file == &ymodem_file_fw1) {
             uint32_t buf;
             nk_printf("It's a software image: setting bootloader flag\n");

@@ -24,6 +24,25 @@
 
 #include "nkymodem_config.h"
 
+// Characters
+#define NK_YM_SOH 0x01
+#define NK_YM_STX 0x02
+#define NK_YM_EOT 0x04
+#define NK_YM_ACK 0x06
+#define NK_YM_NAK 0x15
+#define NK_YM_CAN 0x18
+
+// Packet lengths including SOH/STX, sequence number and CRC
+#ifdef NK_YM_NOCRC
+#define NK_YM_SHORT_PACKET_LEN 132u
+#define NK_YM_LONG_PACKET_LEN 1028u
+#define NK_YM_REQ NK_YM_NAK
+#else
+#define NK_YM_SHORT_PACKET_LEN 133u
+#define NK_YM_LONG_PACKET_LEN 1029u
+#define NK_YM_REQ 'C'
+#endif
+
 // Ymodem uses nk_putc, nk_getc and nk_uart_read
 
 // ymodem_send return status

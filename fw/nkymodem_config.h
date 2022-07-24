@@ -31,9 +31,8 @@
 // Allow 1K packets.  Comment out for only 128 byte packets
 #define NK_YM_ALLOWLONG 1
 
-// Set NOCRC to 1 to supporess sending 'C" instead of 'NAK', to indicate to sender to use checksum
-// instead of CRC
-#define NK_YM_NOCRC 0
+// Define to supporess sending 'C" instead of 'NAK', to indicate to sender to use checksum instead of CRC
+// #define NK_YM_NOCRC 1
 
 // Comment out to use XMODEM send
 #define NK_YM_YMODEM_SEND 1
