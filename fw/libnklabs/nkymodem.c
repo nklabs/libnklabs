@@ -31,27 +31,6 @@
 
 int timeout_tid;
 
-// Options:
-
-// Keep all received data in packet_buf for debugging.  Received data is printed with "ymodem show"
-//#define PROTOLOG 1
-
-// Allow 1K packets.  When this is disabled, we also set ymodem_nocrc because "sz" command will use 1K
-// packets if it detects that receive side can accept packets with CRC.
-#define NK_YM_ALLOWLONG 1
-
-// Set NOCRC to 1 to supporess sending 'C" instead of 'NAK', to indicate to sender to use checksum
-// instead of CRC
-#ifdef NK_YM_ALLOWLONG
-#define NK_YM_NOCRC 0
-#else
-#define NK_YM_NOCRC 1
-#endif
-
-// Comment out to use XMODEM send
-#define YMODEM_SEND 1
-
-
 #define NK_YM_SOH 0x01
 #define NK_YM_STX 0x02
 #define NK_YM_EOT 0x04
@@ -74,10 +53,6 @@ static unsigned char packet_buf[NK_YM_LONG_PACKET_LEN]; // Enough for STX 01 FE 
 #else
 static unsigned char packet_buf[NK_YM_SHORT_PACKET_LEN]; // Enough for SOH 01 FE Data[128] CRC CRC
 #endif
-
-// Define size of debug code log
-// Uncomment to disable debug log
-#define NK_YM_DEBUG_LOG_SIZE 200
 
 #ifdef NK_YM_DEBUG_LOG_SIZE
 
@@ -166,7 +141,7 @@ static void ymodem_setup_header()
     packet_buf[0] = NK_YM_SOH;
     packet_buf[1] = ymodem_send_seq;
     packet_buf[2] = (uint8_t)~ymodem_send_seq;
-#ifdef YMODEM_SEND
+#ifdef NK_YM_YMODEM_SEND
     unsigned short crc = nk_crc16be_check(packet_buf + 3, 128);
     packet_buf[131] = (uint8_t)(crc >> 8);
     packet_buf[132] = (uint8_t)crc;
@@ -181,7 +156,7 @@ static void ymodem_setup_header()
 #endif
 }
 
-#ifdef YMODEM_SEND
+#ifdef NK_YM_YMODEM_SEND
 static void ymodem_prepare_fin()
 {
     memset(packet_buf + 3, 0, 128);
@@ -248,7 +223,7 @@ static int nk_ysend_evt(int (*tgetc)(void *), void *file, unsigned char c)
         if (ymodem_send_eot)
         {
             ymodem_send_eot = 0;
-#ifdef YMODEM_SEND
+#ifdef NK_YM_YMODEM_SEND
             ymodem_prepare_fin();
             ymodem_send_fin = 1;
             ymodem_send_hdr = 1;
@@ -397,7 +372,7 @@ void nk_ysend_file(
     ymodem_send_fin = 0;
 
     // First block: file name
-#ifdef YMODEM_SEND
+#ifdef NK_YM_YMODEM_SEND
     ymodem_send_seq = 0;
     memset(packet_buf + 3, 0, 128);
     nk_snprintf((char *)packet_buf + 3, 125, "%s%c%d", name, 0, tsize(ysend_file));
@@ -864,7 +839,7 @@ extern nk_checked_t ymodem_file;
 static int process_full_outer()
 {
     int sta = ymodem_rcv(packet_buf + last_idx, yrecv_len);
-#ifdef PROTOLOG
+#ifdef NK_YM_PROTOLOG
     last_idx += yrecv_len;
 #endif
     yrecv_len = 0;
@@ -1050,6 +1025,8 @@ void debug_rcv_status()
     nk_printf("crc_count = %d\n", crc_count);
     nk_printf("max_len = %zd\n", max_len);
     nk_printf("cksum_count = %d\n", cksum_count);
-    NK_YM_DEBUG_LOG_SHOW();
+#ifdef NK_YM_DEBUG_LOG_SIZE
+    debug_log_show();
     nk_printf("%p %d\n", debug_log_show, debug_log_idx);
+#endif
 }

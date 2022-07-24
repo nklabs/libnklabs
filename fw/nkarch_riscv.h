@@ -87,20 +87,29 @@ typedef int spinlock_t;
 
 // Scheduler timer
 
-uint32_t nk_get_sched_time();
-uint32_t nk_get_sched_timeout();
-uint32_t nk_convert_delay(uint32_t delay);
-void nk_init_sched_timer();
-void nk_start_sched_timer(uint32_t delay);
-
-// Wall time
-
 typedef uint32_t nk_time_t;
-nk_time_t nk_get_time();
 
-// Units for wall time
+// Units for scheduler time
 #define NK_TIME_COUNTS_PER_SECOND 25000000
 #define NK_TIME_COUNTS_PER_USECOND 25
+
+// Get current time
+nk_time_t nk_get_time();
+
+// Convert milliseconds into scheduler time
+nk_time_t nk_convert_delay(uint32_t delay);
+
+// Initialize scheduler timer
+void nk_init_sched_timer();
+
+// Set an alarm for 'when'.  An interrupt should fire at this time.
+// Interrupts will be masked when this is called.
+
+// If when is now or in the past, the interrupt should also fire.
+
+// The system must wake up immediately on the next call to nk_irq_unlock_and_wait.
+
+void nk_sched_wakeup(nk_time_t when);
 
 // Microsecond delay
 

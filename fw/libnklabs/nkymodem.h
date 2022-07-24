@@ -19,6 +19,11 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#ifndef _Inkymodem
+#define _Inkymodem
+
+#include "nkymodem_config.h"
+
 // Ymodem uses nk_putc, nk_getc and nk_uart_read
 
 // ymodem_send return status
@@ -296,3 +301,5 @@ CRC and checksum cover only the data part of the packet, not head SOH/STX or seq
 Checksum is just byte by byte add (no carry wrapping like TCP/IP).
 
 */
+
+#endif

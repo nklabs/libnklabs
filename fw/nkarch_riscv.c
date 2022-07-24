@@ -24,49 +24,36 @@
 #include "nkmcuflash.h"
 #include "nkarch_riscv.h"
 
-
 // Scheduler timer- using PICORV32 timer
 
-#define SCHED_TIMER_HZ 25000000
-
-static volatile uint32_t current_time; // The current time
-static volatile uint32_t timeout; // Amount of delay from timer
-
-uint32_t nk_get_sched_time(void)
-{
-	return current_time;
-}
-
-uint32_t nk_get_sched_timeout(void)
-{
-	return timeout;
-}
-
 // Convert delay in milliseconds to number of scheduler timer clock ticks
-uint32_t nk_convert_delay(uint32_t delay)
+nk_time_t nk_convert_delay(uint32_t delay)
 {
-	return delay * (SCHED_TIMER_HZ / 1000);
+	return delay * (NK_TIME_COUNTS_PER_SECOND / 1000);
 }
 
 void picorv32_timer_irq()
 {
-	// Advance timer
-    	current_time += timeout;
-    	timeout = 0;
+	// Nothing to do, system should wake up
 }
 
 void nk_init_sched_timer()
 {
-	current_time = 0;
+	// Nothing to do
 }
 
-// delay in timer ticks
-void nk_start_sched_timer(uint32_t delay)
+// Generate timer interrupt to wake up system
+
+void nk_sched_wakeup(nk_time_t when)
 {
 	uint32_t junk;
-	timeout = delay;
-	if (delay < 1)
-	    delay = 1;
+	uint32_t delay;
+
+	nk_time_t now = nk_get_time();
+	if (when <= now)
+		delay = 1;
+	else
+		delay = when - now;
 
 	picorv32_timer(junk, delay);
 }
