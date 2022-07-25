@@ -588,8 +588,6 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len)
             ymodem_file_size = 0xffffffff;
             if (!ymodem_recv_file_open("anonymous\0"))
             {
-                nk_putc(NK_YM_ACK);
-                NK_YM_DEBUG_LOGIT(5, NK_YM_ACK);
                 ymodem_old_seq = 1;
                 ymodem_seq = 2;
                 // We are going to send 'C' next: but do it after timeout
@@ -608,6 +606,8 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len)
                 }
                 if (this_size)
                     ymodem_recv_file_write(rcvbuf + 3, this_size);
+                nk_putc(NK_YM_ACK);
+                NK_YM_DEBUG_LOGIT(5, NK_YM_ACK);
             }
             else
             {
@@ -829,7 +829,10 @@ static void ymodem_recv_task(void *data)
 {
     if (data == TIMEOUT)
     {
-        NK_YM_DEBUG_LOGIT(20, 0);
+        NK_YM_DEBUG_LOGIT(20, yrecv_len);
+#ifdef NK_YM_PROTOLOG
+        last_idx += yrecv_len;
+#endif
         yrecv_len = 0;
         if (process_full_outer())
             return;
@@ -895,6 +898,7 @@ static void ymodem_recv_task(void *data)
                 if (gotit) // We have a complete packet
                 {
                     gotit = 0;
+                    NK_YM_DEBUG_LOGIT(15, yrecv_len);
                     if (process_full_outer())
                     {
                         nk_unsched(timeout_tid);

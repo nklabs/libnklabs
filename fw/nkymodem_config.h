@@ -23,7 +23,7 @@
 
 // Uncomment to keep all ymodem receive data in packet_buf for debugging.  Received data is printed with "ymodem show"
 // All received data must fit in the packet_buf.
-//#define NK_YM_PROTOLOG 1
+// #define NK_YM_PROTOLOG 1
 
 // Define size of debug event log
 // Uncomment to disable event log

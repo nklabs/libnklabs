@@ -7,7 +7,7 @@ for (y = 0; y != 3; ++y)
  {
  for (x = 0; x != 128; ++x)
   {
-  putchar(x);
+  putchar('A' + y);
   }
  }
 }
