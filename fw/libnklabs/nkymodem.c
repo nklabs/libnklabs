@@ -36,13 +36,9 @@ static int timeout_tid;
 
 static size_t last_idx;
 
-// Receive buffer
+// Packet buffer for receive or transmit
 
-#ifdef NK_YM_ALLOWLONG
-static unsigned char packet_buf[NK_YM_LONG_PACKET_LEN]; // Enough for STX 01 FE Data[1024] CRC CRC
-#else
-static unsigned char packet_buf[NK_YM_SHORT_PACKET_LEN]; // Enough for SOH 01 FE Data[128] CRC CRC
-#endif
+static unsigned char *packet_buf;
 
 #ifdef NK_YM_DEBUG_LOG_SIZE
 
@@ -320,12 +316,14 @@ static void ymodem_send_task(void *data)
 // This disbles the CLI until the transfer is complete or canceled
 
 void nk_ysend_file(
+    unsigned char *packet_buffer,
     const char *name, 
     void *(*topen)(const char *name, const char *mode),
     void (*tclose)(void *f),
     int (*tgetc)(void *f),
     int (tsize)(void *f)
 ) {
+    packet_buf = packet_buffer;
     ysend_tgetc = tgetc;
     ysend_tclose = tclose;
     ysend_file = topen(name, "r");
@@ -414,13 +412,13 @@ static int tzsize(void *f)
 
 // Transmit a buffer as a file
 
-void nk_ysend_buffer(const char *name, char *buffer, size_t len)
+void nk_ysend_buffer(unsigned char *packet_buffer, const char *name, char *buffer, size_t len)
 {
     sdata = buffer;
     sdata_offset = 0;
     sdata_size = len;
     sdata_eof = 0;
-    return nk_ysend_file(name, tzopen, tzclose, tzgetc, tzsize);
+    return nk_ysend_file(packet_buffer, name, tzopen, tzclose, tzgetc, tzsize);
 }
 
 //
@@ -467,7 +465,7 @@ static int ymcrc_check(uint8_t *buf, size_t len)
 #ifdef NK_YM_NOCRC
     size_t x;
     uint8_t cksum = 0;
-    for (x = 0; x != len - 2; ++x)
+    for (x = 0; x != len - 1; ++x)
         cksum = (uint8_t)(cksum + buf[x]);
     if (cksum == buf[x])
     {
@@ -929,8 +927,10 @@ static void ymodem_recv_task(void *data)
 
 // Receive and process a file
 
-void nk_yrecv()
+void nk_yrecv(unsigned char *packet_buffer)
 {
+    packet_buf = packet_buffer;
+
     nk_printf("Start YMODEM send transfer...\r\n");
     nk_printf("Hit Ctrl-X twice to cancel.\r\n");
 
@@ -962,7 +962,7 @@ void debug_rcv_status()
     nk_printf("status = %d\n", laststatus);
     nk_printf("long_count = %d\n", long_count);
     nk_printf("crc_count = %d\n", crc_count);
-    nk_printf("max_len = %zd\n", max_len);
+    nk_printf("max_len = %u\n", max_len);
     nk_printf("cksum_count = %d\n", cksum_count);
 #ifdef NK_YM_DEBUG_LOG_SIZE
     debug_log_show();

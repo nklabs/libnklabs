@@ -43,6 +43,14 @@
 #define NK_YM_REQ 'C'
 #endif
 
+#ifdef NK_YM_ALLOWLONG
+// We must have the large buffer if long packets are allowed
+#define NK_YM_BUFFER_SIZE NK_YM_LONG_PACKET_LEN
+#else
+// Otherwise we only need the small buffer
+#define NK_YM_BUFFER_SIZE NK_YM_SHORT_PACKET_LEN
+#endif
+
 // Ymodem uses nk_putc, nk_getc and nk_uart_read
 
 // ymodem_send return status
@@ -56,6 +64,7 @@ enum {
 // Transmit a file
 
 void nk_ysend_file(
+    unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
     const char *name, 
     void *(*topen)(const char *name, const char *mode),
     void (*tclose)(void *f),
@@ -66,7 +75,11 @@ void nk_ysend_file(
 // Transmit a memory buffer as a file
 //  This calls nk_ysend_file with functions to set send the buffer
 
-void nk_ysend_buffer(const char *name, char *buffer, size_t len);
+void nk_ysend_buffer(
+    unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
+    const char *name,
+    char *buffer,
+    size_t len);
 
 // Receive file handler used by nk_yrecv.  This is provided
 // in nkymodem.c
@@ -127,7 +140,7 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len);
 // Receive and process a file
 //  This calls ymodem_recv_init and ymodem_rcv.
 
-void nk_yrecv();
+void nk_yrecv(unsigned char *packet_buffer); // Packet buffer of size NK_YM_BUFFER_SIZE
 
 // Print some receive status for debugging
 void debug_rcv_status();
@@ -169,18 +182,18 @@ byte packets if CRC is disabled, as follows:
     sz/sb command:
 
     If receive side sends 'C' (indicating that it wants CRC16 packets):
-    sz              Tries zmodem, then falls back to ymodem with 1K option
-    sz --ymodem     Uses ymodem with 1K packets
-    sz --ymodem -k  Uses ymodem with 1K packets
-    sb              Uses ymodem with 1K packets
-    sx              Uses xmodem with 128 byte packets
+    sz              Tries zmodem, then falls back to ymodem with 1K option.
+    sz --ymodem     Uses ymodem with 128 packets.
+    sz --ymodem -k  Uses ymodem with 1K packets.
+    sb              Uses ymodem with 128 byte packets.
+    sx              Uses xmodem with 128 byte packets. (we get one retry?)
 
     If receive side sends 'NAK' (indicating that it wants checksum packets):
-    sz              Tries zmodem, then falls back to ymodem with 1K packets
-    sz --ymodem     Uses ymodem 128 byte packets only
-    sz --ymodem -k  Uses ymodem with 1K packets
-    sb              Uses ymodem with 128 byte packets
-    sx              Uses xmodem with 128 byte packets
+    sz              Tries zmodem, then falls back to ymodem with 1K packets.
+    sz --ymodem     Uses ymodem 128 byte packets only.
+    sz --ymodem -k  Uses ymodem with 1K packets. (cksum_count is less than long_count?)
+    sb              Uses ymodem with 128 byte packets.
+    sx              Uses xmodem with 128 byte packets. (we get one retry?)
 
     "sz" will try zmodem first, then fall back to Ymodem when it sees the 'C'. 
     But note that YMODEM receiver has to be prepared to handle the initial

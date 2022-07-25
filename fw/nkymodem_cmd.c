@@ -31,6 +31,9 @@
 #include "nkmcuflash_map.h"
 #include "nkymodem.h"
 
+// Packet buffer
+static unsigned char packet_buffer[NK_YM_BUFFER_SIZE]; // Enough for STX 01 FE Data[1024] CRC CRC
+
 // Ymodem receive file handler
 // Usually set up to write data to flash
 
@@ -147,7 +150,7 @@ static int cmd_ymodem(nkinfile_t *args)
     if (nk_fscan(args, "")) { // Receive a file
         name_buf[0] = 0;
         dld_done = 0;
-        nk_yrecv();
+        nk_yrecv(packet_buffer);
     } else if (nk_fscan(args, "show ")) {
         // State of previous receive
         nk_printf("name = %s\n", name_buf);
