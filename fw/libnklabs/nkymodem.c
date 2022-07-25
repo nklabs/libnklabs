@@ -448,7 +448,7 @@ void ymodem_recv_init()
     ymodem_seq = 0;
     ymodem_first = 0;
     ymodem_can = 0;
-    ymodem_to = 10;
+    ymodem_to = NK_YM_TIMEOUT;
     ymodem_xmodem = 0;
     // Poke other end: ask for CRCs
     nk_putc(NK_YM_REQ);
@@ -531,7 +531,7 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len)
             {
                 // Got first CAN
                 ymodem_can = 1;
-                ymodem_to = 10;
+                ymodem_to = NK_YM_TIMEOUT;
             }
         }
         else if ((len == NK_YM_SHORT_PACKET_LEN || len == NK_YM_LONG_PACKET_LEN) && rcvbuf[0] == NK_YM_SOH && rcvbuf[1] == 0 && ((rcvbuf[1] ^ 0xFF) == rcvbuf[2])  && ymcrc_check(rcvbuf+3, NK_YM_SHORT_PACKET_LEN-3))
@@ -585,47 +585,37 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len)
             ymodem_can = 0;
             ymodem_to = 0;
             // Valid open file packet
-            if (rcvbuf[3] == 0)
+            ymodem_file_size = 0xffffffff;
+            if (!ymodem_recv_file_open("anonymous\0"))
             {
-                // No more files
                 nk_putc(NK_YM_ACK);
-                NK_YM_DEBUG_LOGIT(4, NK_YM_ACK);
-                status = YMODEM_RECV_DONE;
-            }
-            else
-            {
-                ymodem_file_size = 0xffffffff;
-                if (!ymodem_recv_file_open("anonymous\0"))
+                NK_YM_DEBUG_LOGIT(5, NK_YM_ACK);
+                ymodem_old_seq = 1;
+                ymodem_seq = 2;
+                // We are going to send 'C' next: but do it after timeout
+                ymodem_opened = 1;
+                ymodem_xmodem = 1; // Xmodem mode
+                ymodem_first = 0;
+                uint32_t this_size = 128;
+                if (this_size > ymodem_file_size)
                 {
-                    nk_putc(NK_YM_ACK);
-                    NK_YM_DEBUG_LOGIT(5, NK_YM_ACK);
-                    ymodem_old_seq = 1;
-                    ymodem_seq = 2;
-                    // We are going to send 'C' next: but do it after timeout
-                    ymodem_opened = 1;
-                    ymodem_xmodem = 1; // Xmodem mode
-                    uint32_t this_size = 128;
-                    if (this_size > ymodem_file_size)
-                    {
-                        this_size = ymodem_file_size;
-                        ymodem_file_size = 0;
-                    }
-                    else
-                    {
-                        ymodem_file_size -= this_size;
-                    }
-                    if (this_size)
-                        ymodem_recv_file_write(rcvbuf + 3, this_size);
-                    ymodem_first = 0;
+                    this_size = ymodem_file_size;
+                    ymodem_file_size = 0;
                 }
                 else
                 {
-                    nk_putc(NK_YM_CAN);
-                    NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
-                    nk_putc(NK_YM_CAN);
-                    NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
-                    status = YMODEM_RECV_OPEN_CANCEL;
+                    ymodem_file_size -= this_size;
                 }
+                if (this_size)
+                    ymodem_recv_file_write(rcvbuf + 3, this_size);
+            }
+            else
+            {
+                nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
+                nk_putc(NK_YM_CAN);
+                NK_YM_DEBUG_LOGIT(6, NK_YM_CAN);
+                status = YMODEM_RECV_OPEN_CANCEL;
             }
         }
         else

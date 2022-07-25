@@ -21,12 +21,14 @@
 
 // Ymodem Options:
 
-// Keep all received data in packet_buf for debugging.  Received data is printed with "ymodem show"
+// Uncomment to keep all ymodem receive data in packet_buf for debugging.  Received data is printed with "ymodem show"
+// All received data must fit in the packet_buf.
 //#define NK_YM_PROTOLOG 1
 
 // Define size of debug event log
 // Uncomment to disable event log
-// #define NK_YM_DEBUG_LOG_SIZE 200
+// For ymodem receive, this keeps a log of all sent characters
+#define NK_YM_DEBUG_LOG_SIZE 200
 
 // Allow 1K packets.  Comment out for only 128 byte packets
 #define NK_YM_ALLOWLONG 1
@@ -36,3 +38,6 @@
 
 // Comment out to use XMODEM send
 #define NK_YM_YMODEM_SEND 1
+
+// Ymodem startup retransmit timeout: default is supposed to be 10 seconds, but reducing makes startup faster
+#define NK_YM_TIMEOUT 3
