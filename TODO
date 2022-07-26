@@ -1,3 +1,7 @@
+Project:
+  Move each target to its own repository?
+  Make libnklabs a pure library..
+
 STM32:
   * Use Nucleos as-is (no jumpers)
 
@@ -18,10 +22,6 @@ Atmel:
 
 I2C:
   * allow use of bitbang i2c, or fpga i2c..
-
-- documentation for nkdirect
-- modify nkarch/nksched documentation for new sched timer scheme
-
 
 missing documentation:
   target descriptions
@@ -167,7 +167,8 @@ Notes:
 		timeouts, but time still passes...  This means if we
             schedule something in the futre we are using the wrong time to
             do it.  Ideally, current_time is based on the actual timer
-            value.
+            value. [this is now required, too many problems with nkymodem
+            without it].
 
             Even so, system works not too bad as it is: interrupts usually
             schedule things for now, and that works.  It's only when we

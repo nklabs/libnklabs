@@ -14,6 +14,7 @@ requires UART-link to be 8-bit clean), and transfers the file name.
 
 [nkymodem.c](../src/nkymodem.c),
 [nkymodem.h](../inc/nkymodem.h),
+[nkymodem_config.h](../config/nkymodem_config.h),
 [nkymodem_cmd.c](../app/nkymodem_cmd.c)
 
 Functions used: UART functions: nk_uart_read, nk_set_uart_mode, nk_uart_write,
@@ -29,12 +30,9 @@ nk_scan.
 // receive buffer.
 #define NK_YM_ALLOWLONG
 
-// Define this to 1 to send NAK instead of C, to indicate to the sender to
+// Define this to send NAK instead of C, to indicate to the sender to
 // use checksums intead of CRC.
-// This should be set to 0 if NK_YM_ALLOWLONG is defined.  This is because
-// the "sz" host command will use 1K packets if it detects that the receive
-// side can accept packets with CRC.
-#define NK_YM_NOCRC 0
+// #define NK_YM_NOCRC
 
 // Comment out to use XMODEM send instead of YMODEM send.  This could be
 // used to save some code space if the filename is not needed.
@@ -79,6 +77,7 @@ that YMODEM transfer to host is working.
 
 ```c
 void nk_ysend_file(
+    unsigned char *packet_buffer,
     const char *name, 
     void *(*topen)(const char *name, const char *mode),
     void (*tclose)(void *f),
@@ -92,20 +91,29 @@ on the host will be 'name'.  You provide file access functions that match
 the stdio ones.  (These functions do not necessarily have to read from a
 file).
 
+You also provide an address to a packet buffer, whose size must be
+NK_YM_BUFFER_SIZE.
+
 ## nk_ysend_buffer()
 
 ```c
-void nk_ysend_buffer(const char *name, char *buffer, size_t len);
+void nk_ysend_buffer(unsigned char *packet_buffer, const char *name, char *buffer, size_t len);
 ```
 
 Send a memory buffer to host over serial port using YMODEM protocol.  The
 file name on the host will be 'name'.
 
+You also provide an address to a packet buffer, whose size must be
+NK_YM_BUFFER_SIZE.
+
 ## nk_yrecv()
 
 ```c
-int nk_yrecv();
+int nk_yrecv(unsigned char *packet_buffer);
 ```
+
+You provide an address to a packet buffer, whose size must be
+NK_YM_BUFFER_SIZE.
 
 Receive a file from console serial port using YMODEM protocol.  The return
 value indicates the transfer status:
@@ -126,6 +134,9 @@ void ymodem_recv_file_write(unsigned char *buffer, int len);
 void ymodem_recv_file_close();
 
 void ymodem_recv_file_cancel();
+
+void ymodem_recv_all_done();
+
 ```
 
 ymodem_recv_file_open is called when the file should be opened.  'name'
@@ -138,3 +149,6 @@ ymodem_recv_file_close is called after all data has been received.
 
 ymodem_recv_file_cancel is called instead of ymodem_recv_file_close if the
 transfer was canceled for some reason.
+
+ymodem_recv_all_done is called after the protocol is finished, when it is
+safe to print to the console.

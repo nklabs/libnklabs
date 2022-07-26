@@ -128,55 +128,38 @@ Initialize the scheduler timer module.  This is called by nk_init_sched().
 ### nk_convert_delay()
 
 ```c
-uint32_t nk_convert_delay(uint32_t delay)
+nk_time_t nk_convert_delay(uint32_t delay)
 ```
 
 Convert delay in milliseconds into system dependent number of timer ticks. 
 For example, if hardware timer runs at 50 Hz, then nk_convert_delay(1000)
 returns a value of 20.
 
-### nk_start_sched_timer()
+### nk_sched_wakeup()
 
 ```c
-void nk_start_sched_timer(uint32_t timeout)
+void nk_sched_wakeup(nk_time_t when)
 ```
 
-Start the scheduler timer.  After 'timeout' ticks an interrupt occurs which
-wakes up the processor (causing nk_sleep_until_interrupt() to return).  The
-scheduler timer interrupt handler just adds the specified timeout to the
-current scheduler time (which can be read with nk_get_sched_time()).
+Start the scheduler timer.  When the current time exceeds 'when' (measured
+in ticks) an interrupt occurs which wakes up the processor (causing
+nk_sleep_until_interrupt() to return).
 
-### nk_get_sched_timeout()
-
-```c
-uint32_t nk_get_timeout();
-```
-
-Get current timeout in ticks.  This is the timeout parameter most recently
-passed to nk_start_sched_timer().
-
-### nk_get_sched_time()
-
-```c
-uint32_t nk_get_sched_time(void);
-```
-
-Retrieve current time in ticks.  Note that this is not a free running timer. 
-It is only updated when the scheduler timer fires.
-
-## Microsecond timer
+If 'when' is now or in the past, the interrupt should also fire so that the
+system wakes up immediately on the next call to nk_irq_unlock_and_wait.
 
 ### nk_get_time()
 
 ```c
-nk_time_t nk_get_time()
+nk_time_t nk_get_time(void);
 
 #define NK_TIME_COUNTS_PER_USECOND ...
 #define NK_TIME_COUNTS_PER_SECOND ...
 ```
 
-Get the current time in clock ticks.  This high resolution timer runs while
-the CPU is awake.  It may or may not run when the CPU is asleep.
+Retrieve current time in ticks.
+
+## Microsecond timer
 
 ### nk_udelay()
 
