@@ -1,14 +1,10 @@
 # Maintain a file in a contiguous region of flash memory
 
-This module implements a simple single file store in flash memory.  This is
-useful for cases where a full filesystem is not needed.  It is used by by
-nkymodem to locate the transferred file into flash memory.
+This module allows a region of flash memory to be used as a file.  The
+region has only the file's data, no header.  It is used, for example, by
+nkymodem to locate a transferred FPGA image file in flash memory.
 
-Nkdirect is a variant of nkchecked: nkchecked provides a header in flash
-memory with the file system and CRC.  Nkdirect has no such header, so there
-is no file size (other than the maximum size given by 'area_size' and no CRC
-checking (except that a CRC of all written data is maintained in the
-nk_direct_t structure in RAM).
+See also: [nkchecked](nkdirect.md) for a file in flash memory protected by CRC.
 
 ## Files
 

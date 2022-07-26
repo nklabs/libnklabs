@@ -2,8 +2,10 @@
 
 This module implements a simple single file store in flash memory.  This is
 useful for cases where a full filesystem is not needed.  It is used by
-nkdbase to locate the serialized database in flash memory.  It is also used
-by nkymodem to locate the transferred file into flash memory.
+nkdbase to locate the serialized database in flash memory.
+
+See also [nkdirect](nkdirect.md) to treat a region of flash memory as a
+file, but without any header.
 
 ## Files
 
