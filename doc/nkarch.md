@@ -114,9 +114,9 @@ timer used by the scheduler.  This timer runs even when the CPU is sleeping.
 
 The idea is to maximize the amount of time the CPU is asleep.  So the
 scheduler determines when the CPU must next wake up and starts this timer
-with the required delay and then calls nk_sleep_until_interrupt() in loop
-until nk_get_sched_time() indicates that the requested delay has passed.  A
-loop is used because other interrupts may also wake up the CPU.
+with the required delay and then calls nk_irq_unlock_and_wait() in a loop
+until nk_get_time() indicates that the requested delay has passed.  A loop
+is used because other interrupts may also wake up the CPU.
 
 ### nk_init_sched_timer()
 
