@@ -174,7 +174,7 @@ int nk_kbhit()
 	}
 }
 
-int nk_uart_read(char *s, int len, nk_time_t timeout)
+int nk_uart_read(char *s, int len, uint32_t timeout)
 {
 	int l = 0;
 	int need_time = 1;

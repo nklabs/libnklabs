@@ -33,7 +33,7 @@ int nk_getc();
 int nk_kbhit();
 
 // Read data from UART
-int nk_uart_read(char *s, int len, nk_time_t timeout);
+int nk_uart_read(char *s, int len, uint32_t timeout);
 
 // Set task to trigger when characters are available
 void nk_set_uart_callback(int tid, void (*func)(void *data), void *data);

@@ -143,10 +143,10 @@ void nk_sched_wakeup(nk_time_t when)
 
 Start the scheduler timer.  When the current time exceeds 'when' (measured
 in ticks) an interrupt occurs which wakes up the processor (causing
-nk_sleep_until_interrupt() to return).
+nk_irq_unlock_and_wait() to return).
 
-If 'when' is now or in the past, the interrupt should also fire so that the
-system wakes up immediately on the next call to nk_irq_unlock_and_wait.
+If 'when' is now or in the past, the interrupt should fire immediately so
+that the system wakes up on the next call to nk_irq_unlock_and_wait().
 
 ### nk_get_time()
 
@@ -284,44 +284,52 @@ Initialize flash memory driver.
 
 Return 0 for success, -1 for error.
 
-### nk_flash_sector_size()
+### NK_MCUFLASH_ERASE_SIZE
 
 ```c
-uint32_t nk_flash_sector_size();
+#define NK_MCUFLASH_ERASE_SIZE ...
 ```
 
-Get sector size.  This is the minimum size that nk_flash_erase can erase. 
-nk_init_flash must be called before this.
+This is the minimum size that nk_flash_erase can erase.
 
 ### nk_flash_erase()
 
 ```c
-int nk_flash_erase(uint32_t address, uint32_t byte_count);
+int nk_mcuflash_erase(const void *info, uint32_t address, uint32_t byte_count);
 ```
 
 Erase 1 or more sectors.  Address and byte_count should both be multiples of
 the sector size.
+
+'info' is unused, but exists to make this function compatible with
+nk_spiflash_erase.
 
 Return 0 for success, -1 for error.
 
 ### nk_flash_write()
 
 ```c
-int nk_flash_write(uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_flash_write(const void *info, uint32_t address, const uint8_t *data, uint32_t byte_count);
 ```
 
 Write to flash.  This handles any number for byte_count- it will break up
 the write into multiple page writes as necessary.
+
+'info' is unused, but exists to make this function compatible with
+nk_spiflash_write.
 
 Return 0 for success, -1 for error.
 
 ### nk_flash_read()
 
 ```c
-int nk_flash_read(uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_flash_read(const void *info, uint32_t address, uint8_t *data, uint32_t byte_count);
 ```
 
 Read from flash.  address and byte_count can be any values- the flash memory
 automatically crosses page boundaries.
+
+'info' is unused, but exists to make this function compatible with
+nk_spiflash_write.
 
 Return 0 for success, -1 for error.
