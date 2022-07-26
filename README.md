@@ -206,13 +206,15 @@ Shield adapter to use the above boards:
 
 [nkarch - processor specific functions](doc/nkarch.md)
 
-[nkchecked - maintain a file in flash memory](doc/nkchecked.md)
+[nkchecked - maintain a CRC-protected file in flash memory](doc/nkchecked.md)
 
 [nkcli - command line interface](doc/nkcli.md)
 
 [nkdatetime - Date / Time functions](doc/nkdatetime.md)
 
 [nkdbase - schema driven database](doc/nkdbase.md)
+
+[nkdirect - treat a region of flash memory as a file](doc/nkdirect.md)
 
 [nki2ceeprom - I2C EEPROM driver](doc/nki2ceeprom.md)
 
