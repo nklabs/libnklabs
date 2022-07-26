@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include "nkprintf.h"
 #include "nkcrclib.h"
 #include "nkcli.h"
@@ -141,13 +142,13 @@ static void ymodem_prepare_fin()
 }
 #endif
 
-static int ymodem_prepare_next(int (*tgetc)(void *file), void *file)
+static int ymodem_prepare_next(nkinfile_t *file)
 {
     int x;
     // Load next block
     for (x = 0; x != 128; ++x)
     {
-        int c = tgetc(file);
+        int c = nk_fgetc(file);
         if (c == -1)
             break;
         packet_buf[3 + x] = (unsigned char)c;
@@ -173,7 +174,7 @@ static void ymodem_send_block()
 // Send a file event-
 // Call whenever a character is received
 
-static int nk_ysend_evt(int (*tgetc)(void *), void *file, unsigned char c)
+static int nk_ysend_evt(nkinfile_t *ysend_file, unsigned char c)
 {
     int status = YMODEM_SEND_STATUS_MORE;
     NK_YM_DEBUG_LOGIT(
@@ -219,7 +220,7 @@ static int nk_ysend_evt(int (*tgetc)(void *), void *file, unsigned char c)
         {
             ++ymodem_send_seq;
             // Transmit next
-            if (ymodem_prepare_next(tgetc, file))
+            if (ymodem_prepare_next(ysend_file))
             {
                 // Transmit
                 // We don't send first data after ACK of header, instead we wait for other end to request it with C
@@ -259,26 +260,22 @@ static int nk_ysend_evt(int (*tgetc)(void *), void *file, unsigned char c)
 
 // This is the UART callback function
 
-static void *ysend_file;
-static int (*ysend_tgetc)(void *f);
-static void (*ysend_tclose)(void *f);
-// static int ymodem_async;
 
 static void ymodem_send_task(void *data)
 {
     int sta = YMODEM_SEND_STATUS_MORE;
-    (void)data;
+    nkinfile_t *ysend_file = (nkinfile_t *)data;
     do {
         int c = nk_getc();
         if (c != -1)
-            sta = nk_ysend_evt(ysend_tgetc, ysend_file, (unsigned char)c);
+            sta = nk_ysend_evt(ysend_file, (unsigned char)c);
         else
             break;
     } while (sta == YMODEM_SEND_STATUS_MORE);
 
     if (sta == YMODEM_SEND_STATUS_MORE)
     {
-        nk_set_uart_callback(nk_cli_tid, ymodem_send_task, NULL);
+        nk_set_uart_callback(nk_cli_tid, ymodem_send_task, ysend_file);
     }
     else
     {
@@ -291,8 +288,6 @@ static void ymodem_send_task(void *data)
         // Delay to allow other end to restore terminal
         nk_udelay(1000000);
         nk_printf("\n");
-
-        ysend_tclose(ysend_file);
 
         if (sta == YMODEM_SEND_STATUS_CANCEL)
         {
@@ -317,22 +312,11 @@ static void ymodem_send_task(void *data)
 
 void nk_ysend_file(
     unsigned char *packet_buffer,
-    const char *name, 
-    void *(*topen)(const char *name, const char *mode),
-    void (*tclose)(void *f),
-    int (*tgetc)(void *f),
-    int (tsize)(void *f)
+    nkinfile_t *ysend_file,
+    const char *file_name, 
+    uint32_t file_size
 ) {
     packet_buf = packet_buffer;
-    ysend_tgetc = tgetc;
-    ysend_tclose = tclose;
-    ysend_file = topen(name, "r");
-    
-    if (!ysend_file)
-    {
-        nk_printf("Couldn't open file\n");
-        return;
-    }
 
     nk_printf("Start YMODEM receive transfer...\n");
     nk_printf("Hit Ctrl-X to cancel.\n");
@@ -353,72 +337,30 @@ void nk_ysend_file(
 #ifdef NK_YM_YMODEM_SEND
     ymodem_send_seq = 0;
     memset(packet_buf + 3, 0, 128);
-    nk_snprintf((char *)packet_buf + 3, 125, "%s%c%d", name, 0, tsize(ysend_file));
+    nk_snprintf((char *)packet_buf + 3, 125, "%s%c%"PRIu32"", file_name, 0, file_size);
     ymodem_setup_header();
     ymodem_send_hdr = 1;
 #else
     ymodem_send_seq = 1;
     ymodem_send_hdr = 0;
-    if (!ymodem_prepare_next(tgetc, file))
+    if (!ymodem_prepare_next(ysend_file))
     {
         ymodem_send_eot = 1;
     }
 #endif
 
-    nk_set_uart_callback(nk_cli_tid, ymodem_send_task, NULL);
-}
-
-// Funcitons for transferring a memory buffer as a file
-
-static char *sdata;
-static size_t sdata_offset;
-static size_t sdata_size;
-static int sdata_eof;
-
-static void *tzopen(const char *name, const char *mode)
-{
-    static char fake[] = "fak";
-    (void)name;
-    (void)mode;
-    sdata_offset = 0;
-    sdata_eof = 0;
-    return (void *)fake;
-}
-
-static void tzclose(void *f)
-{
-    (void)f;
-}
-
-static int tzgetc(void *file)
-{
-    (void)file;
-    if (sdata_offset == sdata_size) {
-        sdata_eof = 1;
-        return -1;
-    } else {
-        unsigned char c;
-        c = sdata[sdata_offset];
-        sdata_offset++;
-        return c;
-    }
-}
-
-static int tzsize(void *f)
-{
-    (void)f;
-    return (int)sdata_size;
+    nk_set_uart_callback(nk_cli_tid, ymodem_send_task, ysend_file);
 }
 
 // Transmit a buffer as a file
 
-void nk_ysend_buffer(unsigned char *packet_buffer, const char *name, char *buffer, size_t len)
+void nk_ysend_mem(unsigned char *packet_buffer, const char *name, void *buffer, size_t len)
 {
-    sdata = buffer;
-    sdata_offset = 0;
-    sdata_size = len;
-    sdata_eof = 0;
-    return nk_ysend_file(packet_buffer, name, tzopen, tzclose, tzgetc, tzsize);
+    static nkinfile_t ysend_file;
+
+    nkinfile_open_mem(&ysend_file, buffer, len);
+
+    return nk_ysend_file(packet_buffer, &ysend_file, name, len);
 }
 
 //

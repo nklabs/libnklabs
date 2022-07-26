@@ -109,7 +109,7 @@ int cmd_ymodem(nkinfile_t *args)
         name_buf[0] = 0;
         nk_yrecv(packet_buffer);
     } else if (nk_fscan(args, "send ")) { // Send a file
-        nk_ysend_buffer(packet_buffer, "foo", sdata_test, sizeof(sdata_test));
+        nk_ysend_mem(packet_buffer, "foo", sdata_test, sizeof(sdata_test));
     } else if (nk_fscan(args, "show ")) {
         // State of previous receive
         nk_printf("name = %s\n", name_buf);

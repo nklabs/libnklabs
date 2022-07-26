@@ -67,21 +67,20 @@ enum {
 
 void nk_ysend_file(
     unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
-    const char *name, 
-    void *(*topen)(const char *name, const char *mode),
-    void (*tclose)(void *f),
-    int (*tgetc)(void *f),
-    int (tsize)(void *f)
+    nkinfile_t *ysend_file,
+    const char *file_name,
+    uint32_t file_size
 );
 
 // Transmit a memory buffer as a file
 //  This calls nk_ysend_file with functions to set send the buffer
 
-void nk_ysend_buffer(
+void nk_ysend_mem(
     unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
     const char *name,
-    char *buffer,
-    size_t len);
+    void *buffer,
+    size_t len
+);
 
 // Receive file handler used by nk_yrecv.  This is provided
 // in nkymodem.c

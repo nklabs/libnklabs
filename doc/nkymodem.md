@@ -78,18 +78,15 @@ that YMODEM transfer to host is working.
 ```c
 void nk_ysend_file(
     unsigned char *packet_buffer,
+    nkinfile_t *file,
     const char *name, 
-    void *(*topen)(const char *name, const char *mode),
-    void (*tclose)(void *f),
-    int (*tgetc)(void *f),
-    int (tsize)(void *f)
+    uint32_t size
 );
 ```
 
 Send a file to host over serial port using YMODEM protocol.  The file name
-on the host will be 'name'.  You provide file access functions that match
-the stdio ones.  (These functions do not necessarily have to read from a
-file).
+on the host will be 'name'.  You provide an open nkinfile_t from which
+nk_ysend_file will read the data to send.  'size' has the file size.
 
 You also provide an address to a packet buffer, whose size must be
 NK_YM_BUFFER_SIZE.
@@ -97,7 +94,7 @@ NK_YM_BUFFER_SIZE.
 ## nk_ysend_buffer()
 
 ```c
-void nk_ysend_buffer(unsigned char *packet_buffer, const char *name, char *buffer, size_t len);
+void nk_ysend_buffer(unsigned char *packet_buffer, const char *name, void *buffer, size_t len);
 ```
 
 Send a memory buffer to host over serial port using YMODEM protocol.  The
