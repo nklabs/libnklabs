@@ -1,0 +1,219 @@
+{tstruct:{tbool:true, tint:2147483646, tuint:4026531838, tint8:126, tuint8:238, tint16:32766, tuint16:61438, tdouble:0.125, tfloat:0.0625, tstring:"Hello"}, tarray:[{tstring:"Hello", tfloat:0.0625, tdouble:0.125, tuint16:61438, tint16:32766, tuint8:238, tint8:126, tuint:4026531838, tint:2147483646, tbool:false}, {tstring:"Hello", tfloat:0.0626, tdouble:0.125, tuint16:61438, tint16:32766, tuint8:238, tint8:126, tuint:4026531838, tint:2147483646, tbool:false}, {tstring:"Hello", tfloat:0.0627, tdouble:0.125, tuint16:61438, tint16:32766, tuint8:238, tint8:126, tuint:4026531838, tint:2147483646, tbool:false}, {tstring:"Hello", tfloat:0.0628, tdouble:0.125, tuint16:61438, tint16:32766, tuint8:238, tint8:126, tuint:4026531838, tint:2147483646, tbool:false}], tvararray:[{tbool:true, tint:2147483646, tuint:4026531838, tint8:126, tuint8:238, tint16:32766, tuint16:61438, tdouble:0.126, tfloat:0.0625, tstring:"Hello"}, {tbool:true, tint:2147483646, tuint:4026531838, tint8:126, tuint8:238, tint16:32766, tuint16:61438, tdouble:0.127, tfloat:0.0625, tstring:"Hello"}, {tbool:true, tint:2147483646, tuint:4026531838, tint8:126, tuint8:238, tint16:32766, tuint16:61438, tdouble:0.128, tfloat:0.0625, tstring:"Hello"}], ttable:(tstring tfloat tdouble tuint16 tint16 tuint8 tint8 tuint tint tbool :"Hello" 0.063 0.125 61438 32766 238 126 4026531838 2147483646 false:"Hello" 0.0631 0.125 61438 32766 238 126 4026531838 2147483646 false:"Hello" 0.0632 0.125 61438 32766 238 126 4026531838 2147483646 false)}
+{
+  tstruct: {
+    tbool: true,
+    tint: 2147483646,
+    tuint: 4026531838,
+    tint8: 126,
+    tuint8: 238,
+    tint16: 32766,
+    tuint16: 61438,
+    tdouble: 0.125,
+    tfloat: 0.0625,
+    tstring: "Hello"
+  },
+  tarray: [
+    {
+      tstring: "Hello",
+      tfloat: 0.0625,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0626,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0627,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0628,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    }
+  ],
+  tvararray: [
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.126,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    },
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.127,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    },
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.128,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    }
+  ],
+  ttable:
+    (	tstring	tfloat	tdouble	tuint16	tint16	tuint8	tint8	tuint	tint	tbool
+    :	"Hello"	0.063	0.125	61438	32766	238	126	4026531838	2147483646	false
+    :	"Hello"	0.0631	0.125	61438	32766	238	126	4026531838	2147483646	false
+    :	"Hello"	0.0632	0.125	61438	32766	238	126	4026531838	2147483646	false
+    )
+}
+Parse status = 1
+{
+  tstruct: {
+    tbool: true,
+    tint: 2147483646,
+    tuint: 4026531838,
+    tint8: 126,
+    tuint8: 238,
+    tint16: 32766,
+    tuint16: 61438,
+    tdouble: 0.125,
+    tfloat: 0.0625,
+    tstring: "Hello"
+  },
+  tarray: [
+    {
+      tstring: "Hello",
+      tfloat: 0.0625,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0626,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0627,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    },
+    {
+      tstring: "Hello",
+      tfloat: 0.0628,
+      tdouble: 0.125,
+      tuint16: 61438,
+      tint16: 32766,
+      tuint8: 238,
+      tint8: 126,
+      tuint: 4026531838,
+      tint: 2147483646,
+      tbool: false
+    }
+  ],
+  tvararray: [
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.126,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    },
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.127,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    },
+    {
+      tbool: true,
+      tint: 2147483646,
+      tuint: 4026531838,
+      tint8: 126,
+      tuint8: 238,
+      tint16: 32766,
+      tuint16: 61438,
+      tdouble: 0.128,
+      tfloat: 0.0625,
+      tstring: "Hello"
+    }
+  ],
+  ttable:
+    (	tstring	tfloat	tdouble	tuint16	tint16	tuint8	tint8	tuint	tint	tbool
+    :	"Hello"	0.063	0.125	61438	32766	238	126	4026531838	2147483646	false
+    :	"Hello"	0.0631	0.125	61438	32766	238	126	4026531838	2147483646	false
+    :	"Hello"	0.0632	0.125	61438	32766	238	126	4026531838	2147483646	false
+    )
+}
+They match!
