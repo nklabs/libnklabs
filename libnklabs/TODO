@@ -1,0 +1,184 @@
+Project:
+  Move each target to its own repository?
+  Make libnklabs a pure library..
+
+STM32:
+  * Use Nucleos as-is (no jumpers)
+
+  How do we handle STM32F746 flash memory? Sector sizes are not uniform..
+  Missing flash size for info
+
+  low power modes?  We need lpuart..
+
+  * get openocd to work for all stm32s
+
+  * make command to just copy the .hex to the fake usb flash device
+
+Atmel:
+  * i2c not working well on atsame70 (crash during i2c scan), but ok on others
+  use bitbang for atsame70..
+
+  low power modes?  which is the best clock to use?
+
+I2C:
+  * allow use of bitbang i2c, or fpga i2c..
+
+missing documentation:
+  target descriptions
+  * nkpin
+  nkcrclib
+  nkmcuflash?
+  nkdisplay when we do it
+
+bootloader:
+  * We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
+
+nkymodem:
+  * document options
+  * ymodem send should send back the file we downloaded..
+  provide file access functions right in call to nk_yrecv?
+  provide name for xmodem file to nk_yrecv?
+  use nkoutfile for yrecv?
+     it would need nk_outfile_write
+  add dbase upload/download using ymodem
+
+  nkblock_t abstraction?
+    nk_block_read
+    nk_block_write
+
+event driven:
+  * multi-line gets for dbase
+
+global:
+  * probably only app should print error messages
+
+displays:
+  link multiple displays together as one
+  nkoutfile_t for them? maybe vt100 emul..
+  displays: share CLI code: maybe include display size in struct for this
+
+very small systems:
+  f030: try to reduce size, don't use float for any driver..
+  maybe have a reduced nucleo.mx that doesn't include everything
+
+tab complete sub-commands
+  Now it just prints help, but completion would be better
+    Redesign command table so that sub-commands are in it? (Makes table large..)
+    Complex algorithm to parse sub-commands from help?
+
+mcuflash:
+
+  nkmcuflash rd and wr do 32-bit works, but on stm32 min. size is 8 bytes- add read / modify / write?
+
+nkchecked:
+  better error return for nk_checked_read- maybe return ssize_t. [done]
+    but this means nkinfile needs to expect ssize_t from block_read.
+
+nkinfile:
+  How do we handle read errors for nkinfile operations?  Maybe use ssize_t
+  for block_read..
+
+
+
+sdio driver + fat filesystem
+
+arduino functionality:
+  digitalRead, digitalWrite, pinMode
+  attachInterrupt, detachInterrupt
+  analogRead, analogReference,
+  analogWrite
+  pwm out, pulse in
+
+Add more MCU peripheral drivers:
+
+  CAN, ADC, DAC, etc..
+
+Add more targets:
+
+  PICO-PI
+  Add RISCV
+  Add Xilinx
+  Add TI
+  PIC32
+  Some example in an RTOS
+
+GPIO:
+
+  Pinmode to alternate functions
+  A way to read back the current mode
+  Include i2c pin expander gpio pins
+
+nkdbase:
+
+  more tests..
+  try all input number formats, including negatives..
+
+  make sure skipping works..
+
+  should error output be an argument instead of nkstderr?  Better for threads
+
+  Finish schema compiler
+
+Nkscan:
+
+  iscan ignores case and squashes case on word and identifier.  Maybe word/identifier should be individually controllable?
+  maybe case ignore should be changable in the format string?
+
+  need tests for iscan
+
+  * Expression parser for nkscan?  Allow 0x before decimal?
+
+  Some kind of options parser where we don't care about order- we can build this externally
+    while tryopt1 || tryopt2 || tryopt3 || tryopt4
+
+  Always allow whitespace before end of string?  Always allow whitespace before start of conversion?
+  Do not ignore whitespace before doubles? (but strtod does this to match C-library standard).
+
+  Versions of nkscan and friends which take a C-string, like sscanf?
+
+  Also vs. sscanf:
+    sscanf has character classes
+    sscanf automatically skips whitespace before conversions (except for a few special cases)
+    sscanf '*' modifier scans but doesn't save result
+
+Get rid of global arrays:
+
+  instead have a wrapper function with the array on the stack which calls the underlying function
+
+Naming:
+
+  nkinfile_t vs. nk_infile_t  type name
+  nkdbase vs. nk_dbase        file name
+
+Notes:
+  output freezes on ST- fixed by reboot linux
+
+  It seems like a nice idea to use non-standard format sequences in nk_printf-
+  but we can not if we also want gcc's built-in format string checking to work.  Therefore we
+  have other printing functions:
+
+	nk_indent
+	nk_byte_hex_dump
+	nk_dbase_fprint
+
+        nkprintf / nkscan:
+
+          Print not just a C-string, but also from an nkinfile
+
+          But this then means that print depends on nkinfile...
+          Likewise: Save output to an nkoutfile, not just to a C-string
+
+  sched bug:
+            in some implementations, we only update current_time at
+		timeouts, but time still passes...  This means if we
+            schedule something in the futre we are using the wrong time to
+            do it.  Ideally, current_time is based on the actual timer
+            value. [this is now required, too many problems with nkymodem
+            without it].
+
+            Even so, system works not too bad as it is: interrupts usually
+            schedule things for now, and that works.  It's only when we
+            schedule things for the future that it breaks.
+
+            this comes up when we try to do a tickless implementation on low
+	    power CPUs.  Also the zynq one is probably wrong..

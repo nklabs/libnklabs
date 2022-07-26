@@ -1,0 +1,32 @@
+Simple string, test nk_fgetc: Hello world!
+Simple string, test nk_fnext: Hello world!
+Simple string, test nk_fpeek_abs: Hello world!
+..check eof: -1
+..check currnt: H
+Simple string, test nk_fpeek_rel: Hello world!
+..check eof: -1
+..check currnt: w
+Blocks, test nk_fgetc: Hello world!
+Blocks, test nk_fnext: Hello world!
+Blocks, test nk_fpeek_abs: Hello world!
+..check eof: -1
+..check currnt: H
+Blocks, test nk_fpeek_rel: Hello world!
+..check eof: -1
+..check currnt: w
+Blocks2, test nk_fgetc: Hello world!
+Blocks2, test nk_fnext: Hello world!
+Blocks2, test nk_fpeek_abs: Hello world!
+..check eof: -1
+..check currnt: H
+Blocks2, test nk_fpeek_rel: Hello world!
+..check eof: -1
+..check currnt: w
+Blocks3, test nk_fgetc: Hello world
+Blocks3, test nk_fnext: Hello world
+Blocks3, test nk_fpeek_abs: Hello world
+..check eof: -1
+..check currnt: H
+Blocks3, test nk_fpeek_rel: Hello world
+..check eof: -1
+..check currnt: w

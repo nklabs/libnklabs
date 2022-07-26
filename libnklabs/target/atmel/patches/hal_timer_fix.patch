@@ -1,0 +1,25 @@
+diff -Naur org/hal/src/hal_timer.c atmel_start/hal/src/hal_timer.c
+--- org/hal/src/hal_timer.c	2021-12-11 15:20:54.000000000 -0500
++++ atmel_start/hal/src/hal_timer.c	2021-12-11 15:13:35.622402311 -0500
+@@ -124,7 +124,7 @@
+ 	descr->flags |= TIMER_FLAG_QUEUE_IS_TAKEN;
+ 	if (is_list_element(&descr->tasks, task)) {
+ 		descr->flags &= ~TIMER_FLAG_QUEUE_IS_TAKEN;
+-		ASSERT(false);
++		// ASSERT(false);
+ 		return ERR_ALREADY_INITIALIZED;
+ 	}
+ 	task->time_label = descr->time;
+@@ -147,11 +147,10 @@
+ int32_t timer_remove_task(struct timer_descriptor *const descr, const struct timer_task *const task)
+ {
+ 	ASSERT(descr && task);
+-
+ 	descr->flags |= TIMER_FLAG_QUEUE_IS_TAKEN;
+ 	if (!is_list_element(&descr->tasks, task)) {
+ 		descr->flags &= ~TIMER_FLAG_QUEUE_IS_TAKEN;
+-		ASSERT(false);
++		// ASSERT(false);
+ 		return ERR_NOT_FOUND;
+ 	}
+ 	list_delete_element(&descr->tasks, task);
