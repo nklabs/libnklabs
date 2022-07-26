@@ -1,6 +1,0 @@
-#!/bin/sh
-cd $PATCHES
-for a in *.patch
-do
-	patch -d $TARGET -p1 <$a
-done
