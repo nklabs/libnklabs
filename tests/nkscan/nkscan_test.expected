@@ -1,0 +1,69 @@
+nk_fscan_ws_1: X
+nk_fscan_ws_2: X
+nk_fscan_word_1:  got this-is-a-word rest is  but-not-this
+nk_fscan_word_2:  got this-is-a-word rest is 
+nk_fscan_word_3:  got 'this is a word' rest is  but-not-this
+nk_fscan_word_4:  got 'this is a word' rest is 
+nk_fscan_word_5:  got this rest is -is-a-word but-not-this
+nk_fscan_word_6:  got this rest is -is-a-word
+nk_fscan_word_7:  got 'this is a word' rest is  but-not-this
+nk_fscan_word_8:  got 'this is a word' rest is 
+nk_fscan_word_9:  got thi rest is  but-not-this
+nk_fscan_word_10:  got thi rest is 
+nk_fscan_word_11:  got 'thi' rest is  but-not-this
+nk_fscan_word_12:  got 'thi' rest is 
+nk_fscan_word_13:  got thi rest is  but-not-this
+nk_fscan_word_14:  got thi rest is 
+nk_fscan_word_15:  got 'thi' rest is  but-not-this
+nk_fscan_word_16:  got 'thi' rest is 
+nk_fscan_word_17: Bad return  but-not-this
+nk_fscan_word_18: Bad return "missing close
+nk_fscan_ident_1:  got This_is_a_word123 rest is  but_not_this
+nk_fscan_ident_2:  got this_is_a_word rest is 
+nk_fscan_ident_3:  got 'this is a word' rest is  but-not-this
+nk_fscan_ident_4:  got 'this is a word' rest is 
+nk_fscan_ident_5:  got this rest is _is_a_word but_not_this
+nk_fscan_ident_6:  got this rest is _is_a_word
+nk_fscan_ident_7:  got 'this is a word' rest is  but_not_this
+nk_fscan_ident_8:  got 'this is a word' rest is 
+nk_fscan_ident_9:  got thi rest is  but_not_this
+nk_fscan_ident_10:  got thi rest is 
+nk_fscan_ident_11:  got 'thi' rest is  but-not-this
+nk_fscan_ident_12:  got 'thi' rest is 
+nk_fscan_ident_13:  got thi rest is  but_not_this
+nk_fscan_ident_14:  got thi rest is 
+nk_fscan_ident_15:  got 'thi' rest is  but_not_this
+nk_fscan_ident_16:  got 'thi' rest is 
+nk_fscan_ident_17: Bad return  but_not_this
+nk_fscan_ident_18: Bad return "missing close
+nk_fscan_hex_1: Got addedfee rest is  Rest
+nk_fscan_hex_2: Got ffaa90 rest is 
+nk_fscan_hex_3: Bad return  FfAa90
+nk_fscan_dec_1: Got 9810 rest is  Rest
+nk_fscan_dec_2: Got 9810 rest is 
+nk_fscan_dec_3: Bad return  9810
+nk_fscan_double_1: Got 98.1 rest is  Rest
+nk_fscan_double_2: Got 98.1 rest is 
+nk_fscan_double_3: Got 98.1 rest is 
+escape: status = 1
+0000: 07 08 1b 0c 0a 0d 09 5c  ff 01 fe ff fe 0f 68 65  .......\......he
+0010: 6c 6c 6f                                          llo             
+fscan1 = 1
+4294967280 2147483632 240
+fscan2 = 1
+120 65520 32752
+fscan3 = 1
+4294967280 2147483632 18446744073709551600
+fscan4 = 1
+9223372036854775792 fffffff0 7ffffff0
+fscan5 = 1
+f0 fff0 fffffff0
+fscan6 = 1
+fffffffffffffff0 0xaddedfee hello-world
+fscan7 = 1
+hello_world 123.456
+fscan8 = 1, first
+fscan8 = 1, second 
+fscan9 = 0, first -- first second
+got 12 rest
+got 12.5
