@@ -100,7 +100,7 @@ int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap)
 			status |= nk_fputc(f, *fmt++);
 		} else {
 			unsigned long long val;
-			char *s;
+			const char *s;
 			size_t n;
 			size_t len; // Length of number in buf
 			int hex = 0; // Set for hex, clear for decimal number
@@ -139,7 +139,7 @@ int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap)
 			// Width
 			if (*fmt == '*') {
 				++fmt;
-				width = (int)va_arg(ap, int);
+				width = (size_t)(int)va_arg(ap, int);
 			} else {
 				while (*fmt >= '0' && *fmt <= '9') {
 					width = width * 10 + *fmt++ - '0';
@@ -151,7 +151,7 @@ int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap)
 				// Precision
 				if (*fmt == '*') {
 					++fmt;
-					prec = (int)va_arg(ap, int);
+					prec = (size_t)(int)va_arg(ap, int);
 				} else {
 					while (*fmt >= '0' && *fmt <= '9') {
 						prec = prec * 10 + *fmt++ - '0';
@@ -416,6 +416,7 @@ int nk_sfprintf(char *dest, size_t len, const char *fmt, ...)
 
 static int outc(void *ptr, unsigned char *buf, size_t len)
 {
+	(void)ptr;
 	while (len--)
 		NKPRINTF_PUTC(*buf++);
 	return 0;

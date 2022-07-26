@@ -23,11 +23,15 @@
 // Provides receive file handler
 
 #include <string.h>
+#include <inttypes.h>
 #include "nkcrclib.h"
 #include "nkcli.h"
 #include "nkchecked.h"
 #include "nkspiflash.h"
 #include "nkymodem.h"
+
+// Packet buffer
+static unsigned char packet_buffer[NK_YM_BUFFER_SIZE]; // Enough for STX 01 FE Data[1024] CRC CRC
 
 // Test data for transmit
 static char sdata_test[]="This is fake data\n";
@@ -37,6 +41,7 @@ static char sdata_test[]="This is fake data\n";
 
 static char name_buf[128];
 static uint32_t dld_exact; // Exact file size from sender
+static int dld_done;
 
 extern const struct nk_spiflash_info m95m04;
 
@@ -48,13 +53,13 @@ const nk_checked_base_t ymodem_file_base =
     .info = &m95m04,
     .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_read, // info, address, data, byte_count
     .flash_erase = 0,
-    .flash_write = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_write, // info, address, data, byte_count
+    .flash_write = (int (*)(const void *, uint32_t, const uint8_t *, uint32_t))nk_spiflash_write, // info, address, data, byte_count
     .granularity = 1
 };
 
 nk_checked_t ymodem_file;
 
-int ymodem_recv_file_open(char *name)
+int ymodem_recv_file_open(const char *name)
 {
     int len;
     strcpy(name_buf, name);
@@ -62,13 +67,14 @@ int ymodem_recv_file_open(char *name)
     dld_exact = 0xffffffff;
     if (name[len+1])
     {
-        dld_exact = atoi(name+len+1);
+        dld_exact = (uint32_t)atoi(name+len+1);
     }
 
+    dld_done = 0;
     return nk_checked_write_open(&ymodem_file, &ymodem_file_base);
 }
 
-void ymodem_recv_file_write(unsigned char *buffer, int len)
+void ymodem_recv_file_write(unsigned char *buffer, size_t len)
 {
     nk_checked_write(&ymodem_file, buffer, len);
 }
@@ -76,10 +82,21 @@ void ymodem_recv_file_write(unsigned char *buffer, int len)
 void ymodem_recv_file_close()
 {
     nk_checked_write_close(&ymodem_file);
+    dld_done = 1;
 }
 
 void ymodem_recv_file_cancel()
 {
+}
+
+// Called after all files successfully transferred: OK to print
+
+void ymodem_recv_all_done()
+{
+    if (dld_done)
+    {
+        nk_printf("All done!  filename = '%s', size = %"PRIu32", CRC = %"PRIx32"\n", name_buf, ymodem_file.size, ymodem_file.crc);
+    }
 }
 
 
@@ -90,9 +107,9 @@ int cmd_ymodem(nkinfile_t *args)
     unsigned char ebuf[256];
     if (nk_fscan(args, "")) { // Receive a file
         name_buf[0] = 0;
-        nk_yrecv();
+        nk_yrecv(packet_buffer);
     } else if (nk_fscan(args, "send ")) { // Send a file
-        nk_ysend_buffer("foo", sdata_test, sizeof(sdata_test));
+        nk_ysend_buffer(packet_buffer, "foo", sdata_test, sizeof(sdata_test));
     } else if (nk_fscan(args, "show ")) {
         // State of previous receive
         nk_printf("name = %s\n", name_buf);

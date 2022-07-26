@@ -21,20 +21,10 @@
 
 #include <string.h>
 #include "nkprintf.h"
+#include "nkmcuflash.h"
 #include "nkarch_atsam.h"
 
 static volatile uint32_t current_time; // The current time in ticks
-static volatile uint32_t timeout; // Amount of delay from timer in ticks
-
-uint32_t nk_get_sched_time(void)
-{
-	return current_time;
-}
-
-uint32_t nk_get_sched_timeout(void)
-{
-	return timeout;
-}
 
 // Convert delay in milliseconds to number of scheduler timer ticks
 
@@ -51,8 +41,6 @@ uint32_t nk_convert_delay(uint32_t delay)
 static void timer_callback(const struct timer_task *const timer_task)
 {
 	++current_time;
-	if (timeout)
-		--timeout;
 }
 
 static struct timer_task sched_timer_task;
@@ -69,10 +57,11 @@ void nk_init_sched_timer()
 
 // delay in timer ticks
 
-void nk_start_sched_timer(uint32_t delay)
+void nk_sched_wakeup(nk_time_t when)
 {
-	timeout = delay;
+	// Nothing to do, we wake up on every tick
 }
+
 
 // Get current time
 
@@ -107,15 +96,15 @@ void reboot(void)
 	NVIC_SystemReset();
 }
 
-
 int nk_init_mcuflash()
 {
 	return 0;
 }
 
-int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
+int nk_mcuflash_erase(const void *info, uint32_t address, uint32_t byte_count)
 {
 	int rtn = 0;
+	(void)info;
 
 	// As long as we're not done..
 	while (byte_count) {
@@ -131,19 +120,18 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 		}
 	}
 
-	if (rtn) {
-		nk_printf("ERROR: flash_erase returned %d\n", rtn);
-	} else if (byte_count) {
-		nk_printf("ERROR: Invalid erase size\n");
+	if (!rtn && byte_count) {
+		// We didn't finish, probably bad erase size
 		rtn = -1;
 	}
 
 	return rtn;
 }
 
-int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, uint32_t byte_count)
 {
 	int rtn = 0; // Assume success
+	(void)info;
 
 	uint32_t page_size = NK_MCUFLASH_PAGE_SIZE;
 
@@ -164,16 +152,13 @@ int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 		data += page_len;
 	}
 
-	if (rtn) {
-		nk_printf("ERROR: Flash_write returned %d\n", rtn);
-	}
-
 	return rtn;
 }
 
-int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
 	int rtn = 0; // Assume success
+	(void)info;
 
 	uint32_t page_size = NK_MCUFLASH_PAGE_SIZE;
 
@@ -192,10 +177,6 @@ int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
 		byte_count -= page_len;
 		address += page_len;
 		data += page_len;
-	}
-
-	if (rtn) {
-		nk_printf("ERROR: Flash_read returned %d\n", rtn);
 	}
 
 	return rtn;

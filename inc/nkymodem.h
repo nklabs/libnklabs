@@ -19,6 +19,40 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#ifndef _Inkymodem
+#define _Inkymodem
+
+#include "nkymodem_config.h"
+
+// Characters
+#define NK_YM_SOH 0x01
+#define NK_YM_STX 0x02
+#define NK_YM_EOT 0x04
+#define NK_YM_ACK 0x06
+#define NK_YM_NAK 0x15
+#define NK_YM_CAN 0x18
+
+// Packet lengths including SOH/STX, sequence number and CRC
+#ifdef NK_YM_NOCRC
+#define NK_YM_SHORT_PACKET_LEN 132u
+#define NK_YM_LONG_PACKET_LEN 1028u
+#define NK_YM_REQ NK_YM_NAK
+#else
+#define NK_YM_SHORT_PACKET_LEN 133u
+#define NK_YM_LONG_PACKET_LEN 1029u
+#define NK_YM_REQ 'C'
+#endif
+
+// NK_YM_BUFFER_SIZE is the size of the packet buffer supplied
+// by the user
+#ifdef NK_YM_ALLOWLONG
+// We must have the large buffer if long packets are allowed
+#define NK_YM_BUFFER_SIZE NK_YM_LONG_PACKET_LEN
+#else
+// Otherwise we only need the small buffer
+#define NK_YM_BUFFER_SIZE NK_YM_SHORT_PACKET_LEN
+#endif
+
 // Ymodem uses nk_putc, nk_getc and nk_uart_read
 
 // ymodem_send return status
@@ -32,6 +66,7 @@ enum {
 // Transmit a file
 
 void nk_ysend_file(
+    unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
     const char *name, 
     void *(*topen)(const char *name, const char *mode),
     void (*tclose)(void *f),
@@ -42,26 +77,48 @@ void nk_ysend_file(
 // Transmit a memory buffer as a file
 //  This calls nk_ysend_file with functions to set send the buffer
 
-void nk_ysend_buffer(const char *name, char *buffer, size_t len);
+void nk_ysend_buffer(
+    unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
+    const char *name,
+    char *buffer,
+    size_t len);
 
 // Receive file handler used by nk_yrecv.  This is provided
 // in nkymodem.c
 
 // Called by ymodem_rcv to open receive file
+// This should not print anything
+// Return 0 for success.  If non-zero is return, the transfer is canceled.
+// The name is NUL terminated, but other information follows the terminator:
+//  Name: foo.c NUL length SPC mod-date SPC mode SPC serno NUL
+//   length in ascii decimal
+//   mod-date in octal seconds from Jan 1 1970
+//   mode octal UNIX mode
+//   serno octal (0 if no serial number)
+// For xmodem, the name will be "anonymous\0\0"
 
-int ymodem_recv_file_open(char *name);
+int ymodem_recv_file_open(const char *name);
 
 // Called by ymodem_rcv to write data to file
+// The writing will be limited to the exact file size, if it is given in the ymodem filename header
+// Otherwise all 128 or 1024 byte blocks are written.
 
-void ymodem_recv_file_write(unsigned char *buffer, int len);
+void ymodem_recv_file_write(unsigned char *buffer, size_t len);
 
-// Called by ymodem_rcv to close receive file after transfer complete
+// Called by ymodem_rcv to close receive file after it has been transferred.
+// Do not print, ymodem protocol still in control.
 
 void ymodem_recv_file_close();
 
 // Called by ymodem_rcv to close receive file for case of canceled transfer
+// Do not print, ymodem protocol still in control.
 
 void ymodem_recv_file_cancel();
+
+// Called after all files have been transferred and ymodem protocol no
+// longer running.  OK to print.
+
+void ymodem_recv_all_done();
 
 // Prepare to receive
 
@@ -80,12 +137,12 @@ enum {
 
 // Processed some received data
 
-int ymodem_rcv(unsigned char *rcvbuf, int len);
+int ymodem_rcv(unsigned char *rcvbuf, size_t len);
 
 // Receive and process a file
 //  This calls ymodem_recv_init and ymodem_rcv.
 
-void nk_yrecv();
+void nk_yrecv(unsigned char *packet_buffer); // Packet buffer of size NK_YM_BUFFER_SIZE
 
 // Print some receive status for debugging
 void debug_rcv_status();
@@ -127,18 +184,18 @@ byte packets if CRC is disabled, as follows:
     sz/sb command:
 
     If receive side sends 'C' (indicating that it wants CRC16 packets):
-    sz              Tries zmodem, then falls back to ymodem with 1K option
-    sz --ymodem     Uses ymodem with 1K packets
-    sz --ymodem -k  Uses ymodem with 1K packets
-    sb              Uses ymodem with 1K packets
-    sx              Uses xmodem with 128 byte packets
+    sz              Tries zmodem, then falls back to ymodem with 1K option.
+    sz --ymodem     Uses ymodem with 128 packets.
+    sz --ymodem -k  Uses ymodem with 1K packets.
+    sb              Uses ymodem with 128 byte packets.
+    sx              Uses xmodem with 128 byte packets. (we get one retry?)
 
     If receive side sends 'NAK' (indicating that it wants checksum packets):
-    sz              Tries zmodem, then falls back to ymodem with 1K packets
-    sz --ymodem     Uses ymodem 128 byte packets only
-    sz --ymodem -k  Uses ymodem with 1K packets
-    sb              Uses ymodem with 128 byte packets
-    sx              Uses xmodem with 128 byte packets
+    sz              Tries zmodem, then falls back to ymodem with 1K packets.
+    sz --ymodem     Uses ymodem 128 byte packets only.
+    sz --ymodem -k  Uses ymodem with 1K packets. (cksum_count is less than long_count?)
+    sb              Uses ymodem with 128 byte packets.
+    sx              Uses xmodem with 128 byte packets. (we get one retry?)
 
     "sz" will try zmodem first, then fall back to Ymodem when it sees the 'C'. 
     But note that YMODEM receiver has to be prepared to handle the initial
@@ -278,3 +335,6 @@ CRC and checksum cover only the data part of the packet, not head SOH/STX or seq
 Checksum is just byte by byte add (no carry wrapping like TCP/IP).
 
 */
+
+#endif
+ 

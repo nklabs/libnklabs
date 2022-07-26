@@ -64,7 +64,7 @@ struct nkinfile
 
 // Return current file position
 // Return 0..file_size.  If it returns file_size, it means we are at end of file.
-#define nk_ftell(f) ((f)->start_offset + (f)->ptr - (f)->start)
+#define nk_ftell(f) ((size_t)((f)->start_offset + (f)->ptr - (f)->start))
 
 // True if we're at end of file
 #define nk_feof(f) ((f)->ptr == (f)->end)

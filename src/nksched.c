@@ -50,7 +50,7 @@ static struct item {
 	int tid;
 	void (*func)(void *data);
 	void *data;
-	uint32_t when; // Time in timer ticks
+	nk_time_t when; // Time in timer ticks
 	const char *comment;
 	const char *name;
 	const char *by;
@@ -120,7 +120,7 @@ int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, con
 		item->tid = tid;
 		item->func = func;
 		item->data = data;
-		item->when = nk_get_sched_time() + delay;
+		item->when = nk_get_time() + delay;
 		item->name = name;
 		item->by = by;
 		item->comment = comment;
@@ -158,7 +158,7 @@ int nk_resched(int tid, void (*func)(void *data), void *data, uint32_t delay)
 	} else { // Found
 		struct item *q;
 		deque(item);
-		item->when = nk_get_sched_time() + delay;
+		item->when = nk_get_time() + delay;
 		item->func = func;
 		item->data = data;
 		// Find first item ahead of us in time, or end of queue
@@ -245,7 +245,7 @@ static int cmd_work(nkinfile_t *args)
 	unsigned long irq_flag;
 	struct item *i;
 	if (nk_fscan(args, "")) {
-		nk_printf("Current time = %lu\n", nk_get_sched_time());
+		nk_printf("Current time = %lu\n", nk_get_time());
 		nk_printf("Pending tasks:\n");
 		nk_irq_lock(&sched_lock, irq_flag);
 		if (queue->next != queue) {
@@ -317,7 +317,8 @@ void nk_sched_loop()
 	for (;;) {
 		nk_irq_lock(&sched_lock, irq_flag);
 		// Execute pending work
-		while (queue_not_empty() && (int32_t)(nk_get_sched_time() - queue->next->when) >= 0) {
+		if (queue_not_empty() && (int32_t)(nk_get_time() - queue->next->when) >= 0)
+		{
 			void (*func)(void *data);
 			void *data;
 			struct item *item = deque(queue->next);
@@ -327,13 +328,19 @@ void nk_sched_loop()
 			free_item(item);
 			nk_irq_unlock(&sched_lock, irq_flag);
 			func(data);
-			nk_irq_lock(&sched_lock, irq_flag);
+			continue;
 		}
-		// (Re)Start the timer if the earliest work item does not match
-		// the current timeout
-		if (queue_not_empty() && queue->next->when - nk_get_sched_time() != nk_get_sched_timeout()) {
-			nk_start_sched_timer(queue->next->when - nk_get_sched_time());
+		else
+		{
+			// Set alarm to wake up system for next event
+			// There must be a wake up interrupt, even if the request is for now or in the past
+			if (queue_not_empty())
+			{
+				nk_sched_wakeup(queue->next->when);
+			}
+			// Enable interrupts and sleep
+			nk_irq_unlock_and_wait(&sched_lock, irq_flag, deepness);
+			// If there are any pending interrupts, the system should wake up
 		}
-		nk_irq_unlock_and_wait(&sched_lock, irq_flag, deepness);
 	}
 }

@@ -21,61 +21,31 @@
 
 #include <string.h>
 #include "nkcrclib.h"
-#include "nkchecked.h"
+#include "nkdirect.h"
 
 // Open file for reading
-int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, unsigned char *buffer, size_t buf_size)
+int nk_direct_read_open(nk_direct_t *var_file, const nk_direct_base_t *file, unsigned char *buffer, size_t buf_size)
 {
-    int rtn;
-    uint32_t crc;
-    uint32_t size;
-    uint32_t addr;
+    int rtn = 0;
+    (void)buffer;
+    (void)buf_size;
     var_file->file = file;
-    // Get header
-    rtn = file->flash_read(file->info, file->area_base, buffer, sizeof(nk_checked_header_t));
-    if (rtn)
-        return rtn;
-    size = var_file->size = ((nk_checked_header_t *)buffer)->size;
-    var_file->crc = ((nk_checked_header_t *)buffer)->crc;
-    // Check file integrity
-    // Is size good?
-    if (var_file->size > file->area_size - sizeof(nk_checked_header_t))
-        return -1;
-
-    // How about CRC?
-    addr = sizeof(nk_checked_header_t) + file->area_base;
-    crc = 0;
-    while (size) {
-        uint32_t x;
-        uint32_t len = size;
-        if (len > buf_size)
-            len = buf_size;
-        rtn = file->flash_read(file->info, addr, buffer, len);
-        if (rtn)
-            return rtn;
-        for (x = 0; x != len; ++x)
-            crc = nk_crc32be_update(crc, buffer[x]);
-        size -= len;
-        addr += len;
-    }
-
-    if (crc != var_file->crc)
-        return -1;
-    // It's good
-    return 0;
+    var_file->crc = 0;
+    var_file->size = file->area_size;
+    return rtn;
 }
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(nk_checked_t *var_file, size_t offset, unsigned char *buffer, size_t buf_size)
+size_t nk_direct_read(nk_direct_t *var_file, size_t offset, unsigned char *buffer, size_t buf_size)
 {
     int rtn;
     uint32_t len;
-    const nk_checked_base_t *file = var_file->file;
+    const nk_direct_base_t *file = var_file->file;
     len = buf_size;
     if (offset + len > var_file->size)
         len = var_file->size - offset;
     if (len) {
-        rtn = file->flash_read(file->info, file->area_base + sizeof(nk_checked_header_t) + offset, buffer, len);
+        rtn = file->flash_read(file->info, file->area_base + offset, buffer, len);
         if (rtn)
             len = 0;
     }
@@ -84,32 +54,20 @@ size_t nk_checked_read(nk_checked_t *var_file, size_t offset, unsigned char *buf
 
 // Open file for writing
 // This erases first block of area
-int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file)
+int nk_direct_write_open(nk_direct_t *var_file, const nk_direct_base_t *file)
 {
     int rtn = 0;
     var_file->file = file;
     var_file->crc = 0;
     var_file->size = 0;
-    if (file->flash_erase)
-    {
-        rtn = file->flash_erase(file->info, file->area_base, file->erase_size);
-    }
-    else
-    {
-        uint8_t junk[8];
-        memset(junk, 0xFF, sizeof(junk));
-        // Even if there is no erase, try to write FFs to the start.. we want to know if
-        // if somethin is wrong with the flash as early as possible.
-        rtn = file->flash_write(file->info, file->area_base, junk, sizeof(junk));
-    }
     return rtn;
 }
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t len)
+int nk_direct_write(nk_direct_t *var_file, const unsigned char *buffer, size_t len)
 {
     int rtn = 0;
-    const nk_checked_base_t *file = var_file->file;
+    const nk_direct_base_t *file = var_file->file;
     uint32_t x;
 
     // Update CRC
@@ -117,7 +75,7 @@ int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t
         var_file->crc = nk_crc32be_update(var_file->crc, buffer[x]);
 
     // Starting address
-    uint32_t address = file->area_base + sizeof(nk_checked_header_t) + var_file->size;
+    uint32_t address = file->area_base + var_file->size;
 
     // Write write pointer
     var_file->size += len;
@@ -145,12 +103,9 @@ int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t
     return rtn;
 }
 
-// Close write file: write header
-int nk_checked_write_close(nk_checked_t *var_file)
+// Close write file
+int nk_direct_write_close(nk_direct_t *var_file)
 {
-    nk_checked_header_t header;
-    const nk_checked_base_t *file = var_file->file;
-    header.crc = var_file->crc;
-    header.size = var_file->size;
-    return file->flash_write(file->info, file->area_base, (unsigned char *)&header, sizeof(header));
+    (void)var_file;
+    return 0;
 }

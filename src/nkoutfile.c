@@ -47,7 +47,7 @@ nkoutfile_t *nkoutfile_open(
 int nk_fflush(nkoutfile_t *f)
 {
     int rtn;
-    size_t len = f->ptr - f->start;
+    size_t len = (size_t)(f->ptr - f->start);
     f->ptr = f->start;
     // Round write up to granularity
     len = ((len + (f->granularity - 1)) & ~(f->granularity - 1));

@@ -19,24 +19,17 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// A checked file in region of flash memory
+// A file in region of flash memory
 
 // These functions allow you to reserve a contiguous region of flash memory
-// for a single file accessible through nkinfile and nkoutfile.  They add a
-// small header to the file data that contains the file length and CRC.
+// for a single file accessible through nkinfile and nkoutfile.  There is no
+// header for the file in flash.
 
-#ifndef _Inkchecked
-#define _Inkchecked
+#ifndef _Inkdirect
+#define _Inkdirect
 
 #include <stdlib.h>
 #include <stdint.h>
-
-// File header
-
-typedef struct {
-    uint32_t size; // Size of file
-    uint32_t crc; // CRC of file
-} nk_checked_header_t;
 
 // File access structure: constant part
 
@@ -51,31 +44,29 @@ typedef struct {
     int (* const flash_erase)(const void *info, uint32_t addr, uint32_t size); // NULL for no erase
     int (* const flash_write)(const void *info, uint32_t addr, const uint8_t *buf, uint32_t size);
     const size_t granularity;
-} nk_checked_base_t;
+} nk_direct_base_t;
 
 // File access structure: variable part
 
 typedef struct {
-    const nk_checked_base_t *file;
+    const nk_direct_base_t *file;
     uint32_t crc; // Current file CRC
     uint32_t size; // Size of file (for reading)
-} nk_checked_t;
+} nk_direct_t;
 
 // Open file for reading
-// This function checks the file's integrity
-// Returns false if file is corrupted: incorrect length or CRC
-int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, unsigned char *buffer, size_t buf_size);
+int nk_direct_read_open(nk_direct_t *var_file, const nk_direct_base_t *file, unsigned char *buffer, size_t buf_size);
 
 // Open file for writing
-int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file);
+int nk_direct_write_open(nk_direct_t *var_file, const nk_direct_base_t *file);
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(nk_checked_t *ptr, const unsigned char *buffer, size_t len);
+int nk_direct_write(nk_direct_t *ptr, const unsigned char *buffer, size_t len);
 
-// Close write file: write header
-int nk_checked_write_close(nk_checked_t *var_file);
+// Close write file
+int nk_direct_write_close(nk_direct_t *var_file);
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(nk_checked_t *ptr, size_t offset, unsigned char *buffer, size_t block_size);
+size_t nk_direct_read(nk_direct_t *ptr, size_t offset, unsigned char *buffer, size_t block_size);
 
 #endif

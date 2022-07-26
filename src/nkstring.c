@@ -21,10 +21,10 @@
 
 #include "nkstring.h"
 
-char nk_tolower(char a)
+int nk_tolower(int a)
 {
 	if (a >= 'A' && a <= 'Z')
-		return (char)(a + 'a' - 'A');
+		return a + 'a' - 'A';
 	else
 		return a;
 }
@@ -33,7 +33,7 @@ void nk_tolowers(char *s)
 {
 	int x;
 	for (x = 0; s[x]; ++x) {
-		s[x] = nk_tolower(s[x]);
+		s[x] = (char)nk_tolower(s[x]);
 	}
 }
 
@@ -70,4 +70,24 @@ int nk_memicmp(const char *a, const char *b, size_t len)
 		return 1;
 	else
 		return -1;
+}
+
+// We have these because sometimes ctype is not avaiable
+
+int nk_isxdigit(int c)
+{
+	if ((c >= '0' && c <= '9') ||
+	    (c >= 'A' && c <= 'F') ||
+	    (c >= 'a' && c <= 'f'))
+	    	return 1;
+	else
+		return 0;
+}
+
+int nk_isspace(int c)
+{
+	if (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v')
+		return 1;
+	else
+		return 0;
 }

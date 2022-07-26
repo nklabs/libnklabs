@@ -1,4 +1,4 @@
-// Copyright 2020 NK Labs, LLC
+// Copyright 2021 NK Labs, LLC
 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -19,18 +19,25 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef  _NKREADLINE_H
-#define _NKREADLINE_H
+// Ymodem Options:
 
-#include <stdbool.h>
-#include "nkreadline_config.h"
+// Uncomment to keep all ymodem receive data in packet_buf for debugging.  Received data is printed with "ymodem show"
+// All received data must fit in the packet_buf.
+// #define NK_YM_PROTOLOG 1
 
-// Prompt for line of input, execute callback when we get it
-// Callback receives pointer to line of input
+// Define size of debug event log
+// Uncomment to disable event log
+// For ymodem receive, this keeps a log of all sent characters
+#define NK_YM_DEBUG_LOG_SIZE 200
 
-void nk_readline(int tid, void (*f)(char *line), const char *prompt_text);
+// Allow 1K packets.  Comment out for only 128 byte packets
+#define NK_YM_ALLOWLONG 1
 
-bool nk_set_echo(bool mode);
-bool nk_get_echo();
+// Define to supporess sending 'C" instead of 'NAK', to indicate to sender to use checksum instead of CRC
+// #define NK_YM_NOCRC 1
 
-#endif    /* _NKREADLINE_H   */
+// Comment out to use XMODEM send
+#define NK_YM_YMODEM_SEND 1
+
+// Ymodem startup retransmit timeout: default is supposed to be 10 seconds, but reducing makes startup faster
+#define NK_YM_TIMEOUT 3

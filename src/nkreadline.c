@@ -42,30 +42,30 @@ static char histbuf[NKREADLINE_HIST_SIZE]; // NUL terminated lines
 static size_t hist_end; // Number of bytes in history buffer
 static size_t hist_idx; // Index to start of current history line
 
-static uint8_t echo_mode = 1;
+static bool echo_mode = 1;
 
 static uint8_t mode;
 static uint8_t tab_count;
 
-int nk_set_echo(int mode)
+bool nk_set_echo(bool new_mode)
 {
-        int org = echo_mode;
-        echo_mode = mode;
+        bool org = echo_mode;
+        echo_mode = new_mode;
         return org;
 }
 
-int nk_get_echo()
+bool nk_get_echo()
 {
         return echo_mode;
 }
 
-void console_putchar(int c)
+static void console_putchar(char c)
 {
         if (echo_mode)
                 nk_putc(c);
 }
 
-void console_puts(const char *s)
+static void console_puts(const char *s)
 {
 	if (echo_mode)
 		nk_puts(s);
@@ -294,9 +294,10 @@ static void delch()
 	}
 }
 
-void prompt_task(void *data)
+static void prompt_task(void *data)
 {
 	int ch;
+	(void)data;
 	for (;;) {
 		ch = nk_getc();
 		if (ch == -1) {

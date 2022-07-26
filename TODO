@@ -1,48 +1,82 @@
-displays:
-  link multiple displays together as one
-  nkoutfile_t for them? maybe vt100 emul..
-  displays: share CLI code: maybe include display size in struct for this
-
-tab complete sub-commands
-  Now it just prints help, but completion would be better
-
-very small systems:
-  f030: try to reduce size, don't use float for any driver..
-  maybe have a reduced nucleo.mx that doesn't include everything
-
 STM32:
+  * Use Nucleos as-is (no jumpers)
+
   How do we handle STM32F746 flash memory? Sector sizes are not uniform..
   Missing flash size for info
 
   low power modes?  We need lpuart..
 
-  get openocd to work for all stm32s
+  * get openocd to work for all stm32s
+
+  * make command to just copy the .hex to the fake usb flash device
 
 Atmel:
-  i2c not working well on atsame70 (crash during i2c scan), but ok on others
+  * i2c not working well on atsame70 (crash during i2c scan), but ok on others
   use bitbang for atsame70..
 
   low power modes?  which is the best clock to use?
 
+I2C:
+  * allow use of bitbang i2c, or fpga i2c..
+
+- documentation for nkdirect
+- modify nkarch/nksched documentation for new sched timer scheme
+
+
 missing documentation:
   target descriptions
-  nkpin
+  * nkpin
   nkcrclib
   nkmcuflash?
   nkdisplay when we do it
 
+bootloader:
+  * We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
+
 nkymodem:
-  document options, move them to a config file
-  ymodem send should send back the file we downloaded..
+  * document options
+  * ymodem send should send back the file we downloaded..
   provide file access functions right in call to nk_yrecv?
-  call-back when nk_yrecv is done
-  some clean up
+- provide name for xmodem file to nk_yrecv?
+
+event driven:
+  * multi-line gets for dbase
+
+global:
+  * probably only app should print error messages
+
+
+displays:
+  link multiple displays together as one
+  nkoutfile_t for them? maybe vt100 emul..
+  displays: share CLI code: maybe include display size in struct for this
+
+very small systems:
+  f030: try to reduce size, don't use float for any driver..
+  maybe have a reduced nucleo.mx that doesn't include everything
+
+tab complete sub-commands
+  Now it just prints help, but completion would be better
+    Redesign command table so that sub-commands are in it? (Makes table large..)
+    Complex algorithm to parse sub-commands from help?
+
+mcuflash:
+
+  nkmcuflash rd and wr do 32-bit works, but on stm32 min. size is 8 bytes- add read / modify / write?
 
 nkchecked:
   better error return for nk_checked_read- maybe return ssize_t. [done]
     but this means nkinfile needs to expect ssize_t from block_read.
 
-arduino:
+nkinfile:
+  How do we handle read errors for nkinfile operations?  Maybe use ssize_t
+  for block_read..
+
+
+
+sdio driver + fat filesystem
+
+arduino functionality:
   digitalRead, digitalWrite, pinMode
   attachInterrupt, detachInterrupt
   analogRead, analogReference,
@@ -53,16 +87,6 @@ Add more MCU peripheral drivers:
 
   CAN, ADC, DAC, etc..
 
-  fat filesystem + sdio?
-
-mcuflash:
-
-  nkmcuflash rd and wr do 32-bit works, but on stm32 min. size is 8 bytes- add read / modify / write?
-
-bootloader:
-
-  We should include an example standard bootloader to show off the ymodem/zmodem firmware udpate
-
 Add more targets:
 
   PICO-PI
@@ -72,20 +96,11 @@ Add more targets:
   PIC32
   Some example in an RTOS
 
-I2C:
-  allow use of bitbang i2c, or fpga i2c..
-
 GPIO:
 
   Pinmode to alternate functions
   A way to read back the current mode
   Include i2c pin expander gpio pins
-
-event driven:
-
-  multi-line gets for dbase
-
-  maybe call sched recursively?
 
 nkdbase:
 
@@ -98,10 +113,6 @@ nkdbase:
 
   Finish schema compiler
 
-global:
-
-  probably only app should print error messages
-
 Nkscan:
 
   iscan ignores case and squashes case on word and identifier.  Maybe word/identifier should be individually controllable?
@@ -109,7 +120,7 @@ Nkscan:
 
   need tests for iscan
 
-  Expression parser for nkscan?  Allow 0x before decimal?
+  * Expression parser for nkscan?  Allow 0x before decimal?
 
   Some kind of options parser where we don't care about order- we can build this externally
     while tryopt1 || tryopt2 || tryopt3 || tryopt4
@@ -132,11 +143,6 @@ Naming:
 
   nkinfile_t vs. nk_infile_t  type name
   nkdbase vs. nk_dbase        file name
-
-nkinfile:
-
-  How do we handle read errors for nkinfile operations?  Maybe use ssize_t
-for block_read..
 
 Notes:
   output freezes on ST- fixed by reboot linux

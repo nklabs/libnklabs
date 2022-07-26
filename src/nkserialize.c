@@ -536,7 +536,7 @@ static int skip_value(nkinfile_t *f)
 		size_t org = nk_ftell(f);
 		num = 0;
 		while (c >= '0' && c <= '9') {
-			num = num * 10 + c - '0';
+			num = num * 10 + (unsigned)(c - '0');
 			c = nk_fnext_fast(f);
 		}
 		if (c == '.' || c == 'e' || c == 'E') {
@@ -550,7 +550,7 @@ static int skip_value(nkinfile_t *f)
 		size_t org = nk_ftell(f);
 		num = 0;
 		while (c >= '0' && c <= '9') {
-			num = num * 10 + c - '0';
+			num = num * 10 + (unsigned)(c - '0');
 			c = nk_fnext_fast(f);
 		}
 		if (c == '.' || c == 'e' || c == 'E') {
@@ -631,7 +631,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				size_t org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c <= '9') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {
@@ -654,7 +654,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c<= '9') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {
@@ -715,7 +715,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				size_t org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c <= '9') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {
@@ -731,7 +731,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c  <= '9') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {
@@ -771,7 +771,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				size_t org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c <= '9') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {
@@ -787,7 +787,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				org = nk_ftell(f);
 				num = 0;
 				while (c >= '0' && c <= '0') {
-					num = num * 10 + c - '0';
+					num = num * 10 + (unsigned)(c - '0');
 					c = nk_fnext_fast(f);
 				}
 				if (c == '.' || c == 'e' || c == 'E') {

@@ -168,7 +168,7 @@ const struct nk_dbase test_dbase =
         .info = &m95m04,
         .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_read,
         .flash_erase = NULL,
-        .flash_write = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_write,
+        .flash_write = (int (*)(const void *, uint32_t, const uint8_t *, uint32_t))nk_spiflash_write,
         .granularity = 1
     },
 
@@ -179,7 +179,7 @@ const struct nk_dbase test_dbase =
         .info = &m95m04,
         .flash_read = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_read,
         .flash_erase = NULL,
-        .flash_write = (int (*)(const void *, uint32_t, uint8_t *, uint32_t))nk_spiflash_write,
+        .flash_write = (int (*)(const void *, uint32_t, const uint8_t *, uint32_t))nk_spiflash_write,
         .granularity = 1
     },
 

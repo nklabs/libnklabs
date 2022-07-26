@@ -21,44 +21,26 @@
 
 #include <string.h>
 #include "nkprintf.h"
+#include "nkmcuflash.h"
 #include "nkarch_stm32.h"
-
-static uint32_t timeout;
-static nk_time_t start_time;
 
 // Scheduler timer- using low power timer
 
-uint32_t nk_get_sched_time(void)
-{
-	nk_time_t current = nk_get_time();
-	nk_time_t change = current - start_time;
-	if (change > timeout)
-		timeout = 0;
-	else
-		timeout -= change;
-	return current;
-}
-
-uint32_t nk_get_sched_timeout(void)
-{
-	return timeout;
-}
-
 // Convert delay in milliseconds to number of scheduler timer clock ticks
-uint32_t nk_convert_delay(uint32_t delay)
+nk_time_t nk_convert_delay(uint32_t delay)
 {
 	return (delay * NK_TIME_COUNTS_PER_SECOND) / 1000;
 }
 
 void nk_init_sched_timer()
 {
+	// Nothing to do
 }
 
-// delay in timer ticks
-void nk_start_sched_timer(uint32_t delay)
+void nk_sched_wakeup(nk_time_t when)
 {
-	timeout = delay;
-	start_time = nk_get_time();
+	// No need, since tick interrupts wake us up
+	(void)when;
 }
 
 // Get current time
@@ -205,8 +187,9 @@ int flash_erase(uint32_t address)
 
 // Erase a range of space, all pages that touch the space are erased
 
-int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
+int nk_mcuflash_erase(const void *info, uint32_t address, uint32_t byte_count)
 {
+	(void)info;
 	address += NK_FLASH_BASE_ADDRESS;
 
 #ifdef FLASH_PAGE_SIZE
@@ -225,13 +208,12 @@ int nk_mcuflash_erase(uint32_t address, uint32_t byte_count)
 		}
 	}
 
-	if (rtn) {
-		nk_printf("ERROR: flash_erase returned %d\n", rtn);
-	} else if (byte_count) {
-		nk_printf("ERROR: Invalid erase size\n");
-		return -1;
+	if (!rtn && byte_count)
+	{
+		rtn = -1;
 	}
-	return 0;
+
+	return rtn;
 #else
 	return -1;
 #endif
@@ -261,9 +243,10 @@ int flash_write(uint32_t address, uint64_t data)
 	return -1;
 }
 
-int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, uint32_t byte_count)
 {
 	int rtn = 0; // Assume success
+	(void)info;
 
 	address += NK_FLASH_BASE_ADDRESS;
 
@@ -297,15 +280,12 @@ int nk_mcuflash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 		data += page_len;
 	}
 
-	if (rtn) {
-		nk_printf("ERROR: Flash_write returned %d\n", rtn);
-	}
-
 	return rtn;
 }
 
-int nk_mcuflash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, uint32_t byte_count)
 {
+	(void)info;
 	// Flash is memory mapped
 	memcpy((void *)data, (void *)(address + NK_FLASH_BASE_ADDRESS), byte_count);
 	return 0;
