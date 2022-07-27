@@ -105,12 +105,12 @@ Some foundational libraries are also provided:
 It is recommended that you include libnklabs as a git "subtree" with the
 following command:
 
-  git subtree add --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
+    git subtree add --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
 
 This way you will have a copy (not a reference) to libnklabs.  You can
 pull in the latest changes into your copy at any time with:
 
-  git subtree pull --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
+    git subtree pull --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
 
 The library is designed to be modular, though many of the modules depend on
 each other.
