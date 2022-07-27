@@ -1,4 +1,6 @@
-Test
+Add command to switch banks (for FPGA based)
+
+nkinfile_open_mem: the buffer pointer should be const
 
 Project:
   Move each target to its own repository?
