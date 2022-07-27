@@ -53,7 +53,10 @@
 #define NK_YM_BUFFER_SIZE NK_YM_SHORT_PACKET_LEN
 #endif
 
+//
+// Ymodem transmitter
 // Ymodem uses nk_putc, nk_getc and nk_uart_read
+//
 
 // ymodem_send return status
 
@@ -82,8 +85,15 @@ void nk_ysend_mem(
     size_t len
 );
 
-// Receive file handler used by nk_yrecv.  This is provided
-// in nkymodem.c
+
+//
+// ymodem receiver
+//
+
+//
+// Receive file handler used by nk_yrecv
+//  You provide these
+//
 
 // Called by ymodem_rcv to open receive file
 // This should not print anything
@@ -119,6 +129,11 @@ void ymodem_recv_file_cancel();
 
 void ymodem_recv_all_done();
 
+//
+// Low level ymodem handlers
+//   usually you just call ymodem_recv(), not these
+//
+
 // Prepare to receive
 
 void ymodem_recv_init();
@@ -138,8 +153,11 @@ enum {
 
 int ymodem_rcv(unsigned char *rcvbuf, size_t len);
 
+//
 // Receive and process a file
-//  This calls ymodem_recv_init and ymodem_rcv.
+//  This disables CLI and starts a task to receive a file
+//  When transmission is complete, the CLI is re-enabled
+//
 
 void nk_yrecv(unsigned char *packet_buffer); // Packet buffer of size NK_YM_BUFFER_SIZE
 
