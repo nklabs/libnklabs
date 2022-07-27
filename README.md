@@ -70,7 +70,7 @@ The CLI provides an automatic interface to set or get individual fields from
 the database.  You can index a part of the database using an expression,
 somewhat similar to XML's XPath expressions.
 
-See the [Example application commands](https://github.com/nklabs/libnklabs-examples/doc/app.md) document to see how these
+See the [Example application commands](https://github.com/nklabs/libnklabs-examples/blob/main/doc/app.md) document to see how these
 work.
 
 ### Common drivers and foundations
