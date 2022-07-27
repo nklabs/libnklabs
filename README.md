@@ -130,7 +130,7 @@ by eliminating unused code.
 
 # Example applications
 
-Examlpe applications can be found here:
+Example applications can be found here:
 
 [libnklabs-examples](https://github.com/nklabs/libnklabs-examples)
 
