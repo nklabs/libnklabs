@@ -66,7 +66,7 @@ enum {
     YMODEM_SEND_STATUS_CANCEL = 3
 };
 
-// Transmit a file
+// Transmit a single nkinfile_t
 
 void nk_ysend_file(
     unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
@@ -75,59 +75,60 @@ void nk_ysend_file(
     uint32_t file_size
 );
 
-// Transmit a memory buffer as a file
-//  This calls nk_ysend_file with functions to set send the buffer
-
-void nk_ysend_mem(
-    unsigned char *packet_buffer, // Packet buffer of size NK_YM_BUFFER_SIZE
-    const char *name,
-    void *buffer,
-    size_t len
-);
-
-
 //
 // ymodem receiver
 //
 
 //
 // Receive file handler used by nk_yrecv
-//  You provide these
+//  You provide this
 //
 
-// Called by ymodem_rcv to open receive file
-// This should not print anything
-// Return 0 for success.  If non-zero is return, the transfer is canceled.
-// The name is NUL terminated, but other information follows the terminator:
-//  Name: foo.c NUL length SPC mod-date SPC mode SPC serno NUL
-//   length in ascii decimal
-//   mod-date in octal seconds from Jan 1 1970
-//   mode octal UNIX mode
-//   serno octal (0 if no serial number)
-// For xmodem, the name will be "anonymous\0\0"
+typedef struct nk_yrecv_struct nk_yrecv_struct_t;
 
-int ymodem_recv_file_open(const char *name);
+struct nk_yrecv_struct
+{
+    // Pointer to packet buffer of size at least NK_YM_BUFFER_SIZE
+    unsigned char *packet_buffer;
 
-// Called by ymodem_rcv to write data to file
-// The writing will be limited to the exact file size, if it is given in the ymodem filename header
-// Otherwise all 128 or 1024 byte blocks are written.
+    // Name passed to open in case sender uses XMODEM
+    // Note that string must be terminated with two NULs!
+    const char *xname;
 
-void ymodem_recv_file_write(unsigned char *buffer, size_t len);
+    // Called by ymodem_rcv to open receive file
+    // This should not print anything
+    // Return 0 for success.  If non-zero is return, the transfer is canceled.
+    // The name is NUL terminated, but other information follows the terminator:
+    //  Name: foo.c NUL length SPC mod-date SPC mode SPC serno NUL
+    //   length in ascii decimal
+    //   mod-date in octal seconds from Jan 1 1970
+    //   mode octal UNIX mode
+    //   serno octal (0 if no serial number)
+    // For xmodem, the name will be "anonymous\0\0"
 
-// Called by ymodem_rcv to close receive file after it has been transferred.
-// Do not print, ymodem protocol still in control.
+    int (*open)(const char *name);
 
-void ymodem_recv_file_close();
+    // Called by ymodem_rcv to write data to file
+    // The writing will be limited to the exact file size, if it is given in the ymodem filename header
+    // Otherwise all 128 or 1024 byte blocks are written.
 
-// Called by ymodem_rcv to close receive file for case of canceled transfer
-// Do not print, ymodem protocol still in control.
+    void (*write)(unsigned char *buffer, size_t len);
 
-void ymodem_recv_file_cancel();
+    // Called by ymodem_rcv to close receive file after it has been transferred.
+    // Do not print, ymodem protocol still in control.
 
-// Called after all files have been transferred and ymodem protocol no
-// longer running.  OK to print.
+    void (*close)();
 
-void ymodem_recv_all_done();
+    // Called by ymodem_rcv to close receive file for case of canceled transfer
+    // Do not print, ymodem protocol still in control.
+
+    void (*cancel)();
+
+    // Called after all files have been transferred and ymodem protocol no
+    // longer running.  OK to print.
+
+    void (*all_done)();
+};
 
 //
 // Low level ymodem handlers
@@ -136,7 +137,7 @@ void ymodem_recv_all_done();
 
 // Prepare to receive
 
-void ymodem_recv_init();
+void ymodem_recv_init(const nk_yrecv_struct_t *);
 
 // ymodem_yrecv return status
 
@@ -159,7 +160,7 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len);
 //  When transmission is complete, the CLI is re-enabled
 //
 
-void nk_yrecv(unsigned char *packet_buffer); // Packet buffer of size NK_YM_BUFFER_SIZE
+void nk_yrecv(const nk_yrecv_struct_t *);
 
 // Print some receive status for debugging
 void debug_rcv_status();

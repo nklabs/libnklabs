@@ -40,8 +40,6 @@ bootloader:
 nkymodem:
   * document options
   * ymodem send should send back the file we downloaded..
-  provide file access functions right in call to nk_yrecv?
-  provide name for xmodem file to nk_yrecv?
   use nkoutfile for yrecv?
      it would need nk_outfile_write
   add dbase upload/download using ymodem

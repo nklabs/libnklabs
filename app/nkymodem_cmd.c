@@ -59,7 +59,7 @@ const nk_checked_base_t ymodem_file_base =
 
 nk_checked_t ymodem_file;
 
-int ymodem_recv_file_open(const char *name)
+static int ymodem_recv_file_open(const char *name)
 {
     int len;
     strcpy(name_buf, name);
@@ -74,24 +74,24 @@ int ymodem_recv_file_open(const char *name)
     return nk_checked_write_open(&ymodem_file, &ymodem_file_base);
 }
 
-void ymodem_recv_file_write(unsigned char *buffer, size_t len)
+static void ymodem_recv_file_write(unsigned char *buffer, size_t len)
 {
     nk_checked_write(&ymodem_file, buffer, len);
 }
 
-void ymodem_recv_file_close()
+static void ymodem_recv_file_close()
 {
     nk_checked_write_close(&ymodem_file);
     dld_done = 1;
 }
 
-void ymodem_recv_file_cancel()
+static void ymodem_recv_file_cancel()
 {
 }
 
 // Called after all files successfully transferred: OK to print
 
-void ymodem_recv_all_done()
+static void ymodem_recv_all_done()
 {
     if (dld_done)
     {
@@ -99,6 +99,16 @@ void ymodem_recv_all_done()
     }
 }
 
+const nk_yrecv_struct_t nk_yrecv_str =
+{
+    .packet_buffer = packet_buffer,
+    .xname = "anonymous\0",
+    .open = ymodem_recv_file_open,
+    .write = ymodem_recv_file_write,
+    .close = ymodem_recv_file_close,
+    .cancel = ymodem_recv_file_cancel,
+    .all_done = ymodem_recv_all_done
+};
 
 // Command line interface
 
@@ -107,9 +117,11 @@ int cmd_ymodem(nkinfile_t *args)
     unsigned char ebuf[256];
     if (nk_fscan(args, "")) { // Receive a file
         name_buf[0] = 0;
-        nk_yrecv(packet_buffer);
+        nk_yrecv(&nk_yrecv_str);
     } else if (nk_fscan(args, "send ")) { // Send a file
-        nk_ysend_mem(packet_buffer, "foo", sdata_test, sizeof(sdata_test));
+        static nkinfile_t ysend_file; // Important! ysend_file must stay around after cmd_ymodem returns
+        nkinfile_open_mem(&ysend_file, sdata_test, sizeof(sdata_test));
+        nk_ysend_file(packet_buffer, &ysend_file, "foo", sizeof(sdata_test));
     } else if (nk_fscan(args, "show ")) {
         // State of previous receive
         nk_printf("name = %s\n", name_buf);
