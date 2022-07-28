@@ -394,7 +394,7 @@ void ymodem_recv_init(const nk_yrecv_struct_t *nk_yrecv_n)
 static int crc_count; // Count of CRC packets
 static int cksum_count; // Count of checksum packets
 
-static int ymcrc_check(uint8_t *buf, size_t len)
+static int ymcrc_check(const uint8_t *buf, size_t len)
 {
 #ifdef NK_YM_NOCRC
     size_t x;
@@ -420,7 +420,7 @@ static int ymcrc_check(uint8_t *buf, size_t len)
 
 static int long_count; // Count of received long packets- for debugging
 
-int ymodem_rcv(unsigned char *rcvbuf, size_t len)
+int ymodem_rcv(const unsigned char *rcvbuf, size_t len)
 {
     int status = YMODEM_RECV_MORE;
 
@@ -483,17 +483,17 @@ int ymodem_rcv(unsigned char *rcvbuf, size_t len)
             }
             else
             {
-                size_t name_len = strlen((char *)rcvbuf + 3);
+                size_t name_len = strlen((const char *)rcvbuf + 3);
                 // Get exact file size
                 if (rcvbuf[3 + name_len + 1])
                 {
-                    ymodem_file_size = (uint32_t)atoi((char *)(rcvbuf + 3 + name_len + 1));
+                    ymodem_file_size = (uint32_t)atoi((const char *)(rcvbuf + 3 + name_len + 1));
                 }
                 else
                 {
                     ymodem_file_size = 0xffffffff;
                 }
-                if (!nk_yrecv_s->open((char *)rcvbuf+3))
+                if (!nk_yrecv_s->open((const char *)rcvbuf+3))
                 {
                     nk_putc(NK_YM_ACK);
                     NK_YM_DEBUG_LOGIT(3, NK_YM_ACK);
@@ -763,7 +763,7 @@ static void ymodem_recv_task(void *data)
 {
     if (data == TIMEOUT)
     {
-        NK_YM_DEBUG_LOGIT(20, yrecv_len);
+        NK_YM_DEBUG_LOGIT(20, (uint8_t)yrecv_len);
 #ifdef NK_YM_PROTOLOG
         last_idx += yrecv_len;
 #endif
@@ -832,7 +832,7 @@ static void ymodem_recv_task(void *data)
                 if (gotit) // We have a complete packet
                 {
                     gotit = 0;
-                    NK_YM_DEBUG_LOGIT(15, yrecv_len);
+                    NK_YM_DEBUG_LOGIT(15, (uint8_t)yrecv_len);
                     if (process_full_outer())
                     {
                         nk_unsched(timeout_tid);

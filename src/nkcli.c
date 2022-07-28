@@ -20,13 +20,14 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
+#include <stdbool.h>
 #include "nksched.h"
 #include "nkreadline.h"
 #include "nkcli.h"
 
 int nk_cli_tid;
-int facmode = 1; // Set if we are in factory mode
-int cli_disabled = 0;
+bool facmode = 1; // Set if we are in factory mode
+bool cli_disabled = 0;
 
 // Command table
 
@@ -282,7 +283,7 @@ void nk_init_cli()
         );
 #else
         // Use bubble sort to save space
-        int work;
+        bool work;
         do {
             struct console_cmd *x;
             work = 0;

@@ -50,9 +50,10 @@ struct nkinfile
     size_t tmp_pos; // Temporary position for nkfpeek_rel and nkfpeek_abs
 
     // Information about current buffer
-    unsigned char *ptr; // Current pointer into current buffer
-    unsigned char *start; // Start of current buffer
-    unsigned char *end; // End of current buffer
+    unsigned char *buffer; // Buffer we read into
+    const unsigned char *ptr; // Current pointer into current buffer
+    const unsigned char *start; // Start of current buffer (usually same as 'buffer', but const)
+    const unsigned char *end; // End of current buffer
     size_t len; // Number of bytes available in current buffer
     size_t start_offset; // File offset of first byte of current buffer
 
@@ -142,10 +143,10 @@ nkinfile_t *nkinfile_open(
 );
 
 // Open a memory block as a file
-nkinfile_t *nkinfile_open_mem(nkinfile_t *f, unsigned char *mem, size_t size);
+nkinfile_t *nkinfile_open_mem(nkinfile_t *f, const unsigned char *mem, size_t size);
 
 // Open a string as a file
-nkinfile_t *nkinfile_open_string(nkinfile_t *f, char *s);
+nkinfile_t *nkinfile_open_string(nkinfile_t *f, const char *s);
 
 // Print rest of file to nkstdout, usually for debugging
 

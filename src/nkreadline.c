@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "nkuart.h"
 #include "nkcli.h"
 #include "nkreadline.h"
@@ -34,7 +35,7 @@ const char *console_prompt;
 static char tty_buf[NKREADLINE_LINE_SIZE];
 static size_t tty_len;
 static size_t tty_cur;
-static uint8_t changed; // Set if buffer has been edited
+static bool changed; // Set if buffer has been edited
 
 // History buffer
 

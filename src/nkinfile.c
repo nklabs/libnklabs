@@ -43,7 +43,13 @@ int nk_fseek_slow(nkinfile_t *f, size_t pos)
         // Load block.  If end of file is within block, f->len will be less than block_size.
         // If end of file is exactly at start of block, then nothing is loaded and f->len is zero.
         // Otherwise f->len will be equal to block_size.
-        f->len = f->block_read(f->block_read_ptr, f->start_offset, f->start, f->block_size);
+        f->len = f->block_read(f->block_read_ptr, f->start_offset, f->buffer, f->block_size);
+    }
+    else
+    {
+        // We don't do this, because when we have opened a memory block, we want seek to work
+        // even after we've reached EOF. 
+        // f->len = 0;
     }
     f->end = f->start + f->len;
 
@@ -63,6 +69,7 @@ int nk_fseek_slow(nkinfile_t *f, size_t pos)
 
 nkinfile_t *nkinfile_open(nkinfile_t *f, size_t (*block_read)(void *block_read_ptr, size_t pos, unsigned char *buffer, size_t block_size), void *block_read_ptr, size_t block_size, unsigned char *buffer)
 {
+    f->buffer = buffer;
     f->start = buffer;
     f->ptr = f->start;
     f->start_offset = 0;
@@ -74,23 +81,33 @@ nkinfile_t *nkinfile_open(nkinfile_t *f, size_t (*block_read)(void *block_read_p
 
     // Read first block into buffer
     if (block_read)
-        f->len = block_read(block_read_ptr, f->start_offset, buffer, f->block_size);
+        f->len = block_read(block_read_ptr, f->start_offset, f->buffer, f->block_size);
 
     f->end = f->start + f->len;
 
     return f;
 }
 
-nkinfile_t *nkinfile_open_mem(nkinfile_t *f, unsigned char *mem, size_t size)
+nkinfile_t *nkinfile_open_mem(nkinfile_t *f, const unsigned char *mem, size_t size)
 {
-    nkinfile_open(f, NULL, NULL, size, mem);
+    f->buffer = 0;
+    f->start = mem;
+    f->ptr = f->start;
+    f->start_offset = 0;
+    
+    f->block_read_ptr = NULL;
+    f->block_read = NULL;
     f->block_size = 0;
+    f->len = size;
+
+    f->end = f->start + f->len;
+
     return f;
 }
 
-nkinfile_t *nkinfile_open_string(nkinfile_t *f, char *s)
+nkinfile_t *nkinfile_open_string(nkinfile_t *f, const char *s)
 {
-    return nkinfile_open_mem(f, (unsigned char *)s, strlen(s));
+    return nkinfile_open_mem(f, (const unsigned char *)s, strlen(s));
 }
 
 int nk_fcopy(nkoutfile_t *g, nkinfile_t *f)
@@ -108,6 +125,7 @@ int nk_infile_print(nkinfile_t *f)
 
 static nkinfile_t _nkinfile_null =
 {
+    .buffer = 0,
     .ptr = 0,
     .start = 0,
     .end = 0,

@@ -22,6 +22,7 @@
 #ifndef _Inkcli
 #define _Inkcli
 
+#include <stdbool.h>
 #include "nkmacros.h"
 #include "nkscan.h"
 #include "nkprintf.h"
@@ -58,7 +59,7 @@ void nk_init_cli(void);
 
 extern int nk_cli_tid; // tid for CLI task
 
-extern int facmode; // Set if we are in factory mode
+extern bool facmode; // Set if we are in factory mode
 
 // Re-enable CLI: this will print the prompt and request more input
 void nk_cli_enable();
