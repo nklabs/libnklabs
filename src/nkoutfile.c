@@ -76,7 +76,7 @@ nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, char *mem, size_t size)
 
 // This is called when we try to write to a full output buffer
 
-int _nk_flush_and_putc(nkoutfile_t *f, unsigned char c)
+int _nk_flush_and_putc(nkoutfile_t *f, int c)
 {
     if (f->size)
     {
@@ -85,15 +85,16 @@ int _nk_flush_and_putc(nkoutfile_t *f, unsigned char c)
         if (!rtn)
         {
             // Flush was successful, save latest character
-            *f->ptr++ = c;
+            *f->ptr++ = (unsigned char)c;
         }
         return rtn;
     }
     else if (f->block_write)
     {
+        unsigned char d = (unsigned char)c;
         // Special case: no buffering, just call output function directly
         // If granularity is not 1, we write junk after &c on the stack
-        return f->block_write(f->block_write_ptr, &c, f->granularity);
+        return f->block_write(f->block_write_ptr, &d, f->granularity);
     }
     else
     {
