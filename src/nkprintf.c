@@ -91,7 +91,7 @@ int nk_byte_hex_dump(unsigned char *buf, unsigned long base, unsigned long offse
 
 // Small printf()
 
-int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap)
+int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 {
 	int status = 0;
 
@@ -372,7 +372,7 @@ int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap)
 
 // Print to string, NUL always written
 
-int nk_snprintf(char *dest, size_t len, const char *fmt, ...)
+int _nk_snprintf(char *dest, size_t len, const NK_FLASH char *fmt, ...)
 {
 	nkoutfile_t f;
 	int status;
@@ -382,7 +382,7 @@ int nk_snprintf(char *dest, size_t len, const char *fmt, ...)
 
 	nkoutfile_open_mem(&f, dest, len - 1);
 
-	status = nk_vprintf(&f, fmt, ap);
+	status = _nk_vprintf(&f, fmt, ap);
 
 	*f.ptr = 0;
 
@@ -392,7 +392,7 @@ int nk_snprintf(char *dest, size_t len, const char *fmt, ...)
 
 // Print to string, balance of string is space filled.  No NUL!
 
-int nk_sfprintf(char *dest, size_t len, const char *fmt, ...)
+int _nk_sfprintf(char *dest, size_t len, const NK_FLASH char *fmt, ...)
 {
 	nkoutfile_t f;
 	int status;
@@ -402,7 +402,7 @@ int nk_sfprintf(char *dest, size_t len, const char *fmt, ...)
 
 	nkoutfile_open_mem(&f, dest, len);
 
-	status = nk_vprintf(&f, fmt, ap);
+	status = _nk_vprintf(&f, fmt, ap);
 
 	while (f.ptr != f.end) {
 		*f.ptr++ = ' ';
@@ -450,7 +450,7 @@ nkoutfile_t *nkstdnull = &__nkstdnull;
 
 // Print to console
 
-void nk_printf(const char *fmt,...)
+void _nk_printf(const NK_FLASH char *fmt,...)
 {
 	va_list ap;
 	va_start (ap, fmt);
@@ -459,7 +459,7 @@ void nk_printf(const char *fmt,...)
         NKPRINTF_LOCK
 #endif
 
-	nk_vprintf(nkstdout, fmt, ap);
+	_nk_vprintf(nkstdout, fmt, ap);
 
 #ifdef NKPRINTF_UNLOCK
 	NKPRINTF_UNLOCK
@@ -470,13 +470,13 @@ void nk_printf(const char *fmt,...)
 
 // Print to file
 
-int nk_fprintf(nkoutfile_t *f, const char *fmt,...)
+int _nk_fprintf(nkoutfile_t *f, const NK_FLASH char *fmt,...)
 {
 	int status;
 	va_list ap;
 	va_start (ap, fmt);
 
-	status = nk_vprintf(f, fmt, ap);
+	status = _nk_vprintf(f, fmt, ap);
 
 	va_end(ap);
 

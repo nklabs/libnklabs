@@ -97,7 +97,7 @@ void nk_udelay(unsigned long usec)
 //{
 //}
 
-void reboot()
+void nk_reboot()
 {
 	NVIC_SystemReset();
 }

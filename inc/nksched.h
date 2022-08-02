@@ -78,6 +78,6 @@ int nk_alloc_tid();
 int nk_get_sched_sleep_mode();
 int nk_set_sched_sleep_mode(int deepness);
 
-extern spinlock_t sched_lock;
+extern nk_spinlock_t sched_lock;
 
 #endif

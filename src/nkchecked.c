@@ -46,10 +46,12 @@ int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, 
     addr = sizeof(nk_checked_header_t) + file->area_base;
     crc = 0;
     while (size) {
-        uint32_t x;
-        uint32_t len = size;
-        if (len > buf_size)
+        size_t x;
+        size_t len;
+        if (size > buf_size)
             len = buf_size;
+        else
+            len = (size_t)size;
         rtn = file->flash_read(file->info, addr, buffer, len);
         if (rtn)
             return rtn;
@@ -66,14 +68,14 @@ int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, 
 }
 
 // For nkinfile_t: read a block from the file
-size_t nk_checked_read(nk_checked_t *var_file, size_t offset, unsigned char *buffer, size_t buf_size)
+size_t nk_checked_read(nk_checked_t *var_file, uint32_t offset, unsigned char *buffer, size_t buf_size)
 {
     int rtn;
-    uint32_t len;
+    size_t len;
     const nk_checked_base_t *file = var_file->file;
     len = buf_size;
     if (offset + len > var_file->size)
-        len = var_file->size - offset;
+        len = (size_t)(var_file->size - offset);
     if (len) {
         rtn = file->flash_read(file->info, file->area_base + sizeof(nk_checked_header_t) + offset, buffer, len);
         if (rtn)
@@ -125,7 +127,7 @@ int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t
     // Write a page at a time
     while (len) {
         uint32_t page_offset = (address & (file->erase_size - 1)); // Starting offset within page
-	uint32_t page_len = file->erase_size - page_offset; // Up to one page
+	size_t page_len = (size_t)(file->erase_size - page_offset); // Up to one page
 	if (len < page_len)
 	    page_len = len;
         if (file->flash_erase && ((address & (file->erase_size - 1)) == 0)) {

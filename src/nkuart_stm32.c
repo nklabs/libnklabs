@@ -35,7 +35,7 @@ static int waiting_rx_tid;
 static void (*waiting_rx_task)(void *data);
 static void *waiting_rx_task_data;
 
-spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
+nk_spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
 
 void nk_set_uart_callback(int tid, void (*func)(void *data), void *data)
 {

@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#define NK_FLASH
+
 // MCU abstraction layer
 
 // Borrow Linux kernel lock syntax

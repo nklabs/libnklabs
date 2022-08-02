@@ -31,6 +31,8 @@
 #include <stdlib.h> // For ssize_t
 #include <stdarg.h>
 
+#include "nkarch.h"
+
 #include "nkinfile.h"
 
 #include "nkscan_config.h"
@@ -82,11 +84,36 @@
 //  A field width may be specified after any %, like %2d.  This will limit the parsing to the indicated size.  WIth %2d, only the first two
 //  digits will be taken.  For example, you could parse a date such as 20181231 with "%4d%2d%2d", &year, &month, &day
 
-int nk_vscan(nkinfile_t *f, const char *fmt, va_list ap);
-int nk_fscan(nkinfile_t *f, const char *fmt, ...);
 
-int nk_viscan(nkinfile_t *f, const char *fmt, va_list ap);
-int nk_fiscan(nkinfile_t *f, const char *fmt, ...);
+#ifdef NK_PSTR
+
+int _nk_vscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_vscan(a, b, ...) _nk_vscan((a), PSTR(b), ##__VA_ARGS__)
+
+int _nk_fscan(nkinfile_t *f, const NK_FLASH char *fmt, ...);
+#define nk_fscan(a, b, ...) _nk_fscan((a), PSTR(b), ##__VA_ARGS__)
+
+int _nk_viscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_viscan(a, b, ...) _nk_viscan((a), PSTR(b), ##__VA_ARGS__)
+
+int _nk_fiscan(nkinfile_t *f, const NK_FLASH char *fmt, ...);
+#define nk_fiscan(a, b, ...) _nk_fiscan((a), PSTR(b), ##__VA_ARGS__)
+
+#else
+
+int _nk_vscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_vscan(a, b, ...) _nk_vscan((a), (b), ##__VA_ARGS__)
+
+int _nk_fscan(nkinfile_t *f, const NK_FLASH char *fmt, ...);
+#define nk_fscan(a, b, ...) _nk_fscan((a), (b), ##__VA_ARGS__)
+
+int _nk_viscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_viscan(a, b, ...) _nk_viscan((a), (b), ##__VA_ARGS__)
+
+int _nk_fiscan(nkinfile_t *f, const NK_FLASH char *fmt, ...);
+#define nk_fiscan(a, b, ...) _nk_fiscan((a), (b), ##__VA_ARGS__)
+
+#endif
 
 int nk_fscan_ws(nkinfile_t *f);
 int nk_fscan_escape(nkinfile_t *f);

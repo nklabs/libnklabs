@@ -26,11 +26,12 @@
 #include "nkmacros.h"
 #include "nkscan.h"
 #include "nkprintf.h"
+#include "nkarch.h" // For NK_FLASH
 
 // Command table entry
 
 struct console_cmd {
-    const char *text; // Command name and help
+    const NK_FLASH char *text; // Command name and help
     int (*func)(nkinfile_t *args); // Command function
 };
 
@@ -49,9 +50,24 @@ struct console_cmd {
 // Note that command table ends up in data section, in RAM.  This is intentional: so that it can be sorted.
 // (otherwise it could be in constants section, in flash only).
 
+#ifdef NK_PSTR
+
+// Put strings in AVR program memory
+
+#define COMMAND(func, text) \
+\
+const NK_FLASH char (__help_ ## func)[] = (text); \
+\
+static struct console_cmd cmd_entry_ ## func __attribute__ ((section (".COMMAND_TABLE"))) __attribute__((unused)) __attribute__((used)) = \
+  { (__help_ ## func), (func) };
+
+#else
+
 #define COMMAND(func, text) \
 static struct console_cmd cmd_entry_ ## func __attribute__ ((section (".COMMAND_TABLE"))) __attribute__((unused)) __attribute__((used)) = \
   { (text), (func) };
+
+#endif
 
 // Start up CLI, print first prompt
 // (this submits a task, so prompt is issued on next return to sched)

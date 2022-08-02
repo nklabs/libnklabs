@@ -22,44 +22,47 @@
 #ifndef _Inkcrclib
 #define _Inkcrclib
 
+#include <inttypes.h>
+#include <stddef.h>
+
 /* Poly is 0x04c11db7 (this is used for Ethernet) */
 /* Big endian, MSB first version */
 /* When you append the calculated CRC to a file (MSByte first), the CRC of the result will be 0 */
-unsigned long nk_crc32be_update(unsigned long accu, unsigned char byte);
+uint32_t nk_crc32be_update(uint32_t accu, uint8_t byte);
 
 // Compute CRC of an array.  Result is 0 if CRC is good.
-unsigned long nk_crc32be_check(unsigned char *start, unsigned long size);
+uint32_t nk_crc32be_check(uint8_t *start, size_t size);
 
 
 /* Poly is 0xedb88320 (this is used for ZMODEM) */
 /* Little endian, LSB first version */
 /* When you append the calculated CRC to a file (LSByte first), the CRC of the result will be 0 */
-unsigned long nk_crc32le_update(unsigned long accu, unsigned char byte);
+uint32_t nk_crc32le_update(uint32_t accu, uint8_t byte);
 
 // Compute CRC of an array.  Result is 0 if CRC is good.
-unsigned long nk_crc32le_check(unsigned char *start, unsigned long size);
+uint32_t nk_crc32le_check(uint8_t *start, size_t size);
 
 
 // CRC-16-CCITT (poly is 0x1021) (this is used for XMODEM / YMODEM)
 // Big endian version: append crc to data, most significant byte first.  CRC of result will be zero.
-unsigned short nk_crc16be_update(unsigned short crc, unsigned char ch);
+uint16_t nk_crc16be_update(uint16_t crc, uint8_t ch);
 
 // Compute CRC of an array.  Result is 0 if CRC is good.
 // (initial crc is 0x0000)
-unsigned short nk_crc16be_check(const unsigned char* data_p, unsigned long length);
+uint16_t nk_crc16be_check(const uint8_t *data_p, size_t length);
 
 
 // CRC-16-CCITT (poly is 0x8408)
 // Little endian version: append crc to data, least significant byte first.  CRC of result will be zero.
-unsigned short nk_crc16le_update(unsigned short crc, unsigned char ch);
+uint16_t nk_crc16le_update(uint16_t crc, uint8_t ch);
 
 // Compute CRC of an array.  Result is 0 if CRC is good.
 // (initial crc is 0x0000)
-unsigned short nk_crc16le_check(const unsigned char* data_p, unsigned long length);
+uint16_t nk_crc16le_check(const uint8_t* data_p, size_t length);
 
 
 // Poly is 0x07 (as used in ST's energy monitor ICs)
 // Compute CRC of an array.
-unsigned char nk_crc8(const unsigned char *data, unsigned long length);
+uint8_t nk_crc8(const uint8_t *data, size_t length);
 
 #endif

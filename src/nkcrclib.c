@@ -21,16 +21,19 @@
 
 // CRC library
 
+#include <stdint.h>
+#include <stddef.h>
 #include "nkcrclib.h"
+#include "nkarch.h" // for NK_FLASH
 
-unsigned char nk_crc8(const unsigned char *data, unsigned long length)
+uint8_t nk_crc8(const uint8_t *data, size_t length)
 {
-    unsigned char crc = 0;
-    unsigned long x;
+    uint8_t crc = 0;
+    size_t x;
     for (x = 0; x != length; ++x)
     {
-        unsigned char i = (crc ^ data[x]);
-        crc = (unsigned char)(i ^ (i >> 7) ^ (i << 1) ^ (i << 2) ^ ((i >> 4) & 0x0C) ^ ((i >> 5) & 0x02) ^ ((i >> 6) & 0x01));
+        uint8_t i = (crc ^ data[x]);
+        crc = (uint8_t)(i ^ (i >> 7) ^ (i << 1) ^ (i << 2) ^ ((i >> 4) & 0x0C) ^ ((i >> 5) & 0x02) ^ ((i >> 6) & 0x01));
     }
     return crc;
 }
@@ -40,7 +43,7 @@ unsigned char nk_crc8(const unsigned char *data, unsigned long length)
 /* When you append the calculated CRC to a file (MSByte first), the CRC of the result will be 0 */
 /* Poly is 0x04c11db7- this is the one used in Ethernet */
 
-static const unsigned long crctab_be[256] =
+static const NK_FLASH uint32_t crctab_be[256] =
 {
 	0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
 	0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
@@ -108,15 +111,15 @@ static const unsigned long crctab_be[256] =
 	0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4
 };
 
-unsigned long nk_crc32be_update(unsigned long accu, unsigned char byte)
+uint32_t nk_crc32be_update(uint32_t accu, uint8_t byte)
 {
 	return (accu << 8) ^ crctab_be[((accu >> 24) ^ byte)];
 }
 
-unsigned long nk_crc32be_check(unsigned char *start, unsigned long size)
+uint32_t nk_crc32be_check(uint8_t *start, size_t size)
 {
-	unsigned long crc = 0;
-	unsigned long x;
+	uint32_t crc = 0;
+	size_t x;
 	for (x = 0; x != size; ++x)
 		crc = nk_crc32be_update(crc, start[x]);
 	return crc;
@@ -127,7 +130,7 @@ unsigned long nk_crc32be_check(unsigned char *start, unsigned long size)
 /* When you append the calculated CRC to a file (LSByte first), the CRC of the result will be 0 */
 /* Poly is 0xedb88320 */
 
-static const unsigned long crctab_le[] = { /* CRC polynomial 0xedb88320 */
+static const NK_FLASH uint32_t crctab_le[] = { /* CRC polynomial 0xedb88320 */
 	0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
 	0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
 	0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -175,15 +178,15 @@ static const unsigned long crctab_le[] = { /* CRC polynomial 0xedb88320 */
 
 // #define UPDC32(b, c) (cr3tab[((int)c ^ b) & 0xff] ^ ((c >> 8) & 0x00FFFFFF))
 
-unsigned long nk_crc32le_update(unsigned long accu, unsigned char byte)
+uint32_t nk_crc32le_update(uint32_t accu, uint8_t byte)
 {
 	return ((accu >> 8) & 0x00FFFFFF) ^ crctab_le[(accu ^ byte) & 0xFF];
 }
 
-unsigned long nk_crc32le_check(unsigned char *start, unsigned long size)
+uint32_t nk_crc32le_check(uint8_t *start, size_t size)
 {
-	unsigned int crc = 0;
-	unsigned long x;
+	uint32_t crc = 0;
+	size_t x;
 	for (x = 0; x != size; ++x)
 		crc = nk_crc32le_update(crc, start[x]);
 	return crc;
@@ -198,16 +201,16 @@ unsigned long nk_crc32le_check(unsigned char *start, unsigned long size)
 
 // Big endian version: append crc to data, most significant byte first.  CRC of result will be zero.
 
-unsigned short nk_crc16be_update(unsigned short crc, unsigned char ch)
+uint16_t nk_crc16be_update(uint16_t crc, uint8_t ch)
 {
-    unsigned char x = (unsigned char)((crc >> 8) ^ ch);
+    uint8_t x = (uint8_t)((crc >> 8) ^ ch);
     x ^= (x >> 4);
-    return (unsigned short)((crc << 8) ^ (x << 12) ^ (x << 5) ^ x);
+    return (uint16_t)((crc << 8) ^ (x << 12) ^ (x << 5) ^ x);
 }
 
-unsigned short nk_crc16be_check(const unsigned char* data_p, unsigned long length)
+uint16_t nk_crc16be_check(const uint8_t *data_p, size_t length)
 {
-    unsigned short crc = 0x0000;
+    uint16_t crc = 0x0000;
 
     while (length--)
     {
@@ -220,16 +223,16 @@ unsigned short nk_crc16be_check(const unsigned char* data_p, unsigned long lengt
 
 // Little endian version: append crc to data, least significant byte first.  CRC of result will be zero.
 
-unsigned short nk_crc16le_update(unsigned short crc, unsigned char ch)
+uint16_t nk_crc16le_update(uint16_t crc, uint8_t ch)
 {
-    unsigned char e = (unsigned char)(crc ^ ch);
-    unsigned char f = (unsigned char)(e ^ (e << 4));
-    return (unsigned short)((crc >> 8) ^ (f << 8) ^ (f << 3) ^ (f >> 4));
+    uint8_t e = (uint8_t)(crc ^ ch);
+    uint8_t f = (uint8_t)(e ^ (e << 4));
+    return (uint16_t)((crc >> 8) ^ (f << 8) ^ (f << 3) ^ (f >> 4));
 }
 
-unsigned short nk_crc16le_check(const unsigned char* data_p, unsigned long length)
+uint16_t nk_crc16le_check(const uint8_t* data_p, size_t length)
 {
-    unsigned short crc = 0x0000;
+    uint16_t crc = 0x0000;
 
     while (length--)
     {
@@ -247,13 +250,16 @@ unsigned short nk_crc16le_check(const unsigned char* data_p, unsigned long lengt
 //#define CRC_UPDATE nk_crc_update
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <inttypes.h>
 
 int main(int argc, char *argv[])
 {
     FILE *f;
-    unsigned int accu = 0;
+    uint32_t accu = 0;
     int total = 0;
-    unsigned char buf[1024];
+    uint8_t buf[1024];
     if (!argv[1]) {
         printf("Missing file name\n");
         return -1;
@@ -277,7 +283,7 @@ int main(int argc, char *argv[])
      }
      fclose(f);
      printf("Size is %d bytes\n", total);
-     printf("CRC is %x\n", accu);
+     printf("CRC is %"PRIx32"\n", accu);
 }
 
 #endif
@@ -286,14 +292,14 @@ int main(int argc, char *argv[])
 
 #include <stdio.h>
 
-unsigned int table[256];
+uint32_t table[256];
 
 // Fast way to make table
 
 void make_table()
 {
 	int i;
-	unsigned int crc = 0x80000000;
+	uint32_t crc = 0x80000000;
 	table[0] = 0;
 	for (i = 1; i != 512; i <<= 1)
 	{

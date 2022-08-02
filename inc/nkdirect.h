@@ -40,9 +40,9 @@ typedef struct {
     const void *info; // First arg to flash access functions
     // Flash access functions
     // These should all return 0 for success
-    int (* const flash_read)(const void *info, uint32_t addr, uint8_t *buf, uint32_t size);
+    int (* const flash_read)(const void *info, uint32_t addr, uint8_t *buf, size_t size);
     int (* const flash_erase)(const void *info, uint32_t addr, uint32_t size); // NULL for no erase
-    int (* const flash_write)(const void *info, uint32_t addr, const uint8_t *buf, uint32_t size);
+    int (* const flash_write)(const void *info, uint32_t addr, const uint8_t *buf, size_t size);
     const size_t granularity;
 } nk_direct_base_t;
 
@@ -67,6 +67,6 @@ int nk_direct_write(nk_direct_t *ptr, const unsigned char *buffer, size_t len);
 int nk_direct_write_close(nk_direct_t *var_file);
 
 // For nkinfile_t: read a block from the file
-size_t nk_direct_read(nk_direct_t *ptr, size_t offset, unsigned char *buffer, size_t block_size);
+size_t nk_direct_read(nk_direct_t *ptr, uint32_t offset, unsigned char *buffer, size_t block_size);
 
 #endif

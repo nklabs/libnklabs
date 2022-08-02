@@ -166,7 +166,7 @@ static int ymodem_prepare_next(nkinfile_t *file)
 
 static void ymodem_send_block()
 {
-    int x;
+    size_t x;
     for (x = 0; x != ymodem_send_block_size; ++x)
         nk_putc(packet_buf[x]);
 }
@@ -528,10 +528,10 @@ int ymodem_rcv(const unsigned char *rcvbuf, size_t len)
                 ymodem_opened = 1;
                 ymodem_xmodem = 1; // Xmodem mode
                 ymodem_first = 0;
-                uint32_t this_size = 128;
+                unsigned int this_size = 128;
                 if (this_size > ymodem_file_size)
                 {
-                    this_size = ymodem_file_size;
+                    this_size = (unsigned int)ymodem_file_size;
                     ymodem_file_size = 0;
                 }
                 else
@@ -628,13 +628,13 @@ int ymodem_rcv(const unsigned char *rcvbuf, size_t len)
                 // Good receive data
                 //uint32_t this_size = (rcvbuf[0] == NK_YM_SOH ? 128 : 1024);
 #ifdef NK_YM_NOCRC
-                uint32_t this_size = len - 4;
+                unsigned int this_size = (unsigned int)len - 4;
 #else
-                uint32_t this_size = len - 5;
+                unsigned int this_size = (unsigned int)len - 5;
 #endif
                 if (this_size > ymodem_file_size)
                 {
-                    this_size = ymodem_file_size;
+                    this_size = (unsigned int)ymodem_file_size;
                     ymodem_file_size = 0;
                 }
                 else
