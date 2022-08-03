@@ -40,8 +40,8 @@ void *waiting_rx_task_data;
 
 void nk_set_uart_callback(int tid, void (*func)(void *data), void *data)
 {
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
         if (nk_kbhit()) {
         	nk_sched(tid, func, data, 0, "UART ISR");
 		waiting_rx_task = 0;

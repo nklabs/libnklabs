@@ -243,7 +243,7 @@ int flash_write(uint32_t address, uint64_t data)
 	return -1;
 }
 
-int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, size_t byte_count)
 {
 	int rtn = 0; // Assume success
 	(void)info;
@@ -283,7 +283,7 @@ int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, u
 	return rtn;
 }
 
-int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, size_t byte_count)
 {
 	(void)info;
 	// Flash is memory mapped

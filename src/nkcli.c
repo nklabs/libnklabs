@@ -303,7 +303,6 @@ void nk_init_cli()
 	// In theory this could be done by modifying the .elf file after
 	// compiling- then command table would not use RAM.  But then we
 	// have to write a special tool..
-	nk_printf("Sort\n");
 #if 0
 	// Sort command table
         qsort(
@@ -328,7 +327,6 @@ void nk_init_cli()
             }
         } while (work);
 #endif
-	nk_printf("Done\n");
 	// Delay it until startup is completely done
 	nk_cli_tid = nk_alloc_tid();
 	nk_sched(nk_cli_tid, (void (*)(void *))handle_cmd, NULL, 0, "CLI start");

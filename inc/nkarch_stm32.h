@@ -35,7 +35,7 @@ typedef unsigned long nk_irq_flag_t;
 #define SPIN_LOCK_UNLOCKED 0
 
 // Restore interrupt enable flag
-inline __attribute__((always_inline)) void nk_irq_unlock(nk_spinlock_t *lock, nk_irq_flag_t flags)
+static inline __attribute__((always_inline)) void nk_irq_unlock(nk_spinlock_t *lock, nk_irq_flag_t flags)
 {
     (void)lock;
     if (flags)
@@ -43,7 +43,7 @@ inline __attribute__((always_inline)) void nk_irq_unlock(nk_spinlock_t *lock, nk
 }
 
 // Try to sleep, then restore interrupt enable flag
-inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spinlock_t *lock, nk_irq_flag_t flags, int deepness)
+static inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spinlock_t *lock, nk_irq_flag_t flags, int deepness)
 {
     switch (deepness) {
         case 1: {
@@ -63,7 +63,7 @@ inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spinlock_t 
 // Save interrupt enable flag and disable all interrupts
 // Acquire spinlock on multi-core systems
 
-inline __attribute__((always_inline)) nk_irq_flag_t nk_irq_lock(nk_spinlock_t *lock)
+static inline __attribute__((always_inline)) nk_irq_flag_t nk_irq_lock(nk_spinlock_t *lock)
 {
     (void)lock;
     nk_irq_flag_t flags = !(1 & __get_PRIMASK());
