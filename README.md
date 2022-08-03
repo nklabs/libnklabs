@@ -4,8 +4,8 @@ See: [https://www.nklabs.com/](https://www.nklabs.com/)
 
 # NK Labs common library
 
-This is our library for very quickly making products based on common 32-bit
-and 64-bit microcontrollers.  It is a layer added on top of the MCU vendor's
+This is our library for very quickly making products based on common 8-bit -
+64-bit microcontrollers.  It is a layer added on top of the MCU vendor's
 library that provides features required for almost every product.  It
 provides these features:
 
