@@ -351,6 +351,35 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 					len = strlen(s);
 					goto emits;
 					break;
+#ifdef NK_PSTR
+				} case 'S': { // AVR String located in flash memory
+					const NK_FLASH char *S = va_arg(ap, char *);
+					len = strlen_P(S);
+					if (minus) { // Left justify
+						/* Emit string */
+						while (len--) {
+							status |= nk_fputc(f, *S++);
+							if (width)
+								--width;
+						}
+						/* Padding: always space for left justified */
+						while (width) {
+							status |= nk_fputc(f, ' ');
+							--width;
+						}
+					} else { // Right justify
+						/* Padding */
+						while (width > len) {
+							status |= nk_fputc(f, pad);
+							--width;
+						}
+						/* Emit string */
+						while (len--) {
+							status |= nk_fputc(f, *S++);
+						}
+					}
+					break;
+#endif
 				} case '_': { // Nothing: use with %*_ to print N spaces
 					s = "";
 					len = 0;

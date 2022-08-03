@@ -370,7 +370,9 @@ static void prompt_task(void *data)
 				}
 				hist_idx = hist_end;
 				to_end();
-				nk_puts("^C\n");
+				nk_putc('^');
+				nk_putc('C');
+				nk_putc('\n');
 				nk_puts(console_prompt); // Reprint prompt
 				tty_len = 0;
 				tty_cur = 0;
@@ -393,7 +395,7 @@ static void prompt_task(void *data)
 					hist_ins(tty_buf);
 				}
 				hist_idx = hist_end;
-				nk_puts("\n");
+				nk_putc('\n');
 				changed = 0;
 				console_callback(tty_buf);
 				break;

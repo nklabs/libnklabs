@@ -28,6 +28,8 @@
 #include "nkprintf.h"
 #include "nkarch.h" // For NK_FLASH
 
+#define NK_MAX_CMD_LEN 16
+
 // Command table entry
 
 struct console_cmd {

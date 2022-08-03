@@ -51,9 +51,9 @@ static struct item {
 	void (*func)(void *data);
 	void *data;
 	nk_time_t when; // Time in timer ticks
-	const char *comment;
-	const char *name;
-	const char *by;
+	const NK_FLASH char *comment;
+	const NK_FLASH char *name;
+	const NK_FLASH char *by;
 } queue[NK_WORK_QUEUE_SIZE];
 
 static struct item *freelist;
@@ -93,7 +93,7 @@ static int queue_not_empty()
 }
 
 // delay in milliseconds
-int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const char *name, const char *by, const char *comment)
+int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const NK_FLASH char *name, const NK_FLASH char *by, const NK_FLASH char *comment)
 {
 	struct item *item;
 	nk_irq_flag_t irq_flag;
@@ -251,7 +251,11 @@ static int cmd_work(nkinfile_t *args)
 		if (queue->next != queue) {
 			for (i = queue->next; i != queue; i = i->next) {
 				/* Note that on ARM, address will be odd, due to thumb mode bit being set */
+#ifdef NK_PSTR
+				nk_printf(" \"%S\": tid=%d func=%S(0x%p) data=0x%p when=%lu [submitted by %S]\n", i->comment, i->tid, i->name, i->func, i->data, i->when, i->by);
+#else
 				nk_printf(" \"%s\": tid=%d func=%s(0x%p) data=0x%p when=%lu [submitted by %s]\n", i->comment, i->tid, i->name, i->func, i->data, i->when, i->by);
+#endif
 			}
 		}
 		nk_irq_unlock(&sched_lock, irq_flag);

@@ -199,7 +199,7 @@ static int cmd_help(nkinfile_t *args)
         }
     } else if (nk_fscan(args, "%w ", buf, sizeof(buf))) {
         if (nk_help(buf))
-            nk_puts("Unknown command\n");
+            nk_printf("Unknown command\n");
     } else if (nk_fscan(args, "")) {
         nk_printf("help <name> for help with a specific command\n\n");
         nk_printf("Available commands:\n\n");
@@ -211,7 +211,7 @@ static int cmd_help(nkinfile_t *args)
             }
         }
     } else {
-        nk_puts("Syntax error\n");
+        nk_printf("Syntax error\n");
     }
     return 0;
 }
@@ -219,7 +219,7 @@ static int cmd_help(nkinfile_t *args)
 static void process_cmd(char *pCmd)
 {
     int	rtn = 0;
-    char cmd[80];
+    char cmd[NK_MAX_CMD_LEN];
     nkinfile_t f[1];
     nkinfile_open_string(f, pCmd);
 
