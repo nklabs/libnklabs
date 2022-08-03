@@ -130,9 +130,14 @@ by eliminating unused code.
 
 # Example applications
 
-Example applications can be found in a different repository, here:
+Example applications for STM32 and ATSAM can be found in a different
+repository, here:
 
 [libnklabs-examples](https://github.com/nklabs/libnklabs-examples)
+
+An example application for AVR can be found here:
+
+[libnklabs-avr](https://github.com/nklabs/libnklabs-avr)
 
 ### Unit tests
 
