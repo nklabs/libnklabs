@@ -112,7 +112,7 @@ struct nk_yrecv_struct
     // The writing will be limited to the exact file size, if it is given in the ymodem filename header
     // Otherwise all 128 or 1024 byte blocks are written.
 
-    void (*write)(unsigned char *buffer, size_t len);
+    void (*write)(const unsigned char *buffer, size_t len);
 
     // Called by ymodem_rcv to close receive file after it has been transferred.
     // Do not print, ymodem protocol still in control.
@@ -152,7 +152,7 @@ enum {
 
 // Processed some received data
 
-int ymodem_rcv(unsigned char *rcvbuf, size_t len);
+int ymodem_rcv(const unsigned char *rcvbuf, size_t len);
 
 //
 // Receive and process a file

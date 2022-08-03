@@ -39,6 +39,7 @@
 
 #include <stdio.h> // For sprintf
 #include <string.h>
+#include <inttypes.h>
 #include "nkscan.h"
 #include "nkprintf.h"
 #include "nkcrclib.h"
@@ -90,7 +91,7 @@ int nk_dbase_save(
         return -1;
     }
 
-    nk_printf("  size = %lu\n", ofilt.size);
+    nk_printf("  size = %"PRIu32"\n", ofilt.size);
     nk_printf("  rev = %d\n", 1 + *rev);
 
     // Only bump rev if we are successful

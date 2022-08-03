@@ -20,13 +20,14 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
+#include <stdbool.h>
 #include "nksched.h"
 #include "nkreadline.h"
 #include "nkcli.h"
 
 int nk_cli_tid;
-int facmode = 1; // Set if we are in factory mode
-int cli_disabled = 0;
+bool facmode = 1; // Set if we are in factory mode
+bool cli_disabled = 0;
 
 // Command table
 
@@ -42,9 +43,9 @@ COMMAND(cmd_help,
 extern unsigned char __start_COMMAND_TABLE;
 extern unsigned char __stop_COMMAND_TABLE;
 
-static int name_match(const char *table, const char *cmd, size_t partial, int allow_hidden)
+static int name_match(const NK_FLASH char *table, const char *cmd, size_t partial, int allow_hidden)
 {
-    if (table[0] == '>' || allow_hidden)
+    if (*table == '>' || allow_hidden)
     {
         int x;
         ++table;
@@ -111,29 +112,46 @@ int nk_complete(const char *s, int list_flag)
     }
 }
 
-static const char *print_help(const char *s)
+static const NK_FLASH char *print_help(const NK_FLASH char *s)
 {
+    char c;
     ++s;
-    while (*s && (*s != '\n'))
-        nk_putc(*s++);
+    for (;;)
+    {
+        c = *s;;
+        if (c && c != '\n')
+        {
+            nk_putc(c);
+            ++s;
+        }
+        else
+            break;
+    }
     nk_putc('\n');
-    if (*s == '\n')
+    if (c == '\n')
         s++;
     return s;
 }
 
-static const char *skip_help(const char *s)
+static const NK_FLASH char *skip_help(const NK_FLASH char *s)
 {
-    while (*s && (*s != '\n'))
-        s++;
-    if (*s == '\n')
+    char c;
+    for (;;)
+    {
+        c = *s;
+        if (c && c != '\n')
+            ++s;
+        else
+            break;
+    }
+    if (c == '\n')
         s++;
     return s;
 }
 
 // Print detailed help for a specific command by index
 
-static void specific_help(const char *t)
+static void specific_help(const NK_FLASH char *t)
 {
     while (*t) {
         if (facmode || *t != '!')
@@ -181,7 +199,7 @@ static int cmd_help(nkinfile_t *args)
         }
     } else if (nk_fscan(args, "%w ", buf, sizeof(buf))) {
         if (nk_help(buf))
-            nk_puts("Unknown command\n");
+            nk_printf("Unknown command\n");
     } else if (nk_fscan(args, "")) {
         nk_printf("help <name> for help with a specific command\n\n");
         nk_printf("Available commands:\n\n");
@@ -193,7 +211,7 @@ static int cmd_help(nkinfile_t *args)
             }
         }
     } else {
-        nk_puts("Syntax error\n");
+        nk_printf("Syntax error\n");
     }
     return 0;
 }
@@ -201,7 +219,7 @@ static int cmd_help(nkinfile_t *args)
 static void process_cmd(char *pCmd)
 {
     int	rtn = 0;
-    char cmd[80];
+    char cmd[NK_MAX_CMD_LEN];
     nkinfile_t f[1];
     nkinfile_open_string(f, pCmd);
 
@@ -264,6 +282,20 @@ static int cmd_compare(const void *a, const void *b)
 }
 #endif
 
+static int strcmp_PP(const NK_FLASH char *a, const NK_FLASH char * b)
+{
+	while (*a && *b && *a == *b) {
+		++a;
+		++b;
+	}
+	if (*a > *b)
+		return 1;
+	else if (*a < *b)
+		return -1;
+	else
+		return 0;
+}
+
 void nk_init_cli()
 {
 	nk_startup_message("Command Line Interface\n");
@@ -282,12 +314,12 @@ void nk_init_cli()
         );
 #else
         // Use bubble sort to save space
-        int work;
+        bool work;
         do {
             struct console_cmd *x;
             work = 0;
             for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x + 1 < (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
-                if (strcmp(x->text, (x + 1)->text) > 0) {
+                if (strcmp_PP(x->text, (x + 1)->text) > 0) {
                     struct console_cmd tmp = *x;
                     *x = *(x + 1);
                     *(x + 1) = tmp;

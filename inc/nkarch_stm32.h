@@ -25,40 +25,51 @@
 // GPIO pins and devices, also includes stm32g0xx_hal.h
 #include "main.h"
 
+// This is not AVR..
+#define NK_FLASH
+
 // Borrow Linux kernel lock syntax
 
-typedef int spinlock_t;
+typedef int nk_spinlock_t;
+typedef unsigned long nk_irq_flag_t;
 #define SPIN_LOCK_UNLOCKED 0
 
 // Restore interrupt enable flag
-#define nk_irq_unlock(lock, flags) \
-    do { \
-        if (flags) \
-            __enable_irq(); \
-    } while (0);
+inline __attribute__((always_inline)) void nk_irq_unlock(nk_spinlock_t *lock, nk_irq_flag_t flags)
+{
+    (void)lock;
+    if (flags)
+        __enable_irq();
+}
 
-// Save interrupt enable flag and disable interrupts
-#define nk_irq_lock(lock, flags) \
-    do { \
-        flags = !(1 & __get_PRIMASK()); \
-        __disable_irq(); \
-    } while (0);
+// Try to sleep, then restore interrupt enable flag
+inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spinlock_t *lock, nk_irq_flag_t flags, int deepness)
+{
+    switch (deepness) {
+        case 1: {
+            HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+            nk_irq_unlock(lock, flags);
+        } case 2: {
+            HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+            nk_irq_unlock(lock, flags);
+        } default: {
+            nk_irq_unlock(lock, flags);
+            break;
+        }
+    }
+}
 
-#define nk_irq_unlock_and_wait(lock, flags, deepness) \
-    do { \
-        switch (deepness) { \
-            case 1: { \
-                HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI); \
-                nk_irq_unlock(lock, flags); \
-            } case 2: { \
-                HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI); \
-                nk_irq_unlock(lock, flags); \
-            } default: { \
-                nk_irq_unlock(lock, flags); \
-                break; \
-            } \
-        } \
-    } while (0);
+
+// Save interrupt enable flag and disable all interrupts
+// Acquire spinlock on multi-core systems
+
+inline __attribute__((always_inline)) nk_irq_flag_t nk_irq_lock(nk_spinlock_t *lock)
+{
+    (void)lock;
+    nk_irq_flag_t flags = !(1 & __get_PRIMASK());
+    __disable_irq();
+    return flags;
+}
 
 // Scheduler timer
 
@@ -117,6 +128,6 @@ const char *reset_cause_get_name(reset_cause_t reset_cause);
 #define NK_FLASH_BASE_ADDRESS 0x8000000
 
 // Reboot MCU
-void reboot(void);
+void nk_reboot(void);
 
 #endif

@@ -36,14 +36,14 @@ int nk_direct_read_open(nk_direct_t *var_file, const nk_direct_base_t *file, uns
 }
 
 // For nkinfile_t: read a block from the file
-size_t nk_direct_read(nk_direct_t *var_file, size_t offset, unsigned char *buffer, size_t buf_size)
+size_t nk_direct_read(nk_direct_t *var_file, uint32_t offset, unsigned char *buffer, size_t buf_size)
 {
     int rtn;
-    uint32_t len;
+    size_t len;
     const nk_direct_base_t *file = var_file->file;
     len = buf_size;
     if (offset + len > var_file->size)
-        len = var_file->size - offset;
+        len = (size_t)(var_file->size - offset);
     if (len) {
         rtn = file->flash_read(file->info, file->area_base + offset, buffer, len);
         if (rtn)
@@ -68,7 +68,7 @@ int nk_direct_write(nk_direct_t *var_file, const unsigned char *buffer, size_t l
 {
     int rtn = 0;
     const nk_direct_base_t *file = var_file->file;
-    uint32_t x;
+    size_t x;
 
     // Update CRC
     for (x = 0; x != len; ++x)
@@ -83,7 +83,7 @@ int nk_direct_write(nk_direct_t *var_file, const unsigned char *buffer, size_t l
     // Write a page at a time
     while (len) {
         uint32_t page_offset = (address & (file->erase_size - 1)); // Starting offset within page
-	uint32_t page_len = file->erase_size - page_offset; // Up to one page
+	size_t page_len = (size_t)(file->erase_size - page_offset); // Up to one page
 	if (len < page_len)
 	    page_len = len;
         if (file->flash_erase && ((address & (file->erase_size - 1)) == 0)) {

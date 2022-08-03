@@ -281,7 +281,7 @@ int nk_fscan_double(nkinfile_t *f, double *val)
 // Return true for success, ptr updated
 // Return false for syntax error, ptr not updated
 
-static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap)
+static int __nk_vscan(int ignore_case, nkinfile_t *f, const NK_FLASH char *fmt, va_list ap)
 {
 	int status = 0;
 	size_t orgpos = nk_ftell(f);
@@ -354,7 +354,7 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 					uint64_t val;
 					arg = (void *)va_arg(ap, void *);
 					if (nk_fscan_hex(f, &val, width)) {
-						*(void **)arg = (void *)(unsigned long)val;
+						*(void **)arg = (void *)(uintptr_t)val;
 					} else {
 						goto bye;
 					}
@@ -417,7 +417,7 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 			}
 		} else if (ignore_case) {
 			// Case ignoring literal character match
-			if (nk_tolower(nk_fpeek(f)) != nk_tolower(*(const unsigned char *)fmt)) {
+			if (nk_tolower(nk_fpeek(f)) != nk_tolower(*(const NK_FLASH unsigned char *)fmt)) {
 				goto bye;
 			} else {
 				nk_fnext_fast(f);
@@ -426,7 +426,7 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 		} else {
 			// Literal character match
 			lit:
-			if (nk_fpeek(f) != *(const unsigned char *)fmt) {
+			if (nk_fpeek(f) != *(const NK_FLASH unsigned char *)fmt) {
 				goto bye;
 			} else {
 				nk_fnext_fast(f);
@@ -450,32 +450,32 @@ static int _nk_vscan(int ignore_case, nkinfile_t *f, const char *fmt, va_list ap
 	return status;
 }
 
-int nk_vscan(nkinfile_t *f, const char *fmt, va_list ap)
+int _nk_vscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap)
 {
-	return _nk_vscan(0, f, fmt, ap);
+	return __nk_vscan(0, f, fmt, ap);
 }
 
-int nk_viscan(nkinfile_t *f, const char *fmt, va_list ap)
+int _nk_viscan(nkinfile_t *f, const NK_FLASH char *fmt, va_list ap)
 {
-	return _nk_vscan(1, f, fmt, ap);
+	return __nk_vscan(1, f, fmt, ap);
 }
 
-int nk_fscan(nkinfile_t *f, const char *fmt, ...)
+int _nk_fscan(nkinfile_t *f, const NK_FLASH char *fmt, ...)
 {
 	int status;
 	va_list ap;
 	va_start (ap, fmt);
-	status = nk_vscan(f, fmt, ap);
+	status = _nk_vscan(f, fmt, ap);
 	va_end(ap);
 	return status;
 }
 
-int nk_fiscan(nkinfile_t *f, const char *fmt, ...)
+int _nk_fiscan(nkinfile_t *f, const NK_FLASH char *fmt, ...)
 {
 	int status;
 	va_list ap;
 	va_start (ap, fmt);
-	status = nk_viscan(f, fmt, ap);
+	status = _nk_viscan(f, fmt, ap);
 	va_end(ap);
 	return status;
 }

@@ -29,6 +29,7 @@
 #include "nkoutfile.h"
 #include "nkinfile.h"
 #include "nkmacros.h"
+#include "nkarch.h" // For NK_FLASH
 
 // Config options
 
@@ -58,24 +59,61 @@ int nk_indent(int ind);
 //
 //  v prints an nkdbase in serialized format, for example:   nk_printf("%v", type, location);
 
-int nk_vprintf(nkoutfile_t *f, const char *fmt, va_list ap);
+#ifdef NK_PSTR
+// Adorn format strings with PSTR() for AVR
+// Note that format string type checking is disabled for this case
 
-int nk_fprintf(nkoutfile_t *f, const char *fmt, ...) __attribute__((__format__ (__printf__, 2, 3)));
+int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_vprintf(a, b, ...) _nk_vprintf((a), PSTR(b), ##__VA_ARGS__)
+
+int _nk_fprintf(nkoutfile_t *f, const NK_FLASH char *fmt, ...);// __attribute__((__format__ (__printf__, 2, 3)));
+#define nk_fprintf(a, b, ...) _nk_fprintf((a), PSTR(b), ##__VA_ARGS__)
 
 // print to console
 // Output goes to NKPRINTF_PUTC from nkprintf_config.h
 
-void nk_printf(const char *fmt,...) __attribute__((__format__ (__printf__, 1, 2)));
+void _nk_printf(const NK_FLASH char *fmt,...);// __attribute__((__format__ (__printf__, 1, 2)));
+#define nk_printf(a, ...) _nk_printf(PSTR(a), ##__VA_ARGS__)
 
 // print to string, string will always be NUL terminated
 // Returns -1 if string overflowed, 0 otherwise
 
-int nk_snprintf(char *dest, size_t len, const char *fmt,...) __attribute__((__format__ (__printf__, 3, 4)));
+int _nk_snprintf(char *dest, size_t len, const NK_FLASH char *fmt,...);// __attribute__((__format__ (__printf__, 3, 4)));
+#define nk_snprintf(a, b, c, ...) _nk_snprintf((a), (b), PSTR(c), ##__VA_ARGS__)
 
 // print to field, field will be space filled
 // Returns -1 if string overflowed, 0 otherwise
 
-int nk_sfprintf(char *dest, size_t len, const char *fmt,...) __attribute__((__format__ (__printf__, 3, 4)));
+int _nk_sfprintf(char *dest, size_t len, const NK_FLASH char *fmt,...);// __attribute__((__format__ (__printf__, 3, 4)));
+#define nk_sfprintf(a, b, c, ...) _nk_sfprintf((a), (b), PSTR(c), ##__VA_ARGS__)
+
+#else
+
+int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap);
+#define nk_vprintf(a, b, ...) _nk_vprintf((a), (b), ##__VA_ARGS__)
+
+int _nk_fprintf(nkoutfile_t *f, const NK_FLASH char *fmt, ...) __attribute__((__format__ (__printf__, 2, 3)));
+#define nk_fprintf(a, b, ...) _nk_fprintf((a), (b), ##__VA_ARGS__)
+
+// print to console
+// Output goes to NKPRINTF_PUTC from nkprintf_config.h
+
+void _nk_printf(const NK_FLASH char *fmt,...) __attribute__((__format__ (__printf__, 1, 2)));
+#define nk_printf(a, ...) _nk_printf((a), ##__VA_ARGS__)
+
+// print to string, string will always be NUL terminated
+// Returns -1 if string overflowed, 0 otherwise
+
+int _nk_snprintf(char *dest, size_t len, const NK_FLASH char *fmt,...) __attribute__((__format__ (__printf__, 3, 4)));
+#define nk_snprintf(a, b, c, ...) _nk_snprintf((a), (b), (c), ##__VA_ARGS__)
+
+// print to field, field will be space filled
+// Returns -1 if string overflowed, 0 otherwise
+
+int _nk_sfprintf(char *dest, size_t len, const NK_FLASH char *fmt,...) __attribute__((__format__ (__printf__, 3, 4)));
+#define nk_sfprintf(a, b, c, ...) _nk_sfprintf((a), (b), (c), ##__VA_ARGS__)
+
+#endif
 
 extern nkoutfile_t *nkstdout;
 extern nkoutfile_t *nkstderr;

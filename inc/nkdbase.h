@@ -36,7 +36,7 @@ struct nk_dbase {
 	nk_checked_base_t bank0;
 	nk_checked_base_t bank1;
 	unsigned char * const buf; // Transfer buffer for flash memory: this is used for flash_read and flash_write
-	const uint32_t buf_size; // Size of above buffer
+	const size_t buf_size; // Size of above buffer
 	// Flash write granularity
 	//  flash_writes are padded to a multiple of this size
 	//  flash_granularity must be a power of 2 (including 2^0 == 1)

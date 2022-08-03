@@ -27,7 +27,7 @@
 #include "nksched.h"
 
 
-spinlock_t sched_lock = SPIN_LOCK_UNLOCKED;
+nk_spinlock_t sched_lock = SPIN_LOCK_UNLOCKED;
 
 static int current_tid;
 
@@ -51,9 +51,9 @@ static struct item {
 	void (*func)(void *data);
 	void *data;
 	nk_time_t when; // Time in timer ticks
-	const char *comment;
-	const char *name;
-	const char *by;
+	const NK_FLASH char *comment;
+	const NK_FLASH char *name;
+	const NK_FLASH char *by;
 } queue[NK_WORK_QUEUE_SIZE];
 
 static struct item *freelist;
@@ -93,16 +93,16 @@ static int queue_not_empty()
 }
 
 // delay in milliseconds
-int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const char *name, const char *by, const char *comment)
+int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const NK_FLASH char *name, const NK_FLASH char *by, const NK_FLASH char *comment)
 {
 	struct item *item;
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	int rtn = 0;
 
 	// Convert delay in milliseconds to ticks
 	delay = nk_convert_delay(delay);
 
-	nk_irq_lock(&sched_lock, irq_flag);
+	irq_flag = nk_irq_lock(&sched_lock);
 
 	// Maybe this function is already queued.. if so reschedule
 	for (item = queue->next; item != queue; item = item->next)
@@ -141,13 +141,13 @@ int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, con
 int nk_resched(int tid, void (*func)(void *data), void *data, uint32_t delay)
 {
 	struct item *item;
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	int rtn = 0;
 
 	// Convert delay in milliseconds to ticks
 	delay = nk_convert_delay(delay);
 
-	nk_irq_lock(&sched_lock, irq_flag);
+	irq_flag = nk_irq_lock(&sched_lock);
 
 	// Look for tiem
 	for (item = queue->next; item != queue; item = item->next)
@@ -176,10 +176,10 @@ int nk_resched(int tid, void (*func)(void *data), void *data, uint32_t delay)
 int nk_unsched(int tid)
 {
 	struct item *item;
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	int rtn = 0;
 
-	nk_irq_lock(&sched_lock, irq_flag);
+	irq_flag = nk_irq_lock(&sched_lock);
 
 	// Look for item
 	for (item = queue->next; item != queue; item = item->next)
@@ -201,10 +201,10 @@ int nk_unsched(int tid)
 int nk_check(int tid)
 {
 	struct item *item;
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	int rtn = 0;
 
-	nk_irq_lock(&sched_lock, irq_flag);
+	irq_flag = nk_irq_lock(&sched_lock);
 
 	// Look for item
 	for (item = queue->next; item != queue; item = item->next)
@@ -242,16 +242,20 @@ int test_tid;
 
 static int cmd_work(nkinfile_t *args)
 {
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	struct item *i;
 	if (nk_fscan(args, "")) {
 		nk_printf("Current time = %lu\n", nk_get_time());
 		nk_printf("Pending tasks:\n");
-		nk_irq_lock(&sched_lock, irq_flag);
+		irq_flag = nk_irq_lock(&sched_lock);
 		if (queue->next != queue) {
 			for (i = queue->next; i != queue; i = i->next) {
-				/* Note that address will be odd, due to thumb mode bit being set */
-				nk_printf(" \"%s\": tid=%d func=%s(0x%lx) data=0x%p when=%lu [submitted by %s]\n", i->comment, i->tid, i->name, (0xFFFFFFFE & (uint32_t)i->func), i->data, i->when, i->by);
+				/* Note that on ARM, address will be odd, due to thumb mode bit being set */
+#ifdef NK_PSTR
+				nk_printf(" \"%S\": tid=%d func=%S(0x%p) data=0x%p when=%lu [submitted by %S]\n", i->comment, i->tid, i->name, i->func, i->data, i->when, i->by);
+#else
+				nk_printf(" \"%s\": tid=%d func=%s(0x%p) data=0x%p when=%lu [submitted by %s]\n", i->comment, i->tid, i->name, i->func, i->data, i->when, i->by);
+#endif
 			}
 		}
 		nk_irq_unlock(&sched_lock, irq_flag);
@@ -310,12 +314,12 @@ COMMAND(cmd_power,
 
 void nk_sched_loop()
 {
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 
 	nk_startup_message("Begin main loop\n");
 
 	for (;;) {
-		nk_irq_lock(&sched_lock, irq_flag);
+		irq_flag = nk_irq_lock(&sched_lock);
 		// Execute pending work
 		if (queue_not_empty() && (int32_t)(nk_get_time() - queue->next->when) >= 0)
 		{

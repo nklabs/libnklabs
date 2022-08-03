@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "nkuart.h"
 #include "nkcli.h"
 #include "nkreadline.h"
@@ -34,7 +35,7 @@ const char *console_prompt;
 static char tty_buf[NKREADLINE_LINE_SIZE];
 static size_t tty_len;
 static size_t tty_cur;
-static uint8_t changed; // Set if buffer has been edited
+static bool changed; // Set if buffer has been edited
 
 // History buffer
 
@@ -369,7 +370,9 @@ static void prompt_task(void *data)
 				}
 				hist_idx = hist_end;
 				to_end();
-				nk_puts("^C\n");
+				nk_putc('^');
+				nk_putc('C');
+				nk_putc('\n');
 				nk_puts(console_prompt); // Reprint prompt
 				tty_len = 0;
 				tty_cur = 0;
@@ -392,7 +395,7 @@ static void prompt_task(void *data)
 					hist_ins(tty_buf);
 				}
 				hist_idx = hist_end;
-				nk_puts("\n");
+				nk_putc('\n');
 				changed = 0;
 				console_callback(tty_buf);
 				break;

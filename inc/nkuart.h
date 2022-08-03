@@ -47,7 +47,7 @@ void nk_puts(const char *s);
 // Write data
 void nk_uart_write(const char *s, int len);
 
-extern spinlock_t console_lock;
+extern nk_spinlock_t console_lock;
 
 int nk_set_uart_mode(int new_mode);
 int nk_get_uart_mode();

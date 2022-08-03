@@ -39,10 +39,19 @@
 // Returns 1 if new task was submitted
 // Returns 0 if existing task was rescheduled
 
+#ifdef NK_PSTR
+
+int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const __flash char *name, const __flash char *by, const __flash char *comment);
+
+#define nk_sched(tid, func,data,delay,comment) _nk_sched(tid, func, data, delay, PSTR(#func), PSTR(__FILE__ ":" nk_tostring(__LINE__)), PSTR(comment))
+
+#else
 
 int _nk_sched(int tid, void (*func)(void *data), void *data, uint32_t delay, const char *name, const char *by, const char *comment);
 
 #define nk_sched(tid, func,data,delay,comment) _nk_sched(tid, func, data, delay, #func, __FILE__ ":" nk_tostring(__LINE__), comment)
+
+#endif
 
 // Reschedule an already submitted callback function.  Unlike submit, this does not
 // submit the callback if it does not already exist.
@@ -78,6 +87,6 @@ int nk_alloc_tid();
 int nk_get_sched_sleep_mode();
 int nk_set_sched_sleep_mode(int deepness);
 
-extern spinlock_t sched_lock;
+extern nk_spinlock_t sched_lock;
 
 #endif

@@ -33,7 +33,7 @@ static uint32_t rx_buf_rd;
 static volatile uint32_t rx_buf_wr;
 static int tty_mode;
 
-spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
+nk_spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
 
 // Task to submit when rx data available
 int waiting_rx_tid;
