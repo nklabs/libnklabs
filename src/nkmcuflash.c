@@ -32,9 +32,9 @@ static void flash_hex_dump(uint32_t addr, uint32_t len)
     while(len) {
         uint32_t this_page = (addr & ~255U);
         uint32_t this_ofst = (addr & 255U);
-        uint32_t this_len = 256U - this_ofst;
+        size_t this_len = (size_t)(256U - this_ofst);
         if (this_len > len)
-            this_len = len;
+            this_len = (size_t)len;
 
         nk_mcuflash_read(NULL, this_page + this_ofst, buf + this_ofst, this_len);
         nk_byte_hex_dump(buf, this_page, this_ofst, this_len);
@@ -51,9 +51,9 @@ static uint32_t flash_crc(uint32_t addr, uint32_t len)
     while(len) {
         uint32_t this_page = (addr & ~255U);
         uint32_t this_ofst = (addr & 255U);
-        uint32_t this_len = 256U - this_ofst;
+        size_t this_len = (size_t)(256U - this_ofst);
         if (this_len > len)
-            this_len = len;
+            this_len = (size_t)len;
 
         nk_mcuflash_read(NULL, this_page, buf, this_len);
 
@@ -109,14 +109,14 @@ static int cmd_mcuflash(nkinfile_t *args)
         nk_printf("Writing %lu bytes...\n", len);
     	while (len)
     	{
-    		uint32_t th;
+    		size_t th;
     		int n;
     		for (n = 0; n != 16; ++n)
     			buf[n] = x++;
     		if (len >= 16)
     			th = 16;
 		else
-			th = len;
+			th = (size_t)len;
 		status |= nk_mcuflash_write(NULL, addr, buf, th);
 		if (status)
 			break;
@@ -130,11 +130,11 @@ static int cmd_mcuflash(nkinfile_t *args)
         nk_printf("Writing %lu bytes...\n", len);
     	while (len)
     	{
-    		uint32_t th;
+    		size_t th;
     		if (len >= 16)
     			th = 16;
 		else
-			th = len;
+			th = (size_t)len;
 		status |= nk_mcuflash_write(NULL, addr, buf, th);
 		if (status)
 			break;
