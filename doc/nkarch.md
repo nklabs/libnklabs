@@ -20,7 +20,7 @@ nkarch_config.h includes the correct nkarch_xxx.h for the target device.
 ### nk_irq_lock()
 
 ```c
-void nk_irq_lock(nk_spinlock_t *spinlock, nk_int &flags);
+nk_irq_flag_t nk_irq_lock(nk_spinlock_t *spinlock);
 ```
 
 Lock a spinlock and disable interrupts.  The interrupt flags are stashed
@@ -33,7 +33,7 @@ systems, this just has to disable interrupts.
 ### nk_irq_unlock()
 
 ```c
-void nk_irq_unlock(nk_spinlock_t *spinlock, nk_int flags);
+void nk_irq_unlock(nk_spinlock_t *spinlock, nk_irq_flag_t flags);
 ````
 
 Release a spinlock and restore interrupts.
@@ -51,8 +51,7 @@ nk_spinlock_t list_lock = NK_SPIN_LOCK_UNLOCKED;
 
 int list_push(int i)
 {
-	nk_int_t irq_flag;
-	nk_irq_lock(&list_lock, irq_flag);
+	nk_irq_flag_t irq_flag = nk_irq_lock(&list_lock);
 	int status;
 	if (len != 10) {
 		list[len++] = i;
@@ -67,8 +66,7 @@ int list_push(int i)
 int list_pop(int *val)
 {
 	int status;
-	nk_int_t irq_flag;
-	nk_irq_lock(&list_lock, irq_flag);
+	nk_irq_flag_t irq_flag = nk_irq_lock(&list_lock);
 	if (len) {
 		*val = list[--len];
 		status = 0;
@@ -83,7 +81,7 @@ int list_pop(int *val)
 ### nk_irq_unlock_and_wait()
 
 ```c
-void nk_irq_unlock_and_wait(nk_spinlock_t *spinlock, nk_int_t enable_state, int deepness);
+void nk_irq_unlock_and_wait(nk_spinlock_t *spinlock, nk_irq_flag_t enable_state, int deepness);
 ```
 
 Unlock spinlock, restore interrupts and sleep until there is a pending interrupt.
@@ -309,7 +307,7 @@ Return 0 for success, -1 for error.
 ### nk_mcuflash_write()
 
 ```c
-int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, uint32_t byte_count);
+int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, size_t byte_count);
 ```
 
 Write to flash.  This handles any number for byte_count- it will break up
@@ -323,7 +321,7 @@ Return 0 for success, -1 for error.
 ### nk_mcuflash_read()
 
 ```c
-int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, uint32_t byte_count);
+int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, size_t byte_count);
 ```
 
 Read from flash.  address and byte_count can be any values- the flash memory
