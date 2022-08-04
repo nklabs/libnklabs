@@ -130,12 +130,12 @@ by eliminating unused code.
 
 # Example applications
 
-Example applications for STM32 and ATSAM can be found in a different
-repository, here:
+Example applications for STM32 and ATSAM ARM processors can be found in a
+different repository, here:
 
 [libnklabs-examples](https://github.com/nklabs/libnklabs-examples)
 
-An example application for AVR can be found here:
+An example application for Atmel 8-bit AVR MCUs can be found here:
 
 [libnklabs-avr](https://github.com/nklabs/libnklabs-avr)
 
