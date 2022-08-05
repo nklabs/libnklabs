@@ -139,6 +139,10 @@ An example application for Atmel 8-bit AVR MCUs can be found here:
 
 [libnklabs-avr](https://github.com/nklabs/libnklabs-avr)
 
+An example application for RISC-V running on an FPGA can be found here:
+
+[libnklabs-ulx3s](https://github.com/nklabs/libnklabs-ulx3s)
+
 ### Unit tests
 
 To execute the unit tests:
