@@ -143,6 +143,10 @@ An example application for RISC-V running on an FPGA can be found here:
 
 [libnklabs-ulx3s](https://github.com/nklabs/libnklabs-ulx3s)
 
+An example application for Raspberry Pi Pico can be found here:
+
+[libnklabs-pico](https://github.com/nklabs/libnklabs-pico)
+
 ### Unit tests
 
 To execute the unit tests:
