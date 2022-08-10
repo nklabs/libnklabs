@@ -19,7 +19,11 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Abstracted GPIO pin
+// Abstract PWM pins
+
+// TODO: everything
+
+#ifdef PWM_ENABLED
 
 #include <stdbool.h>
 #include "nkarch.h"
@@ -94,5 +98,7 @@ extern const nk_pin_t nk_pin_table[];
 
 // Get current mode
 #define nk_pin_getmmode(pin) (pin)->func->pin_getmode(pin)
+
+#endif
 
 #endif

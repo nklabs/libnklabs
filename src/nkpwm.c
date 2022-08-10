@@ -19,15 +19,11 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Abstract GPIO pins
+// Abstract PWM pins
 
-// Each pin has:
-//   A name string
-//   Can be found in nk_pin_table (pins.c) via enumeration index (pins.h)
-//   Can be accessed by address (it's the address of the pin table entry)
-//   Can be accessed via virtual functions, so that pins not part of the MCU can also be accessed with a different set of functions
+// TODO: everything
 
-// A CLI is provided for accessing the pins on the command line
+#ifdef PWM_ENABLED
 
 #include <string.h>
 #include "nkcli.h"
@@ -176,3 +172,5 @@ COMMAND(cmd_pin,
     "-pin clear <pin>           Clear pin\n"
     "-pin mode <mode>           Change pin mode\n"
 )
+
+#endif
