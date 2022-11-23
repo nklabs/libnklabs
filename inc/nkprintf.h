@@ -27,6 +27,13 @@
 #include <stdarg.h>
 #include <inttypes.h> // For PRI macros
 
+// These are missing on AVR
+#ifndef PRIu64
+#define PRIu64 "llu"
+#define PRIx64 "llx"
+#define PRId64 "lld"
+#endif
+
 #include "nkoutfile.h"
 #include "nkinfile.h"
 #include "nkmacros.h"

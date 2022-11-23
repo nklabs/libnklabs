@@ -30,7 +30,9 @@
 #include <stdint.h> // For uint64_t
 #include <stdlib.h> // For ssize_t
 #include <stdarg.h>
-#include <inttypes.h> // For PRI macros
+
+//#include <inttypes.h> // For PRI macros
+#include "nkprintf.h" // For PRI macros
 
 #include "nkarch.h"
 

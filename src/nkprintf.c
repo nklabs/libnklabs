@@ -326,7 +326,7 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 					break;
 				} case 'u': case 'x': case 'X': case 'p': { // Unsigned decimal or hex
 					if (c == 'p') // Pointer
-						val = (unsigned long long)va_arg(ap, void *);
+						val = (uintptr_t)va_arg(ap, void *);
 					else if (size == 1)
 						val = va_arg(ap, unsigned long);
 					else if (size == 2)
