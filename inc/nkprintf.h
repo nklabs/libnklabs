@@ -25,6 +25,7 @@
 #define _nkprintf 1
 
 #include <stdarg.h>
+#include <inttypes.h> // For PRI macros
 
 #include "nkoutfile.h"
 #include "nkinfile.h"

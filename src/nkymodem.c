@@ -734,17 +734,17 @@ static int process_full_outer()
 
         switch (sta) {
             case YMODEM_RECV_DONE: {
-                nk_printf("Transfer complete: %ld bytes\n", ymodem_file.size);
+                nk_printf("Transfer complete: %"PRIu32" bytes\n", ymodem_file.size);
                 nk_yrecv_s->all_done();
                 break;
             } case YMODEM_RECV_REMOTE_CANCEL: {
-                nk_printf("Canceled after %ld bytes\n", ymodem_file.size);
+                nk_printf("Canceled after %"PRIu32" bytes\n", ymodem_file.size);
                 break;
             } case YMODEM_RECV_OPEN_CANCEL: {
-                nk_printf("Canceled after %ld bytes (couldn't open file)\n", ymodem_file.size);
+                nk_printf("Canceled after %"PRIu32" bytes (couldn't open file)\n", ymodem_file.size);
                 break;
             } default: {
-                nk_printf("YMODEM error code %d after %ld bytes\n", sta, ymodem_file.size);
+                nk_printf("YMODEM error code %d after %"PRIu32" bytes\n", sta, ymodem_file.size);
                 break;
             }
         }
@@ -888,7 +888,7 @@ void debug_rcv_status()
     nk_printf("status = %d\n", laststatus);
     nk_printf("long_count = %d\n", long_count);
     nk_printf("crc_count = %d\n", crc_count);
-    nk_printf("max_len = %u\n", max_len);
+    nk_printf("max_len = %zu\n", max_len);
     nk_printf("cksum_count = %d\n", cksum_count);
 #ifdef NK_YM_DEBUG_LOG_SIZE
     debug_log_show();

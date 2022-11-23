@@ -20,18 +20,50 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Bitbang I2C master interace
-// You provide:
-//    nk_i2c_scl_low, nk_i2c_scl_high, nk_i2c_scl_peek
-//    nk_i2c_sda_low, nk_i2c_sda_high, nk_i2c_sda_peek
 
 #include "nkarch.h"
+#include "nkpin.h"
 #include "nki2c.h"
 
 #define SPEED 10
 
+static void nk_i2c_scl_low(nk_bitbang_i2c_bus_t *port)
+{
+	nk_pin_write(port->scl, 0);
+}
+
+static void nk_i2c_scl_high(nk_bitbang_i2c_bus_t *port)
+{
+	nk_pin_write(port->scl, 1);
+}
+
+static void nk_i2c_sda_low(nk_bitbang_i2c_bus_t *port)
+{
+	nk_pin_write(port->sda, 0);
+}
+
+static void nk_i2c_sda_high(nk_bitbang_i2c_bus_t *port)
+{
+	nk_pin_write(port->sda, 1);
+}
+
+static int nk_i2c_scl_peek(nk_bitbang_i2c_bus_t *port)
+{
+	bool rtn;
+	nk_pin_read(port->scl, &rtn);
+	return rtn;
+}
+
+static int nk_i2c_sda_peek(nk_bitbang_i2c_bus_t *port)
+{
+	bool rtn;
+	nk_pin_read(port->sda, &rtn);
+	return rtn;
+}
+
 // Pulse SCL, read along the way
 
-static int sda_read(void *port)
+static int sda_read(nk_bitbang_i2c_bus_t *port)
 {
 	int rtn;
 	int x;
@@ -52,7 +84,7 @@ static int sda_read(void *port)
 	return rtn;
 }
 
-static void i2c_start(void *port)
+static void i2c_start(nk_bitbang_i2c_bus_t *port)
 {
 	// SCL must already be high
 	nk_i2c_sda_low(port);
@@ -63,7 +95,7 @@ static void i2c_start(void *port)
 
 // Normal stop
 
-static void i2c_stop(void *port)
+static void i2c_stop(nk_bitbang_i2c_bus_t *port)
 {
 	nk_i2c_sda_low(port);
 	nk_udelay(SPEED); // Tlow = 4.7 us min
@@ -75,7 +107,7 @@ static void i2c_stop(void *port)
 
 // Stop before a repeated start
 
-static void i2c_stopr(void *port)
+static void i2c_stopr(nk_bitbang_i2c_bus_t *port)
 {
 	nk_i2c_sda_high(port);
 	nk_udelay(SPEED); // Tlow = 4.7 us min
@@ -83,7 +115,7 @@ static void i2c_stopr(void *port)
 	nk_udelay(SPEED); // Tsu:sto 4.0 us min
 }
 
-static void i2c_byte_out(void *port, uint8_t x)
+static void i2c_byte_out(nk_bitbang_i2c_bus_t *port, uint8_t x)
 {
 	uint8_t b;
 	for (b = 128; b; b >>= 1) {
@@ -97,7 +129,7 @@ static void i2c_byte_out(void *port, uint8_t x)
 	}
 }
 
-static uint8_t i2c_byte_in(void *port)
+static uint8_t i2c_byte_in(nk_bitbang_i2c_bus_t *port)
 {
 	int n;
 	uint8_t v = 0;
@@ -111,7 +143,7 @@ static uint8_t i2c_byte_in(void *port)
 	return v;
 }
 
-static int i2c_check_ack(void *port)
+static int i2c_check_ack(nk_bitbang_i2c_bus_t *port)
 {
 	nk_i2c_sda_high(port);
 	if (sda_read(port)) {
@@ -123,19 +155,19 @@ static int i2c_check_ack(void *port)
 	}
 }
 
-static void i2c_send_ack(void *port)
+static void i2c_send_ack(nk_bitbang_i2c_bus_t *port)
 {
 	nk_i2c_sda_low(port);
 	sda_read(port);
 }
 
-static void i2c_send_nak(void *port)
+static void i2c_send_nak(nk_bitbang_i2c_bus_t *port)
 {
 	nk_i2c_sda_high(port);
 	sda_read(port);
 }
 
-int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_bitbang_i2c_write(nk_bitbang_i2c_bus_t *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
 	int status = 0;
 	i2c_start(port);
@@ -156,7 +188,7 @@ int nk_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 	return status;
 }
 
-int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+int nk_bitbang_i2c_write_nostop(nk_bitbang_i2c_bus_t *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
 	int status = 0;
 	i2c_start(port);
@@ -177,7 +209,7 @@ int nk_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf
 	return status;
 }
 
-int nk_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
+int nk_bitbang_i2c_read(nk_bitbang_i2c_bus_t *port, uint8_t addr, size_t len, uint8_t *buf)
 {
 	int status = 0;
 	i2c_start(port);

@@ -1038,7 +1038,7 @@ const struct type *nk_xpath(char *key, const struct type *type, void **location_
     nkinfile_open_string(&f, key);
 
     while (!nk_feof(&f)) {
-        if (nk_fscan(&f, "[ %u ]%e", &idx)) {
+        if (nk_fscan(&f, "[ %zu ]%e", &idx)) {
             size_t count;
             if (type->what == tVARRAY || type->what == tTABLE) {
                 count = ((union len *)location)->len;

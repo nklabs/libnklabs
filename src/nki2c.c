@@ -281,11 +281,11 @@ int nk_i2c_command(const nk_i2c_bus_t *bus, nkinfile_t *args)
 
 	if (nk_fscan(args, "w %e")) {
 		// Write
-		while (nk_fscan(args, "%hhx %e", &write_array[write_len]))
+		while (nk_fscan(args, "%"PRIx8" %e", &write_array[write_len]))
 			++write_len;
 	}
 	
-	if (!nk_fscan(args, "r %hhx %x ", &read_addr, &read_len)) {
+	if (!nk_fscan(args, "r %"PRIx8" %x ", &read_addr, &read_len)) {
 		read_len = 0;
 	}
 

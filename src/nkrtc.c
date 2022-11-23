@@ -27,7 +27,7 @@
 int nk_rtc_command(const nk_rtc_t *dev, nkinfile_t *args)
 {
     nkdatetime_t datetime;
-    if (nk_fscan(args, "%hd-%hhd-%hhd %hhd:%hhd:%hhd ", &datetime.year, &datetime.month, &datetime.day, &datetime.hour, &datetime.min, &datetime.sec)) {
+    if (nk_fscan(args, "%"PRIu16"-%"PRIu8"-%"PRIu8" %"PRIu8":%"PRIu8":%"PRIu8" ", &datetime.year, &datetime.month, &datetime.day, &datetime.hour, &datetime.min, &datetime.sec)) {
         datetime.month--;
         datetime.day--;
         datetime.weekday = nk_calc_day_of_week(datetime.year, datetime.month, datetime.day);

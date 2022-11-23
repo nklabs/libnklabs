@@ -84,16 +84,6 @@
 *</pre>
 *
 ******************************************************************************/
-/***************************************************************************
-*
-*         NK CLI
-*         qspipsu_flash.c
-*
-*         Copyright (C) 2020 NK Labs, LLC, All Rights Reserved
-*         Confidential and Proprietary
-*     
-*         Author: Joseph Allen, jallen@nklabs.com
-*****************************************************************************/
 
 /***************************** Include Files *********************************/
 
@@ -102,7 +92,8 @@
 #include "xil_printf.h"
 #include "xil_cache.h"
 
-#include "nkflash.h"
+#include "nkprintf.h"
+#include "nkmcuflash.h"
 
 // Comment out driver test stuff that we don't need
 // #define FLASH_DRIVER_TEST 1
@@ -747,10 +738,10 @@ int QspiPsuPolledFlashExample(XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuDeviceId)
 		return XST_FAILURE;
 	}
 
-	xil_printf("Flash connection mode : %d\n\r",
+	//xil_printf("Flash connection mode : %d\n\r",
 			QspiPsuConfig->ConnectionMode);
-	xil_printf("where 0 - Single; 1 - Stacked; 2 - Parallel\n\r");
-	xil_printf("FCTIndex: %d\n\r", FCTIndex);
+	//xil_printf("where 0 - Single; 1 - Stacked; 2 - Parallel\n\r");
+	//xil_printf("FCTIndex: %d\n\r", FCTIndex);
 
 	/*
 	 * Initialize MaxData according to page size.
@@ -783,9 +774,9 @@ int QspiPsuPolledFlashExample(XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuDeviceId)
 		FSRFlag = 0;
 	}
 
-	xil_printf("ReadCmd: 0x%x, WriteCmd: 0x%x,"
-		   " StatusCmd: 0x%x, FSRFlag: %d\n\r",
-		ReadCmd, WriteCmd, StatusCmd, FSRFlag);
+	//xil_printf("ReadCmd: 0x%x, WriteCmd: 0x%x,"
+	//	   " StatusCmd: 0x%x, FSRFlag: %d\n\r",
+	//	ReadCmd, WriteCmd, StatusCmd, FSRFlag);
 
 	if (Flash_Config_Table[FCTIndex].FlashDeviceSize > SIXTEENMB) {
 		Status = FlashEnterExit4BAddMode(QspiPsuInstancePtr, ENTER_4B);
@@ -884,7 +875,7 @@ int FlashReadID(XQspiPsu *QspiPsuPtr)
 		return XST_FAILURE;
 	}
 
-	xil_printf("FlashID=0x%x 0x%x 0x%x\n\r", ReadBfrPtr[0], ReadBfrPtr[1],
+	xil_printf("  FlashID=0x%x 0x%x 0x%x\n\r", ReadBfrPtr[0], ReadBfrPtr[1],
 		   ReadBfrPtr[2]);
 
 	/* In case of dual, read both and ensure they are same make/size */
@@ -2761,11 +2752,17 @@ int FlashEnableQuadMode(XQspiPsu *QspiPsuPtr)
 
 // NK Labs standardized flash API
 
-int nk_init_flash()
+void Printf(const char *fmt,...) __attribute__((__format__ (__printf__, 1, 2)));
+
+int nk_init_mcuflash()
 {
 	int Status;
 	XQspiPsu *QspiPsuInstancePtr = &QspiPsuInstance;
 	XQspiPsu_Config *QspiPsuConfig;
+
+	nk_startup_message("QSPI Flash driver\n");
+
+	// return;
 
 	QspiPsuConfig = XQspiPsu_LookupConfig(QSPIPSU_DEVICE_ID);
 	if (QspiPsuConfig == NULL) {
@@ -2856,21 +2853,23 @@ int nk_init_flash()
 	return XST_SUCCESS;
 }
 
-uint32_t nk_flash_sector_size()
+uint32_t nk_mcuflash_sector_size()
 {
 	return Flash_Config_Table[FCTIndex].SectSize;
 }
 
-int nk_flash_erase(uint32_t address, uint32_t byte_count)
+int nk_mcuflash_erase(const void *info, uint32_t address, uint32_t byte_count)
 {
+	(void)info;
 	int rtn = 0;
 	if (XST_SUCCESS != FlashErase(&QspiPsuInstance, address, byte_count, CmdBfr))
 		rtn = -1;
 	return rtn;
 }
 
-int nk_flash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, size_t byte_count)
 {
+	(void)info;
 	int rtn = 0; // Assume success
 
 	uint32_t page_size = (Flash_Config_Table[FCTIndex].PageSize);
@@ -2881,7 +2880,7 @@ int nk_flash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 		uint32_t page_len = page_size - page_offset; // Up to one page
 
 		if (byte_count < page_len)
-			page_len = byte_count;
+			page_len = (uint32_t)byte_count;
 
 		if (XST_SUCCESS != FlashWrite(&QspiPsuInstance, address, page_len, WriteCmd, data))
 			rtn = -1;
@@ -2894,9 +2893,10 @@ int nk_flash_write(uint32_t address, uint8_t *data, uint32_t byte_count)
 	return rtn;
 }
 
-int nk_flash_read(uint32_t address, uint8_t *data, uint32_t byte_count)
+int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, size_t byte_count)
 {
 	int rtn;
+	(void)info;
 	if (XST_SUCCESS != FlashRead(&QspiPsuInstance, address, byte_count, ReadCmd, CmdBfr, data))
 		rtn = -1;
 	return rtn;

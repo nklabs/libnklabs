@@ -232,14 +232,6 @@ void nk_init_sched()
 	nk_init_sched_timer();
 }
 
-static void do_nothing(void *data)
-{
-	nk_unused(data);
-	nk_printf("Did some work!\n");
-}
-
-int test_tid;
-
 static int cmd_work(nkinfile_t *args)
 {
 	nk_irq_flag_t irq_flag;
@@ -260,13 +252,6 @@ static int cmd_work(nkinfile_t *args)
 		}
 		nk_irq_unlock(&sched_lock, irq_flag);
 		nk_printf("End of list.\n");
-	} else if (nk_fscan(args, "test ")) {
-		int x;
-		if (!test_tid)
-			test_tid = nk_alloc_tid();
-		for (x = 0; x != 50; ++x)
-			nk_sched(test_tid, do_nothing, NULL, 10000, "do nothing");
-		cmd_work(nkinfile_null);
 	} else {
 		nk_printf("Syntax error\n");
 	}

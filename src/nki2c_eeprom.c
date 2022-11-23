@@ -167,36 +167,36 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
     uint32_t addr;
     uint32_t len;
     uint32_t val;
-    if (facmode && nk_fscan(args, "rd %lx ", &addr))
+    if (facmode && nk_fscan(args, "rd %"PRIx32" ", &addr))
     {
         status |= nk_i2c_eeprom_read(info, addr, (uint8_t *)&val, 4);
-        nk_printf("[%lx] has %lx\n", addr, val);
+        nk_printf("[%"PRIx32"] has %"PRIx32"\n", addr, val);
     }
-    else if (facmode && nk_fscan(args, "wr %lx %lx ", &addr, &val))
+    else if (facmode && nk_fscan(args, "wr %"PRIx32" %"PRIx32" ", &addr, &val))
     {
         status |= nk_i2c_eeprom_write(info, addr, (uint8_t *)&val, 4);
-        nk_printf("Wrote %lx to [%lx]\n", val, addr);
+        nk_printf("Wrote %"PRIx32" to [%"PRIx32"]\n", val, addr);
     }
-    else if (facmode && nk_fscan(args, "hd %lx %x ", &addr, &len))
+    else if (facmode && nk_fscan(args, "hd %"PRIx32" %"PRIx32" ", &addr, &len))
     {
         nk_i2c_eeprom_hex_dump(info, addr, len);
     }
-    else if (facmode && nk_fscan(args, "hd %lx ", &addr))
+    else if (facmode && nk_fscan(args, "hd %"PRIx32" ", &addr))
     {
     	len = 0x100;
         nk_i2c_eeprom_hex_dump(info, addr, len);
     }
-    else if (facmode && nk_fscan(args, "crc %lx %lu ", &addr, &len))
+    else if (facmode && nk_fscan(args, "crc %"PRIx32" %"PRIx32" ", &addr, &len))
     {
-        nk_printf("Calculate CRC of %lx - %lx\n", addr, addr + len);
+        nk_printf("Calculate CRC of %"PRIx32" - %"PRIx32"\n", addr, addr + len);
         val = nk_i2c_eeprom_crc(info, addr, len);
-        nk_printf("CRC is %lx\n", val);
+        nk_printf("CRC is %"PRIx32"\n", val);
     }
-    else if (facmode && nk_fscan(args, "fill %lx %x ", &addr, &len))
+    else if (facmode && nk_fscan(args, "fill %"PRIx32" %"PRIx32" ", &addr, &len))
     {
     	uint8_t buf[16];
     	uint8_t x = 0x10;
-        nk_printf("Writing %lu bytes...\n", len);
+        nk_printf("Writing %"PRIu32" bytes...\n", len);
     	while (len)
     	{
     		int th;
@@ -215,11 +215,11 @@ int nk_i2c_eeprom_command(const struct nk_i2c_eeprom_info *info, nkinfile_t *arg
     	}
         nk_printf("done.\n");
     }
-    else if (facmode && nk_fscan(args, "fill %lx %x %x ", &addr, &len, &val))
+    else if (facmode && nk_fscan(args, "fill %"PRIx32" %"PRIx32" %"PRIx32" ", &addr, &len, &val))
     {
     	uint8_t buf[16];
     	memset(buf, val, sizeof(buf));
-        nk_printf("Writing %lu bytes...\n", len);
+        nk_printf("Writing %"PRIu32" bytes...\n", len);
     	while (len)
     	{
     		int th;

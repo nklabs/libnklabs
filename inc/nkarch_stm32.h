@@ -49,9 +49,11 @@ static inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spin
         case 1: {
             HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
             nk_irq_unlock(lock, flags);
+            break;
         } case 2: {
             HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
             nk_irq_unlock(lock, flags);
+            break;
         } default: {
             nk_irq_unlock(lock, flags);
             break;

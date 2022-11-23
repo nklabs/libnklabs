@@ -24,35 +24,62 @@
 
 #include <stdint.h>
 
-#define NK_FLASH
+#include "platform.h"
+#include "xil_cache.h"
+#include "xil_exception.h"
+#include "xscugic.h"
+#include "xuartps.h"
+#include "xgpiops.h"
+#include "xttcps.h"
+#include "xiicps.h"
+#include "xtime_l.h"
+#include "sleep.h"
 
 // MCU abstraction layer
 
+#define NK_FLASH
+
 // Borrow Linux kernel lock syntax
 
-typedef int spinlock_t;
+typedef int nk_spinlock_t;
+typedef unsigned long nk_irq_flag_t;
 #define SPIN_LOCK_UNLOCKED 0
 
 // Restore interrupt enable flag
-#define nk_irq_unlock(lock, flags) \
-    do { \
-        __asm__ __volatile__ ("" ::: "memory"); /* Prevent C compiler from caching memory through locks */ \
-        if (flags) \
-            /* __enable_irq(); */ \
-            /* am_hal_interrupt_master_enable(); */ \
-            Xil_ExceptionEnable(); \
-    } while (0);
+static inline __attribute__((always_inline)) void nk_irq_unlock(nk_spinlock_t *lock, nk_irq_flag_t flags)
+{
+    (void)lock;
+    if (flags)
+        Xil_ExceptionEnable();
+}
 
-// Save interrupt enable flag and disable interrupts
-#define nk_irq_lock(lock, flags) \
-    do { \
-        __asm__ __volatile__ ("" ::: "memory"); /* Prevent C compiler from caching memory through locks */ \
-        /* flags = !(1 & __get_PRIMASK()); */ \
-        /* __disable_irq(); */ \
-        /* flags = !am_hal_interrupt_master_disable(); */ \
-        flags = !(mfcpsr() & XREG_CPSR_IRQ_ENABLE); \
-        Xil_ExceptionDisable(); \
-    } while (0);
+// Try to sleep, then restore interrupt enable flag
+static inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spinlock_t *lock, nk_irq_flag_t flags, int deepness)
+{
+    switch (deepness) {
+        case 1: {
+            nk_irq_unlock(lock, flags);
+            break;
+        } case 2: {
+            nk_irq_unlock(lock, flags);
+            break;
+        } default: {
+            nk_irq_unlock(lock, flags);
+            break;
+        }
+    }
+}
+
+// Save interrupt enable flag and disable all interrupts
+// Acquire spinlock on multi-core systems
+
+static inline __attribute__((always_inline)) nk_irq_flag_t nk_irq_lock(nk_spinlock_t *lock)
+{
+    (void)lock;
+    nk_irq_flag_t flags = !(mfcpsr() & XREG_CPSR_IRQ_ENABLE);
+    Xil_ExceptionDisable();
+    return flags;
+}
 
 #define nk_irq_unlock_and_wait(lock, flags, deepness) \
     do { \
@@ -61,16 +88,25 @@ typedef int spinlock_t;
 
 // Scheduler timer
 
-uint32_t nk_get_sched_time();
-uint32_t nk_get_sched_timeout();
-uint32_t nk_convert_delay(uint32_t delay);
-void nk_init_sched_timer();
-void nk_start_sched_timer(uint32_t delay);
-
-// Wall time
-
 typedef XTime nk_time_t;
+
+// Current time
 nk_time_t nk_get_time();
+
+// Convert milliseconds into scheduler time
+nk_time_t nk_convert_delay(uint32_t delay);
+
+// Initialize scheduler timer
+void nk_init_sched_timer();
+
+// Set an alarm for 'when'.  An interrupt should fire at this time.
+// Interrupts will be masked when this is called.
+
+// If when is now or in the past, the interrupt should also fire.
+
+// The system must wake up immediately on the next call to nk_irq_unlock_and_wait.
+
+void nk_sched_wakeup(nk_time_t when);
 
 // Units for wall time
 
@@ -79,6 +115,22 @@ nk_time_t nk_get_time();
 
 // Microsecond delay
 
+extern uint32_t nk_ticks_per_ms;
+
 void nk_udelay(unsigned long usec);
+
+// MCU flash padding size
+#define NK_MCUFLASH_MIN_SIZE 8
+
+// Start address of flash
+#define NK_FLASH_BASE_ADDRESS 0x8000000
+
+// Reboot MCU
+void nk_reboot(void);
+
+// ZynqMP interrupt controller
+
+extern XScuGic interrupt_controller;
+void iz_intc(void);
 
 #endif    /*  NKARCH_ZYNQMP_H   */

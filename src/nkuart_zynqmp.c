@@ -19,7 +19,10 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "lib.h"
+#include "nkarch.h"
+#include "nksched.h"
+#include "nkprintf.h"
+#include "nkuart.h"
 
 #define CONSOLE_UART XPAR_XUARTPS_0_DEVICE_ID
 #define CONSOLE_UART_IRQ_ID XPAR_XUARTPS_0_INTR
@@ -42,8 +45,8 @@ void *waiting_rx_task_data;
 
 void nk_set_uart_callback(int tid, void (*func)(void *data), void *data)
 {
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
 	if (rx_buf_rd != rx_buf_wr) {
 		// Data is available now
 		nk_sched(tid, func, data, 0, "UART ISR");
@@ -70,8 +73,8 @@ int nk_set_uart_mode(int new_mode)
 
 void nk_putc(char ch)
 {
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
 	if (!tty_mode && ch == '\n') {
 		/* am_hal_uart_char_transmit_polled(CONSOLE_UART, '\r'); */
 		/* XUartPs_SendByte(STDOUT_BASEADDR, '\r'); */
@@ -84,8 +87,8 @@ void nk_putc(char ch)
 
 void nk_puts(const char *s)
 {
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
 	while (*s) {
 		nk_putc(*s++);
 	}
@@ -94,15 +97,15 @@ void nk_puts(const char *s)
 
 void nk_uart_write(const char *s, int len)
 {
-	unsigned long irq_flag;
+	nk_irq_flag_t irq_flag;
 	if (!tty_mode) {
-		nk_irq_lock(&console_lock, irq_flag);
+		irq_flag = nk_irq_lock(&console_lock);
 		while (len--) {
 			nk_putc(*s++);
 		}
 		nk_irq_unlock(&console_lock, irq_flag);
 	} else {
-		nk_irq_lock(&console_lock, irq_flag);
+		irq_flag = nk_irq_lock(&console_lock);
 		while (len--) {
 			char c = *s++;
 			XUartPs_SendByte(console_uart.Config.BaseAddress, c);
@@ -151,8 +154,8 @@ static void console_isr(void *data)
 int nk_getc()
 {
 	int ch = -1;
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
         rx_chars();
 	if (rx_buf_rd != rx_buf_wr) {
 		ch = rx_buf[rx_buf_rd++ & (sizeof(rx_buf) - 1)];
@@ -163,8 +166,8 @@ int nk_getc()
 
 int nk_kbhit()
 {
-        unsigned long irq_flag;
-        nk_irq_lock(&console_lock, irq_flag);
+        nk_irq_flag_t irq_flag;
+        irq_flag = nk_irq_lock(&console_lock);
 	if (rx_buf_rd != rx_buf_wr) {
 		nk_irq_unlock(&console_lock, irq_flag);
 		return 1;
@@ -223,9 +226,8 @@ void nk_init_uart()
 	XUartPs_SetRecvTimeout(&console_uart, 2);
 	XUartPs_SetFifoThreshold(&console_uart, 8);
 
-	nk_printf("interrupt mask = %x\n", XUartPs_ReadReg(console_uart.Config.BaseAddress, XUARTPS_IMR_OFFSET));
+	// nk_printf("interrupt mask = %x\n", XUartPs_ReadReg(console_uart.Config.BaseAddress, XUARTPS_IMR_OFFSET));
 
         // First startup line
-        nk_putc('\n');
         nk_startup_message("Console UART\n");
 }

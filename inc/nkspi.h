@@ -50,6 +50,15 @@ typedef struct {
 
 #endif
 
+#ifdef NK_PLATFORM_ZYNQMP
+
+typedef struct {
+    const nk_pin_t *cs_pin; // Pin of CS_L line
+    //struct spi_m_sync_descriptor *hspi; // SPI device handle
+} nkspi_device_t;
+
+#endif
+
 // Perform a SPI transaction
 
 int nk_spi_transfer(const nkspi_device_t *info, uint8_t *date, uint32_t len);

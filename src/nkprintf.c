@@ -21,6 +21,7 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <stddef.h>
 #include "nkprintf.h"
 
 #ifndef NKPRINTF_NOFLOAT
@@ -114,7 +115,7 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 			size_t width = 0; // Field width
 			size_t prec = 0; // Precision
 
-			int size = 0; // Argument size
+			int size = 0; // Argument size: 0 = int, 1 = long, 2 = long long, -1 = short, -2 = char
 			int dbl = 0; // Double precision
 
 			int neg = 0; // Number is negative
@@ -162,6 +163,8 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 			--fmt;
 			for (;;) {
 				switch (*++fmt) {
+					case 'z': size = 3; continue; // size_t
+					case 't': size = 4; continue; // ptrdiff_t
 					case 'l': ++size; continue;
 					case 'h': --size; continue;
 					case 'L': ++dbl; continue;
@@ -303,6 +306,10 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 						val = (unsigned long long)(long long)va_arg(ap, long);
 					else if (size == 2)
 						val = (unsigned long long)(long long)va_arg(ap, long long);
+					else if (size == 3)
+						val = (unsigned long long)(long long)va_arg(ap, size_t);
+					else if (size == 4)
+						val = (unsigned long long)(long long)va_arg(ap, ptrdiff_t);
 					else
 						val = (unsigned long long)(long long)va_arg(ap, int);
 					if ((long long)val < 0) {
@@ -318,12 +325,16 @@ int _nk_vprintf(nkoutfile_t *f, const NK_FLASH char *fmt, va_list ap)
 					goto rev;
 					break;
 				} case 'u': case 'x': case 'X': case 'p': { // Unsigned decimal or hex
-					if (c == 'p')
-						size = 1; // sizeof(void *) == sizeof(long)
-					if (size == 1)
+					if (c == 'p') // Pointer
+						val = (unsigned long long)va_arg(ap, void *);
+					else if (size == 1)
 						val = va_arg(ap, unsigned long);
 					else if (size == 2)
 						val = va_arg(ap, unsigned long long);
+					else if (size == 3)
+						val = va_arg(ap, size_t);
+					else if (size == 4)
+						val = (unsigned long long)va_arg(ap, ptrdiff_t);
 					else
 						val = va_arg(ap, unsigned int);
 					if (c == 'x' || c == 'p') {
