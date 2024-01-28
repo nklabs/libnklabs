@@ -97,4 +97,10 @@ int nk_help(const char *name);
 
 int nk_complete(const char *s, int list_flag);
 
+// Execute a command
+// Return -1 if command not found or the return value of
+// the executed command.
+
+int nk_cmd(const char *cmd);
+
 #endif

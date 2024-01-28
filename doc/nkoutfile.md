@@ -29,7 +29,11 @@ nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, unsigned char *mem, size_t size)
 
 int nk_fputc(nkoutfile_t *f, unsigned char c);
 
+int nk_fwrite(nkoutfile_t *f, const char *buf, size_t len);
+
 int nk_fflush(nkoutfile_t *f);
+
+size_t nk_fnote(nkoutfile_t *f);
 ```
 
 This is a thin wrapper that provides fast, low overhead file-like
@@ -67,6 +71,13 @@ out the buffer.  If __nk_fputc__ calls __block_write__ it returns
 __block_write's__ return value, otherwise it returns 0.  When __nk_fputc__
 calls __block_write__, its __len__ argument will always be equal to the
 block size.  __nk_fputc__ is implemented as a macro.
+
+__nk_fwrite__ appends a block of memory to the buffer.  It calls
+__block_write__ as necessary when the buffer becomes full.  __nk_fwrite__
+returns __block_write's__ return value, otherwise it returns 0.
+
+__nk_fnote__ returns the number of bytes written since the __nkoutfile_t__
+has been opened.
 
 __nk_fflush__ calls __block_write__ with any remaining bytes to write out. 
 In this case, __block_write's__ __len__ argument can be anything from 0 to

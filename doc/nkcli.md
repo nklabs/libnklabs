@@ -11,10 +11,28 @@
 
 ```c
 void nk_init_cli();
-```
 
-Start command line interface, print first prompt.  This schedules a task, so
-prompt is issued on next return to the scheduler loop.
+int nk_cmd(const char *cmd);
+
+void nk_cli_enable();
+void nk_cli_disable();
+
+```
+__nk_init_cli__ initializes the command line interface.  This includes:
+
+* Prints startup message
+* Sorts the command table, so that the help command shows the available commands in alphabetical order.
+* Schedules a task for the command loop.  On the next return to nk_sched_loop,
+nk_readline is called to issue the command prompt and read the next command
+from the user.
+
+When called by a command, __nk_cli_disable__ prevents the command task from
+prompting for the next command.  The CLI is effectively disabled until
+__nk_cli_enable__ is called.
+
+__nk_cmd__ parses a command line given in the 'cmd' argument, and executes
+the specified command if it exists.  The return value is the return value of
+the executed command, or -1 if the command is not found.
 
 ## COMMAND()
 

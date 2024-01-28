@@ -28,7 +28,7 @@
 // Convert delay in milliseconds to number of scheduler timer clock ticks
 nk_time_t nk_convert_delay(uint32_t delay)
 {
-	return (delay * NK_TIME_COUNTS_PER_SECOND) / 1000;
+	return ((nk_time_t)delay * NK_TIME_COUNTS_PER_SECOND) / 1000;
 }
 
 void nk_init_sched_timer()

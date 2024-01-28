@@ -41,6 +41,7 @@ nkoutfile_t *nkoutfile_open(
     f->block_write_ptr = block_write_ptr;
     f->block_write = block_write;
     f->granularity = granularity;
+    f->written = 0;
     return f;
 }
 
@@ -48,22 +49,19 @@ int nk_fflush(nkoutfile_t *f)
 {
     int rtn;
     size_t len = (size_t)(f->ptr - f->start);
+    // Always reposition
     f->ptr = f->start;
     // Round write up to granularity
     len = ((len + (f->granularity - 1)) & ~(f->granularity - 1));
     if (f->block_write)
     {
+        f->written += len;
         rtn = f->block_write(f->block_write_ptr, f->start, len);
     }
     else
     {
         // No flush function
         rtn = -1;
-    }
-    if (!rtn)
-    {
-        // Flush was successful, reset buffer
-        f->ptr = f->start;
     }
     return rtn;
 }
@@ -101,4 +99,27 @@ int _nk_flush_and_putc(nkoutfile_t *f, int c)
         // No buffer and no output function?
         return -1;
     }
+}
+
+int nk_fwrite(nkoutfile_t *f, const char *buf, size_t len)
+{
+    int rtn = 0;
+    while (len)
+    {
+        if (f->ptr == f->end)
+        {
+            rtn = nk_fflush(f);
+        }
+        size_t space = f->end - f->ptr;
+        size_t now;
+        if (len < space)
+            now = len;
+        else
+            now = space;
+        memcpy(f->ptr, buf, now);
+        f->ptr += now;
+        buf += now;
+        len -= now;
+    }
+    return rtn;
 }

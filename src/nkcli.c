@@ -121,13 +121,13 @@ static const NK_FLASH char *print_help(const NK_FLASH char *s)
         c = *s;;
         if (c && c != '\n')
         {
-            nk_putc(c);
+            nk_fputc(nkstdout, c);
             ++s;
         }
         else
             break;
     }
-    nk_putc('\n');
+    nk_fputc(nkstdout, '\n');
     if (c == '\n')
         s++;
     return s;
@@ -192,7 +192,7 @@ static int cmd_help(nkinfile_t *args)
         for (x = (struct console_cmd *)&__start_COMMAND_TABLE; x != (struct console_cmd *)&__stop_COMMAND_TABLE; ++x) {
             if (facmode || x->text[0] != '!') {
                 if (first)
-                    nk_putc('\n');
+                    nk_fputc(nkstdout, '\n');
                 specific_help(print_help(x->text));
                 first = 1;
             }
@@ -216,7 +216,7 @@ static int cmd_help(nkinfile_t *args)
     return 0;
 }
 
-static void process_cmd(char *pCmd)
+int nk_cmd(const char *pCmd)
 {
     int	rtn = 0;
     char cmd[NK_MAX_CMD_LEN];
@@ -224,7 +224,7 @@ static void process_cmd(char *pCmd)
     nkinfile_open_string(f, pCmd);
 
     if (nk_feof(f) || nk_fpeek(f) == '*') // Ignore empty commands and Zmodem junk
-        return;
+        return 0;
 
     memset(cmd, 0, sizeof(cmd));
 
@@ -232,7 +232,7 @@ static void process_cmd(char *pCmd)
         struct console_cmd *x = find_cmd(cmd);
         if (!x) {
             nk_printf("Syntax error\n");
-            return;
+            return -1;
         } else if (nk_fscan(f, "help ")) {
             specific_help(skip_help(x->text));
         } else {
@@ -240,8 +240,10 @@ static void process_cmd(char *pCmd)
             if (rtn) {
                 nk_printf("Command failed!\n");
             }
+            return rtn;
         }
     }
+    return 0;
 }
 
 static void handle_cmd(char *s)
@@ -249,7 +251,7 @@ static void handle_cmd(char *s)
     // Process this command
     if (s)
     {
-        process_cmd(s);
+        nk_cmd(s);
     }
     // Request next command CLI is still enabled
     if (!cli_disabled)
