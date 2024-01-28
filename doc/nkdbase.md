@@ -4,7 +4,8 @@
 Functions are provided to create a database located in flash memory.  This
 just means that we save a serialized form of a structure into flash memory. 
 The serialized form is useful because it tends to preserve data across
-schema changes.
+schema changes.  See [nkserialize](nkserialize.md) for the serialization
+format.
 
 Two areas of memory (banks) are allocated so that an older version of the
 database is always preserved in case of a power outage during a write.   The
@@ -41,7 +42,7 @@ An nk_dbase structure should be filled out with information about the database:
 int nk_dbase_load(
 	const struct nk_dbase *dbase,
 	char *rev, // Address of version number
-	void *ram // Address of database in RAM
+	void *ram // Address of deserialized database in RAM
 );
 ~~~
 
@@ -50,13 +51,16 @@ saved in *rev.
 
 Returns zero for success.
 
+__nk_fscan__ (see [nkserialize](nkserialize.md)) is used to deserialize the
+database into RAM given the schema in nk_dbase.ty.
+
 ## nk_dbase_save()
 
 ~~~c
 int nk_dbase_save(
 	const struct nk_dbase *dbase,
 	char *rev, // Address of version number
-	void *ram // Address of database in RAM
+	void *ram // Address of deserialized database in RAM
 );
 ~~~
 
@@ -64,6 +68,10 @@ Save a database from RAM into flash.  This bumps the revision number if the
 database was successfully saved.
 
 Returns zero for success.
+
+__nk_dbase_serialize__ (see [nkserialize](nkserialize.md)) is used to serialize
+the database into a string for the flash memory.  nk_dbase.ty hold the
+schema.
 
 ## Configuration or calibration database
 
