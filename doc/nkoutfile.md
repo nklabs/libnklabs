@@ -16,6 +16,7 @@ nkoutfile_t *nkoutfile_open(
     nkoutfile_t *f,
     int (*block_write)(
         void *block_write_ptr,
+        size_t offset,
         unsigned char *buffer,
         size_t len
     ),
