@@ -108,7 +108,7 @@ int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file)
 }
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t len)
+int nk_checked_write(nk_checked_t *var_file, size_t offset, const unsigned char *buffer, size_t len)
 {
     int rtn = 0;
     const nk_checked_base_t *file = var_file->file;
@@ -119,6 +119,7 @@ int nk_checked_write(nk_checked_t *var_file, const unsigned char *buffer, size_t
         var_file->crc = nk_crc32be_update(var_file->crc, buffer[x]);
 
     // Starting address
+    (void)offset; // Ignore offset: this only works for sequential writing for now
     uint32_t address = file->area_base + sizeof(nk_checked_header_t) + var_file->size;
 
     // Write write pointer

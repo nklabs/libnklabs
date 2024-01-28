@@ -64,7 +64,7 @@ int nk_direct_write_open(nk_direct_t *var_file, const nk_direct_base_t *file)
 }
 
 // For nkoutfile_t: write a block to the file
-int nk_direct_write(nk_direct_t *var_file, const unsigned char *buffer, size_t len)
+int nk_direct_write(nk_direct_t *var_file, size_t offset, const unsigned char *buffer, size_t len)
 {
     int rtn = 0;
     const nk_direct_base_t *file = var_file->file;
@@ -75,6 +75,7 @@ int nk_direct_write(nk_direct_t *var_file, const unsigned char *buffer, size_t l
         var_file->crc = nk_crc32be_update(var_file->crc, buffer[x]);
 
     // Starting address
+    (void)offset; // Ignore offset: this is made for sequential writing only for now
     uint32_t address = file->area_base + var_file->size;
 
     // Write write pointer

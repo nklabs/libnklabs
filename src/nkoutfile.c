@@ -21,13 +21,15 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include <string.h> // For memcpy
 #include "nkoutfile.h"
 
 nkoutfile_t *nkoutfile_open(
     nkoutfile_t *f,
     int (*block_write)(
         void *block_write_ptr,
-        unsigned char *buffer,
+        size_t offset,
+        const unsigned char *buffer,
         size_t len
     ),
     void *block_write_ptr,
@@ -37,11 +39,14 @@ nkoutfile_t *nkoutfile_open(
 ) {
     f->start = f->ptr = buffer;
     f->size = len;
-    f->end = f->start + f->size;
+    if (f->start)
+        f->end = f->start + f->size;
+    else
+        f->end = f->start;
     f->block_write_ptr = block_write_ptr;
     f->block_write = block_write;
     f->granularity = granularity;
-    f->written = 0;
+    f->start_offset = 0;
     return f;
 }
 
@@ -55,8 +60,8 @@ int nk_fflush(nkoutfile_t *f)
     len = ((len + (f->granularity - 1)) & ~(f->granularity - 1));
     if (f->block_write)
     {
-        f->written += len;
-        rtn = f->block_write(f->block_write_ptr, f->start, len);
+        rtn = f->block_write(f->block_write_ptr, f->start_offset, f->start, len);
+        f->start_offset += len;
     }
     else
     {
@@ -68,7 +73,7 @@ int nk_fflush(nkoutfile_t *f)
 
 nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, char *mem, size_t size)
 {
-    // We have a buffer, but not output function
+    // We have a buffer, but no output function
     return nkoutfile_open(f, NULL, NULL, (unsigned char *)mem, size, 1);
 }
 
@@ -76,50 +81,75 @@ nkoutfile_t *nkoutfile_open_mem(nkoutfile_t *f, char *mem, size_t size)
 
 int _nk_flush_and_putc(nkoutfile_t *f, int c)
 {
-    if (f->size)
+    int rtn = 0;
+    if (f->start)
     {
         // Normal case, we have a buffer
-        int rtn = nk_fflush(f);
-        if (!rtn)
-        {
-            // Flush was successful, save latest character
-            *f->ptr++ = (unsigned char)c;
-        }
-        return rtn;
+        // nk_fflush always resets ptr
+        rtn = nk_fflush(f);
+        *f->ptr++ = (unsigned char)c;
     }
     else if (f->block_write)
     {
-        unsigned char d = (unsigned char)c;
         // Special case: no buffering, just call output function directly
-        // If granularity is not 1, we write junk after &c on the stack
-        return f->block_write(f->block_write_ptr, &d, f->granularity);
+        // If granularity is not 1, we write whatever junk follows d on the stack
+        unsigned char d = (unsigned char)c;
+        rtn = f->block_write(f->block_write_ptr, f->start_offset, &d, f->granularity);
+        f->start_offset += f->granularity;
     }
     else
     {
         // No buffer and no output function?
-        return -1;
+        // Just discard the data, not an error.
     }
+    return rtn;
 }
 
-int nk_fwrite(nkoutfile_t *f, const char *buf, size_t len)
+int nk_fwrite(nkoutfile_t *f, const unsigned char *buf, size_t len)
 {
     int rtn = 0;
-    while (len)
+    if (f->start)
     {
-        if (f->ptr == f->end)
+        // Normal case, we have an output buffer
+        while (len)
         {
-            rtn = nk_fflush(f);
+            if (f->ptr == f->end)
+            {
+                rtn |= nk_fflush(f);
+            }
+            size_t space = f->end - f->ptr;
+            size_t now;
+            if (len < space)
+                now = len;
+            else
+                now = space;
+            memcpy(f->ptr, buf, now);
+            f->ptr += now;
+            buf += now;
+            len -= now;
         }
-        size_t space = f->end - f->ptr;
-        size_t now;
-        if (len < space)
-            now = len;
-        else
-            now = space;
-        memcpy(f->ptr, buf, now);
-        f->ptr += now;
-        buf += now;
-        len -= now;
+    }
+    else if (f->block_write)
+    {
+        // No output buffer case, call block_write now
+        while (len)
+        {
+            size_t now;
+            if (len < f->size)
+                now = len;
+            else
+                now = f->size;
+            size_t roundup = ((now + (f->granularity - 1)) & ~(f->granularity - 1));
+            rtn |= f->block_write(f->block_write_ptr, f->start_offset, buf, roundup);
+            f->start_offset += roundup;
+            buf += now;
+            len -= now;
+        }
+    }
+    else
+    {
+        // No buffer and no output function?
+        // Just discard the data, not an error.
     }
     return rtn;
 }

@@ -36,10 +36,10 @@ int nk_fflush(nkoutfile_t *f);
 size_t nk_fnote(nkoutfile_t *f);
 ```
 
-This is a thin wrapper that provides fast, low overhead file-like
-sequential write access primitives to an underlying memory area or block
-device.  It is used to direct output from __nk_fprintf__ to a particular
-device or memory region.
+This is a thin wrapper that provides fast, low overhead file-like optionally
+buffered sequential write access primitives to an underlying memory area or
+block device.  It is used to direct output from __nk_fprintf__ to a
+particular device or memory region.
 
 An nkoutfile_t may be opened in the following ways:
 
@@ -51,12 +51,24 @@ __nkoutfile_open__ opens a block device for writing.  __block_write__ is a
 function that is called whenever the buffer is full.  __block_write_ptr__ is
 a void pointer that is passed unchanged as the first argument to
 __block_write__.  __buffer__ is the address of a memory area with space for
-__len__ bytes.  __len__ is the block size.  __granularity__ is the minimum
-alloweed write size for block_write.
+__len__ bytes, or NULL if not output buffered is desired.  __len__ is the
+block size.  __granularity__ is the minimum alloweed write size for
+block_write.
 
-When __block_write__ is called, its __buffer__ argument has the start of the
-write buffer, and its __len__ argument has the number of bytes to write. 
-__block_write__ may return an error status.  A value of zero means no error.
+__nkoutfile_open__ may be called with NULL for __buffer__.  In this
+case, there is no output buffering, instead each call to __nk_fputc__ or
+__nk_fwrite__ causes a call to __block_write__.  In this case, __len__ is
+the maximum number of bytes passed to __block_write__ (__nk_fwrite__ will
+call __block_write__ multiple times if necessary to write all of the data).
+
+When __block_write__ is called, its __offset__ argument has the file offset
+to write, its __buffer__ argument has the start of the data to write, and
+its __len__ argument has the number of bytes to write.  __block_write__ may
+return an error status.  A value of zero means no error.
+
+For each call to __block_write__, its __offset__ argument is set to the
+amount of data previously written (since the initial call to
+__nkoutfile_open__).
 
 __nkoutfile_open__ and __nkoutfile_open_mem__ do not allocate any resources
 which need to be freed or released, so there is no provided close operation. 
@@ -68,22 +80,21 @@ pointer.
 __nk_fputc__ appends a byte to the buffer.  If the buffer becomes full, it
 calls the __block_write__ function provided in __nkoutfile_open__ to write
 out the buffer.  If __nk_fputc__ calls __block_write__ it returns
-__block_write's__ return value, otherwise it returns 0.  When __nk_fputc__
-calls __block_write__, its __len__ argument will always be equal to the
-block size.  __nk_fputc__ is implemented as a macro.
+__block_write's__ return value, otherwise it returns 0.  
+__nk_fputc__ is implemented as an inline function or macro.
 
 __nk_fwrite__ appends a block of memory to the buffer.  It calls
 __block_write__ as necessary when the buffer becomes full.  __nk_fwrite__
 returns __block_write's__ return value, otherwise it returns 0.
 
-__nk_fnote__ returns the number of bytes written since the __nkoutfile_t__
-has been opened.
+__nk_fnote__ returns the number of bytes written with __nk_fputc__ and
+__nk_fwrite__ since the initial call to __nkoutfile_open__.
 
 __nk_fflush__ calls __block_write__ with any remaining bytes to write out. 
 In this case, __block_write's__ __len__ argument can be anything from 0 to
 one less than the block size.  The write size is rounded up to be a multiple
 of __granularity__.  __block_write__ is called even if there are no bytes to
-write.
+write, so it's possible for the __len__ argument to be zero.
 
 __nkstdout__ is the __nkoutfile_t__ used by __nk_printf__ to print to a
 standard console device.  It is normally set up to use __nk_putc__ to write

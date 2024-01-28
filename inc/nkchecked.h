@@ -70,7 +70,7 @@ int nk_checked_read_open(nk_checked_t *var_file, const nk_checked_base_t *file, 
 int nk_checked_write_open(nk_checked_t *var_file, const nk_checked_base_t *file);
 
 // For nkoutfile_t: write a block to the file
-int nk_checked_write(nk_checked_t *ptr, const unsigned char *buffer, size_t len);
+int nk_checked_write(nk_checked_t *ptr, size_t offset, const unsigned char *buffer, size_t len);
 
 // Close write file: write header
 int nk_checked_write_close(nk_checked_t *var_file);

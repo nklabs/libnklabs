@@ -74,7 +74,7 @@ int nk_dbase_save(
         return -1;
     }
 
-    nkoutfile_open(f, (int (*)(void *,unsigned char *,size_t))nk_checked_write, &ofilt, dbase->buf, dbase->buf_size, ofilt.file->granularity);
+    nkoutfile_open(f, (int (*)(void *,size_t,const unsigned char *,size_t))nk_checked_write, &ofilt, dbase->buf, dbase->buf_size, ofilt.file->granularity);
 
     nk_printf("Writing...\n");
 

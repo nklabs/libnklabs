@@ -61,7 +61,7 @@ int nk_direct_read_open(nk_direct_t *var_file, const nk_direct_base_t *file, uns
 int nk_direct_write_open(nk_direct_t *var_file, const nk_direct_base_t *file);
 
 // For nkoutfile_t: write a block to the file
-int nk_direct_write(nk_direct_t *ptr, const unsigned char *buffer, size_t len);
+int nk_direct_write(nk_direct_t *ptr, size_t offset, const unsigned char *buffer, size_t len);
 
 // Close write file
 int nk_direct_write_close(nk_direct_t *var_file);

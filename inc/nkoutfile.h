@@ -37,11 +37,11 @@ struct nkoutfile
     unsigned char *start; // Start of buffer
     unsigned char *end; // End of buffer
     size_t size; // Size of buffer
-    size_t written; // Number of bytes written with block_write so far
+    size_t start_offset; // File offset of first byte of current buffer
 
     // For abstracting some kind of fixed-length block-based storage system into a file
     void *block_write_ptr; // Pointer to pass to block_read
-    int (*block_write)(void *block_write_ptr, unsigned char *buffer, size_t len);
+    int (*block_write)(void *block_write_ptr, size_t offset, const unsigned char *buffer, size_t len);
     size_t granularity; // Write granularity
 };
 
@@ -49,10 +49,10 @@ struct nkoutfile
 
 inline __attribute__((always_inline)) size_t nk_fnote(nkoutfile_t *f)
 {
-    return f->ptr - f->start + f->written;
+    return (size_t)((ptrdiff_t)f->start_offset + (f->ptr - f->start));
 }
 
-int nk_fwrite(nkoutfile_t *f, const char *buf, size_t len);
+int nk_fwrite(nkoutfile_t *f, const unsigned char *buf, size_t len);
 
 // Write character to file, flush if buffer is full
 // Returns return value of block_write or 0 if no flushing was needed.
@@ -84,7 +84,8 @@ nkoutfile_t *nkoutfile_open(
     nkoutfile_t *f,
     int (*block_write)(
         void *block_write_ptr,
-        unsigned char *buffer,
+        size_t offset,
+        const unsigned char *buffer,
         size_t len
     ),
     void *block_write_ptr,
