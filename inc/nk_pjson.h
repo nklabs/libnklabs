@@ -26,8 +26,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "nkprintf.h"
-
-#define NK_JSON_STACK_SIZE 10
+#include "nk_pjson_config.h"
 
 typedef enum
 {

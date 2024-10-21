@@ -4,6 +4,7 @@
 
 [nk_pjson.h](../inc/nk_pjson.h),
 [nk_pjson.c](../src/nk_pjson.c),
+[nk_pjson_config.h](../config/nk_pjson_config.h),
 
 ## Description
 
@@ -14,7 +15,7 @@ void nk_pjson_begin(nkoutfile_t *file);
 /* Get current level.  Right after nk_pjson_begin(), the level is 1. */
 int32_t nk_pjson_getLevel();
 
-/* Begin a new named object, return the old level for use with */
+/* Begin a new named object, return the old level for use with nk_pjson_popto() */
 int32_t nk_pjson_obj(const char *name);
 
 /* Begin a new named array, return the old level for use with nk_pjson_popto() */
@@ -22,6 +23,7 @@ int32_t nk_pjson_array(const char *name);
 
 /* Print various simple values */
 /* If you are in the body of an array, the names are suppressed, ok to use NULL for names */
+
 void nk_pjson_null(const char *name);
 
 void nk_pjson_bool(const char *name, bool value);
@@ -48,6 +50,8 @@ void nk_pjson_popto(int32_t level);
 void nk_pjson_end();
 ```
 
+## Description
+
 Provides functions for printing JSON-formatted data.
 
 This was original designed so that CLI-command results can be emitted on the
@@ -57,6 +61,9 @@ parse the results.
 But it can also be used to write JSON to any nkoutfile_t.
 
 Currently, only one target nkoutfile_t can be written to at a time.
+
+nk_pjson_config.h contains NK_JSON_STACK_SIZE, which sets the maximum object
+or array depth of the produced JSON.
 
 Example use:
 
@@ -93,6 +100,7 @@ Example with objects and arrays:
      nk_pjson_int32("", 2); 
      nk_pjson_int32("", 3);
      // nk_pjson_pop(); // End of Array
+     // nk_pjson_end(); // End of JSON
 ```
 
 Output:
@@ -113,7 +121,7 @@ Output:
 ```
 
 As stated above, we did not call nk_pjson_begin().  Likewise, we did not
-call nk_pjson_end().
+call nk_pjson_end(), assuming that it is called by common CLI code.
 
 When you print values form within an array, the name is ignored.
 
