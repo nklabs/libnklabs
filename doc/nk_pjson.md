@@ -56,13 +56,12 @@ parse the results.
 
 But it can also be used to write JSON to any nkoutfile_t.
 
-The code is not reentrant.  Only one target nkoutfile_t can be written to at
-a time.
+Currently, only one target nkoutfile_t can be written to at a time.
 
 Example use:
 
 ```c
-    nk_pjson_begin();
+    nk_pjson_begin(nkstdout);
     nk_pjson_string("test", "Hello, world!");
     nk_pjson_end();
 ```
