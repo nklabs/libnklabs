@@ -1,11 +1,5 @@
 Add command to switch banks (for FPGA based)
 
-nkinfile_open_mem: the buffer pointer should be const
-
-Project:
-  Move each target to its own repository?
-  Make libnklabs a pure library..
-
 STM32:
   * Use Nucleos as-is (no jumpers)
 

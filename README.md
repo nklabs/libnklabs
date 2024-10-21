@@ -176,6 +176,8 @@ To execute the unit tests:
 
 [nkoutfile - output abstraction](doc/nkoutfile.md)
 
+[nk_pjson - JSON formatted output](doc/nk_pjson.md)
+
 [nkprintf - formatted output](doc/nkprintf.md)
 
 [nkreadline - command line editor](doc/nkreadline.md)
