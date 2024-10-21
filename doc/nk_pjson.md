@@ -102,8 +102,8 @@ Output:
     {
         "test" : "Hello, world"
         "foo" : {
-            "first", : 1,
-            "second", : 2
+            "first" : 1,
+            "second" : 2
         }
        "bar" : [
            1,
