@@ -43,41 +43,62 @@ typedef struct
     json_level_type_t stack[NK_JSON_STACK_SIZE];
 } json_formatter_t;
 
+extern json_formatter_t *nk_std_json;
+
+/* Initialize json_formatter_t structure */
+void nk_fpjson_init(json_formatter_t *json, nkoutfile_t *file);
+#define nk_pjson_init(file) nk_fpjson_init(nk_std_json, (file))
+
 /* Pop all level and begin printing a new JSON object */
-void nk_pjson_begin(nkoutfile_t *file);
+void nk_fpjson_begin(json_formatter_t *json);
+#define nk_pjson_begin() nk_fpjson_begin(nk_std_json)
 
 /* Get current level.  Right after nk_pjson_begin(), the level is 1. */
-int32_t nk_pjson_getLevel();
+int32_t nk_fpjson_getlevel(json_formatter_t *json);
+#define nk_pjson_getlevel() nk_fpjson_getlevel(nk_std_json)
 
 /* Begin a new named object, return the old level for use with */
-int32_t nk_pjson_obj(const char *name);
+int32_t nk_fpjson_obj(json_formatter_t *json, const char *name);
+#define nk_pjson_obj(name) nk_fpjson_obj(nk_std_json, (name))
 
 /* Begin a new named array, return the old level for use with nk_pjson_popto() */
-int32_t nk_pjson_array(const char *name);
+int32_t nk_fpjson_array(json_formatter_t *json, const char *name);
+#define nk_pjson_array(name) nk_fpjson_array(nk_std_json, (name))
 
 /* Print various simple values */
 /* If you are in the body of an array, the names are suppressed, ok to use NULL for names */
-void nk_pjson_null(const char *name);
+void nk_fpjson_null(json_formatter_t *json, const char *name);
+#define nk_pjson_null(name) nk_fpjson_null(nk_std_json, (name))
 
-void nk_pjson_bool(const char *name, bool value);
+void nk_fpjson_bool(json_formatter_t *json, const char *name, bool value);
+#define nk_pjson_bool(name, value) nk_fpjson_bool(nk_std_json, (name), (value))
 
-void nk_pjson_string(const char *name, const char *value);
+void nk_fpjson_string(json_formatter_t *json, const char *name, const char *value);
+#define nk_pjson_string(name, value) nk_fpjson_string(nk_std_json, (name), (value))
 
-void nk_pjson_double(const char *name, double value);
+void nk_fpjson_double(json_formatter_t *json, const char *name, double value);
+#define nk_pjson_double(name, value) nk_fpjson_double(nk_std_json, (name), (value))
 
-void nk_pjson_int32(const char *name, int32_t value);
+void nk_fpjson_int32(json_formatter_t *json, const char *name, int32_t value);
+#define nk_pjson_int32(name, value) nk_fpjson_int32(nk_std_json, (name), (value))
 
-void nk_pjson_uint32(const char *name, uint32_t value);
+void nk_fpjson_uint32(json_formatter_t *json, const char *name, uint32_t value);
+#define nk_pjson_uint32(name, value) nk_fpjson_uint32(nk_std_json, (name), (value))
 
-void nk_pjson_int64(const char *name, int64_t value);
+void nk_fpjson_int64(json_formatter_t *json, const char *name, int64_t value);
+#define nk_pjson_int64(name, value) nk_fpjson_int64(nk_std_json, (name), (value))
 
-void nk_pjson_uint64(const char *name, uint64_t value);
+void nk_fpjson_uint64(json_formatter_t *json, const char *name, uint64_t value);
+#define nk_pjson_uint64(name, value) nk_fpjson_uint64(nk_std_json, (name), (value))
 
 /* Pop one level */
-void nk_pjson_pop();
+void nk_fpjson_pop(json_formatter_t *json);
+#define nk_pjson_pop() nk_fpjson_pop(nk_std_json)
 
 /* Pop to specified level */
-void nk_pjson_popto(int32_t level);
+void nk_fpjson_popto(json_formatter_t *json, int32_t level);
+#define nk_pjson_popto(level) nk_fpjson_popto(nk_std_json, (level))
 
 /* Pop all levels */
-void nk_pjson_end();
+void nk_fpjson_end(json_formatter_t *json);
+#define nk_pjson_end() nk_fpjson_end(nk_std_json)

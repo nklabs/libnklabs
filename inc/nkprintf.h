@@ -123,6 +123,9 @@ int _nk_sfprintf(char *dest, size_t len, const NK_FLASH char *fmt,...) __attribu
 
 #endif
 
+extern nkoutfile_t __nkstdout;
+extern nkoutfile_t __nkstdnull;
+
 extern nkoutfile_t *nkstdout;
 extern nkoutfile_t *nkstderr;
 extern nkoutfile_t *nkstdnull;

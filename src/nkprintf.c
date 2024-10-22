@@ -463,7 +463,7 @@ static int outc(void *ptr, size_t offset, const unsigned char *buf, size_t len)
 	return 0;
 }
 
-static nkoutfile_t __nkstdout =
+nkoutfile_t __nkstdout =
 {
 	.ptr = 0,
 	.start = 0,
@@ -474,7 +474,7 @@ static nkoutfile_t __nkstdout =
 	.granularity = 1
 };
 
-static nkoutfile_t __nkstdnull =
+nkoutfile_t __nkstdnull =
 {
  	.ptr = 0,
 	.start = 0,
