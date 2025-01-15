@@ -34,12 +34,6 @@
 
 // Macros
 
-struct macro_arg {
-        struct macro_arg *next;
-        char *name;	// Argument name, "__VA_ARGS__" for varargs
-        char *subst;	// Substitution text: could be NULL for varargs
-};
-
 struct macro {
         struct macro *next;
         char  *name;
@@ -143,6 +137,8 @@ struct keyword {
 	char *name;
 	int token;
 } keyword[] = {
+	{ "_Bool", tBOOL }, // This how gcc and clang have it
+	{ "schar", tSCHAR }, // Same as char, but for strings
 	{ "auto", tAUTO },
 	{ "break", tBREAK },
 	{ "case", tCASE },
@@ -161,7 +157,6 @@ struct keyword {
 	{ "if", tIF },
 	{ "int", tINT },
 	{ "long", tLONG },
-	{ "_Bool", tBOOL }, // This how gcc and clang have it
 	{ "register", tREGISTER },
 	{ "return", tRETURN },
 	{ "short", tSHORT },
@@ -1902,6 +1897,8 @@ void show_tok(int c)
 {
         switch(c) {
                 case tEOF: printf("%s %d: tEOF\n", file_name, line); break;
+                case tBOOL: printf("%s %d: tBOOL\n", file_name, line); break;
+                case tSCHAR: printf("%s %d: tSCHAR\n", file_name, line); break;
                 case tNUM: printf("%s %d: tNUM (%llu%s%s)\n", file_name, line, num.num, (num.is_unsigned ? "u" : ""), (num.is_long_long ? "ll" : "")); break;
                 case tSTRING: {
                         int x;
@@ -1931,7 +1928,6 @@ void show_tok(int c)
                 case tIF: printf("%s %d: tIF\n", file_name, line); break;
                 case tINT: printf("%s %d: tINT\n", file_name, line); break;
                 case tLONG: printf("%s %d: tLONG\n", file_name, line); break;
-                case tBOOL: printf("%s %d: tBOOL\n", file_name, line); break;
                 case tREGISTER: printf("%s %d: tREGISTER\n", file_name, line); break;
                 case tRETURN: printf("%s %d: tRETURN\n", file_name, line); break;
                 case tSHORT: printf("%s %d: tSHORT\n", file_name, line); break;

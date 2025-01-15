@@ -77,3 +77,11 @@ extern struct include_path *include_paths;
 
 void add_path(char *s);
 int open_file(char *name);
+
+struct macro_arg {
+        struct macro_arg *next;
+        char *name;	// Argument name, "__VA_ARGS__" for varargs
+        char *subst;	// Substitution text: could be NULL for varargs
+};
+
+void set_macro(char *name, struct macro_arg *args, char *body, int name_line);

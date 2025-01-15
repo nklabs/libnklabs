@@ -32,14 +32,17 @@
 
 extern int show_tree;
 
+char *filename = NULL;
+
 int main(int argc, char *argv[])
 {
         int c;
         int x;
         char *top = NULL;
-        char *filename = NULL;
         int justlex = 0;
         int dump = 0;
+
+        set_macro("__SCOMP__", NULL, NULL, 0); // Define to indicate we're running in the schema compiler
 
         for (x = 1; argv[x]; ++x)
                 if (argv[x+1] && !strcmp(argv[x], "--top")) {

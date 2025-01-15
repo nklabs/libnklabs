@@ -72,6 +72,7 @@ enum {
     ntVOID,
     ntBOOL,
     ntCHAR,
+    ntSCHAR, /* String character */
     ntUCHAR,
     ntSHORT,
     ntUSHORT,
