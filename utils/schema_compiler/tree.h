@@ -91,7 +91,6 @@ enum {
     nNOTHING, /* There is nothing here. */
 };
 
-//#define cons(...) ({ Node *n = (Node *)malloc(sizeof(Node)); *n = (Node){ __VA_ARGS__ }; n; })
 #define cons(...) (Node *)memcpy(malloc(sizeof(Node)), &(Node){ __VA_ARGS__ }, sizeof(Node))
 
 struct llvalterm {
