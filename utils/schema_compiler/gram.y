@@ -56,6 +56,7 @@ int show_tree = 0;
 %token <term> tDEFAULT tDO tDOUBLE tELSE tENUM tEXTERN tFLOAT tFOR tGOTO tIF tINT
 %token <term> tLONG tREGISTER tRETURN tSHORT tSIGNED tSIZEOF tSTATIC tSTRUCT tSWITCH
 %token <term> tTYPEDEF tUNION tUNSIGNED tVOID tVOLATILE tWHILE
+%token <term> tBOOL
 %token <n> tTYPE
 
 %type <num> const_expr
@@ -111,6 +112,10 @@ simple_type
     $$.file_name = $1.file_name;
     $$.line = $1.line;
     $$.n = cons(.what = ntVOID);
+} | tBOOL {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.n = cons(.what = ntBOOL);
 } | tCHAR {
     $$.file_name = $1.file_name;
     $$.line = $1.line;

@@ -1,7 +1,5 @@
 #include <stdbool.h>
 
-typedef char _Bool;
-
 struct fred
 {
     int x;

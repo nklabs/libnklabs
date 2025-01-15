@@ -232,6 +232,7 @@ void gen_members(char *name, Node *n)
         switch (n->r->what) {
             case ntARRAY: sprintf(tname, "ty_%s_%s_array", name, n->s); break;
             case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
+            case ntBOOL: sprintf(tname, "tyBOOL"); break;
             case ntCHAR: sprintf(tname, "tyINT8"); break;
             case ntUCHAR: sprintf(tname, "tyUINT8"); break;
             case ntSHORT: sprintf(tname, "tyINT16"); break;
@@ -249,7 +250,7 @@ void gen_members(char *name, Node *n)
 }
 
 void gen_array(char *owner, char *member, Node *n, int depth);
-void gen_struct(struct structbase *n);
+void gen_struct(struct structbase *n, int top);
 
 void recur_members(char *name, Node *n)
 {
@@ -261,7 +262,7 @@ void recur_members(char *name, Node *n)
         char tname[80];
         switch (n->r->what) {
             case ntARRAY: gen_array(name, n->s, n->r->r, 0); break;
-            case ntSTRUCT: gen_struct(n->r->uct); break;
+            case ntSTRUCT: gen_struct(n->r->uct, 0); break;
             default: break;
         }
     } else {
@@ -269,7 +270,7 @@ void recur_members(char *name, Node *n)
     }
 }
 
-void gen_struct(struct structbase *n)
+void gen_struct(struct structbase *n, int top)
 {
     if (!n->reached)
     {
@@ -289,7 +290,10 @@ void gen_struct(struct structbase *n)
             printf("Error: struct %s not defined, can not generate %s_members\n", n->name, n->name);
         }
 
-        printf("const struct type ty_%s = {\n", n->name);
+        if (top)
+            printf("struct type ty_%s = {\n", n->name);
+        else
+            printf("const struct type ty_%s = {\n", n->name);
         printf("    .what = tSTRUCT,\n");
         printf("    .size = sizeof(struct %s),\n", n->name);
         printf("    .members = %s_members,\n", n->name);
@@ -325,6 +329,7 @@ void gen_array(char *owner, char *member, Node *n, int depth)
     switch (n->what) {
         case ntARRAY: sprintf(tname, "ty_%s_%s_array%d", owner, member, depth + 1); break;
         case ntSTRUCT: sprintf(tname, "ty_%s", n->s); break;
+        case ntBOOL: sprintf(tname, "tyBOOL"); break;
         case ntCHAR: sprintf(tname, "tyINT8"); break;
         case ntUCHAR: sprintf(tname, "tyUINT8"); break;
         case ntSHORT: sprintf(tname, "tyINT16"); break;
@@ -348,5 +353,8 @@ void gen_meta(char *name)
         printf("Couldn't find 'struct %s'\n", name);
         return ;
     }
-    gen_struct(n);
+
+    printf("#include \"nkserialize.h\"\n\n");
+
+    gen_struct(n, 1);
 }

@@ -70,6 +70,7 @@ enum {
 
     // Types
     ntVOID,
+    ntBOOL,
     ntCHAR,
     ntUCHAR,
     ntSHORT,

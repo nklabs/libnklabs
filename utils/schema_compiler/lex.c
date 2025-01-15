@@ -161,6 +161,7 @@ struct keyword {
 	{ "if", tIF },
 	{ "int", tINT },
 	{ "long", tLONG },
+	{ "_Bool", tBOOL }, // This how gcc and clang have it
 	{ "register", tREGISTER },
 	{ "return", tRETURN },
 	{ "short", tSHORT },
@@ -1930,6 +1931,7 @@ void show_tok(int c)
                 case tIF: printf("%s %d: tIF\n", file_name, line); break;
                 case tINT: printf("%s %d: tINT\n", file_name, line); break;
                 case tLONG: printf("%s %d: tLONG\n", file_name, line); break;
+                case tBOOL: printf("%s %d: tBOOL\n", file_name, line); break;
                 case tREGISTER: printf("%s %d: tREGISTER\n", file_name, line); break;
                 case tRETURN: printf("%s %d: tRETURN\n", file_name, line); break;
                 case tSHORT: printf("%s %d: tSHORT\n", file_name, line); break;
