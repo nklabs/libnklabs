@@ -79,9 +79,8 @@ nkserialize is schema driven.  This means that a schema determines which
 types and fields are expected in the serialized string.  If you add an extra
 field to a structure for example, it will be ignored during deserialization.
 
-The schema is defined in C (in the future there may be a dedicated schema
-language, but not yet).  For example, suppose the C data structure that you
-want to serialize looks like this:
+The schema is defined in C header file.  For example, suppose the C data
+structure that you want to serialize looks like this:
 
 ```c
 struct top {
@@ -91,8 +90,9 @@ struct top {
 };
 ```
 
-The schema that describes this structure is as follows: 
-
+Meta-data in a .c file that describes the schema must also be be provided. 
+A [Schema Compiler](../utils/schema_compilers/README.md) can generate the
+meta-data based on a provided header file.
 
 ```c
 
