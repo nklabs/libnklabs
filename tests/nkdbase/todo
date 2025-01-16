@@ -1,0 +1,5 @@
+scomp:
+ - support tables
+ - support variable arrays
+ - support more of C, so that we can use any include file
+ - remove built in includes from scomp, always be explicit

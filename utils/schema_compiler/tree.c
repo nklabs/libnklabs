@@ -60,6 +60,8 @@ void print_tree(struct node *n)
             case ntUSHORT: printf("unsigned short"); break;
             case ntLONG: printf("long"); break;
             case ntULONG: printf("unsigned long"); break;
+            case ntLONGLONG: printf("long long"); break;
+            case ntULONGLONG: printf("unsigned long long"); break;
             case ntFLOAT: printf("float"); break;
             case ntDOUBLE: printf("double"); break;
             case ntPTR: printf("* "); print_tree(n->r); break;
@@ -248,6 +250,8 @@ void gen_members(char *name, Node *n)
             case ntUSHORT: sprintf(tname, "tyUINT16"); break;
             case ntLONG: sprintf(tname, "tyINT"); break;
             case ntULONG: sprintf(tname, "tyUINT"); break;
+            case ntLONGLONG: sprintf(tname, "tyLONG"); break;
+            case ntULONGLONG: sprintf(tname, "tyULONG"); break;
             case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
             case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
             default: sprintf(tname, "invalid"); break;
@@ -337,6 +341,10 @@ void gen_array(char *owner, char *member, Node *n, int depth)
     {
         gen_array(owner, member, n->r, depth + 1);
     }
+    else if (n->what == ntSTRUCT)
+    {
+        gen_struct(n->uct, 0);
+    }
 
     if (depth)
         printf("const struct type ty_%s_%s_array%d = {\n", owner, member, depth);
@@ -349,7 +357,7 @@ void gen_array(char *owner, char *member, Node *n, int depth)
         printf("[0]");
     printf("),\n");
 
-    printf("    .members = NULL\n");
+    printf("    .members = NULL,\n");
     
     switch (n->what) {
         case ntARRAY:
@@ -368,6 +376,8 @@ void gen_array(char *owner, char *member, Node *n, int depth)
         case ntUSHORT: sprintf(tname, "tyUINT16"); break;
         case ntLONG: sprintf(tname, "tyINT"); break;
         case ntULONG: sprintf(tname, "tyUINT"); break;
+        case ntLONGLONG: sprintf(tname, "tyLONG"); break;
+        case ntULONGLONG: sprintf(tname, "tyULONG"); break;
         case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
         case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
         default: sprintf(tname, "invalid"); break;

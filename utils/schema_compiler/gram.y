@@ -29,6 +29,14 @@
 #include "lex.h"
 #include "tree.h"
 
+#define fCHAR 1
+#define fSHORT 2
+#define fINT 4
+#define fLONG 8
+#define fSIGNED 16
+#define fUNSIGNED 32
+#define fLONGLONG 64
+
 int yylex();
 void yyerror(char *s);
 
@@ -43,6 +51,7 @@ int show_tree = 0;
     struct llvalfp fp;
     struct llvals s;
     struct llvaln n;
+    struct llvalflag flag;
 }
 
 %token tEOF 0
@@ -62,6 +71,7 @@ int show_tree = 0;
 %type <num> const_expr
 
 %type <n> input inside simple_type decl_name decl
+%type <flag> flag_type
 
 %left <term> '-' '+'
 %left <term> '*' '/'
@@ -107,6 +117,79 @@ inside
         $$ = $2;
 } ;
 
+// Build type by settings flags
+
+flag_type
+  : tCHAR {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fCHAR;
+} | tINT {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fINT;
+} | tSIGNED {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fSIGNED;
+} | tUNSIGNED {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fUNSIGNED;
+} | tSHORT {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fSHORT;
+} | tLONG {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.flag = fLONG;
+} | flag_type tCHAR {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fINT | fSHORT | fLONG)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else {
+      $$.flag |= fCHAR;
+    }
+} | flag_type tINT {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fINT)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else {
+      $$.flag |= fINT;
+    }
+} | flag_type tSIGNED {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fSIGNED | fUNSIGNED)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else {
+      $$.flag |= fSIGNED;
+    }
+} | flag_type tUNSIGNED {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fSIGNED | fUNSIGNED)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else {
+      $$.flag |= fUNSIGNED;
+    }
+} | flag_type tSHORT {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fSHORT | fLONG)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else {
+      $$.flag |= fSHORT;
+    }
+} | flag_type tLONG {
+    $$ = $1;
+    if ($$.flag & (fCHAR | fSHORT | fLONGLONG)) {
+      printf("%s %d: Invalid type combination\n", $2.file_name, $2.line);
+    } else if ($$.flag & fLONG) {
+      $$.flag |= fLONGLONG;
+    } else {
+      $$.flag |= fLONG;
+    }
+} ;
+
 simple_type
   : tVOID {
     $$.file_name = $1.file_name;
@@ -120,59 +203,59 @@ simple_type
     $$.file_name = $1.file_name;
     $$.line = $1.line;
     $$.n = cons(.what = ntSCHAR);
-} | tCHAR {
+} | flag_type {
     $$.file_name = $1.file_name;
     $$.line = $1.line;
-    $$.n = cons(.what = ntCHAR);
-} | tSIGNED tCHAR {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntCHAR);
-} | tUNSIGNED tCHAR {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntUCHAR);
-} | tSHORT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntSHORT);
-} | tSIGNED tSHORT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntSHORT);
-} | tUNSIGNED tSHORT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntUSHORT);
-} | tINT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntLONG);
-} | tSIGNED tINT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntLONG);
-} | tUNSIGNED tINT {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntULONG);
-} | tLONG {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntLONG);
-} | tSIGNED tLONG {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntLONG);
-} | tUNSIGNED tLONG {
-    $$.file_name = $1.file_name;
-    $$.line = $1.line;
-    $$.n = cons(.what = ntULONG);
+    if ($1.flag & fLONGLONG)
+    {
+      // fLONGLONG and fLONG may both be set, in this case it's a long long
+      if ($1.flag & fUNSIGNED)
+        $$.n = cons(.what = ntULONGLONG);
+      else
+        $$.n = cons(.what = ntLONGLONG);
+    }
+    else if ($1.flag & fLONG)
+    {
+      if ($1.flag & fUNSIGNED)
+        $$.n = cons(.what = ntULONG);
+      else
+        $$.n = cons(.what = ntLONG);
+    }
+    else if ($1.flag & fSHORT)
+    {
+      if ($1.flag & fUNSIGNED)
+        $$.n = cons(.what = ntUSHORT);
+      else
+        $$.n = cons(.what = ntSHORT);
+    }
+    else if ($1.flag & fCHAR)
+    {
+      if ($1.flag & fUNSIGNED)
+        $$.n = cons(.what = ntUCHAR);
+      else
+        $$.n = cons(.what = ntCHAR);
+    }
+    else
+    {
+      // Otherwise it must be an int
+      if ($1.flag & fUNSIGNED)
+        $$.n = cons(.what = ntULONG);
+      else
+        $$.n = cons(.what = ntLONG);
+    }
 } | tFLOAT {
     $$.file_name = $1.file_name;
     $$.line = $1.line;
     $$.n = cons(.what = ntFLOAT);
 } | tDOUBLE {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.n = cons(.what = ntDOUBLE);
+} | tLONG tDOUBLE {
+    $$.file_name = $1.file_name;
+    $$.line = $1.line;
+    $$.n = cons(.what = ntDOUBLE);
+} | tDOUBLE tLONG {
     $$.file_name = $1.file_name;
     $$.line = $1.line;
     $$.n = cons(.what = ntDOUBLE);
@@ -355,7 +438,10 @@ int yylex()
     return t;
 }
 
+extern char *file_name;
+extern int line;
+
 void yyerror(char *s)
 {
-    printf("%s\n", s);
+    printf("%s %d: %s\n", file_name, line, s);
 }

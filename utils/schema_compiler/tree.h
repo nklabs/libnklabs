@@ -78,6 +78,8 @@ enum {
     ntUSHORT,
     ntLONG,
     ntULONG,
+    ntLONGLONG,
+    ntULONGLONG,
     ntFLOAT,
     ntDOUBLE,
     ntPTR, /* Pointer to type in r */
@@ -120,6 +122,12 @@ struct llvaln {
     char *file_name;
     int line;
     Node *n;
+};
+
+struct llvalflag {
+    char *file_name;
+    int line;
+    unsigned long flag;
 };
 
 

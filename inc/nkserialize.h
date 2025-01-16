@@ -26,9 +26,15 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "nkoutfile.h"
+#include "nkinfile.h"
 #include "nkmacros.h"
 #include "nkserialize_config.h"
+
+#ifndef __SCOMP__
+typedef char schar;
+#endif
 
 enum val_type {
 	tBOOL,		// true or false

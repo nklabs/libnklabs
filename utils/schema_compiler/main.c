@@ -44,27 +44,6 @@ int main(int argc, char *argv[])
 
         set_macro("__SCOMP__", NULL, NULL, 0); // Define to indicate we're running in the schema compiler
 
-        for (x = 1; argv[x]; ++x)
-                if (argv[x+1] && !strcmp(argv[x], "--top")) {
-                        top = argv[x+1];
-                        ++x;
-                } else if (!strcmp(argv[x], "--lex")) {
-                        justlex = 1;
-                } else if (!strcmp(argv[x], "--dump")) {
-                        dump = 1;
-                } else if (!strcmp(argv[x], "--tree")) {
-                        show_tree = 1;
-                } else if (!strcmp(argv[x], "--help") || !strcmp(argv[x], "-h")) {
-                        printf("%s [options] filename\n", argv[0]);
-                        printf("   --top <structname>     Select top-level structure\n");
-                        printf("   --lex                  Show lexical analyzer output only for debugging it\n");
-                        printf("   --dump                 Show collected tables for debugging\n");
-                        printf("   --tree                 Show AST for debugging\n");
-                        return 0;
-                } else {
-                        filename = argv[x];
-                }
-
         // Print defines: gcc -dM -E - < /dev/null
         // Include path from: echo | clang -E -Wp,-v -
         // add_path("/usr/lib/gcc/x86_64-pc-cygwin/7.3.0/include");
@@ -77,6 +56,31 @@ int main(int argc, char *argv[])
         add_path("/usr/include/x86_64-linux-gnu");
 
         //add_path("/usr/include/w32api");
+
+        for (x = 1; argv[x]; ++x)
+                if (argv[x+1] && !strcmp(argv[x], "--top")) {
+                        top = argv[x+1];
+                        ++x;
+                } else if (!strcmp(argv[x], "--lex")) {
+                        justlex = 1;
+                } else if (argv[x+1] && !strcmp(argv[x], "-I")) {
+                        add_path(argv[x+1]);
+                        ++x;
+                } else if (!strcmp(argv[x], "--dump")) {
+                        dump = 1;
+                } else if (!strcmp(argv[x], "--tree")) {
+                        show_tree = 1;
+                } else if (!strcmp(argv[x], "--help") || !strcmp(argv[x], "-h")) {
+                        printf("%s [options] filename\n", argv[0]);
+                        printf("   --top <structname>     Select top-level structure\n");
+                        printf("   --lex                  Show lexical analyzer output only for debugging it\n");
+                        printf("   --dump                 Show collected tables for debugging\n");
+                        printf("   --tree                 Show AST for debugging\n");
+                        printf("   -I <path>              Add include file path\n");
+                        return 0;
+                } else {
+                        filename = argv[x];
+                }
 
         if (filename)
         {

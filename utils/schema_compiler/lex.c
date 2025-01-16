@@ -924,6 +924,7 @@ int get_tok(int preproc)
 				return c;
 			}
 		} case '"': {
+		        wide_string_const: // Fixme, handle wide string constant if someone jumps here
                         word_buffer_init();
                         for (;;) {
                                 c = tok_getc();
@@ -939,6 +940,7 @@ int get_tok(int preproc)
                         word_buffer_done();
                         return tSTRING;
 		} case '\'': {
+		        wide_char_const: // Fixme, handle wide character constant if someone jumps here
                         num.num = 0;
                         num.is_long_long = 0;
                         num.is_unsigned = 1;
@@ -970,11 +972,18 @@ int get_tok(int preproc)
         		  	    (c >= 'A' && c <= 'Z') || c == '_') {
         		  		word_buffer_next(c);
         		  	} else {
-        		  		tok_ungetc(c);
         		  		break;
         		  	}
                         }
                         word_buffer_done();
+                        if (!strcmp(word_buffer, "L"))
+                        {
+                                if (c == '\'')
+                                        goto wide_char_const;
+                                else if (c == '\"')
+                                        goto wide_string_const;
+                        }
+                        tok_ungetc(c);
                         if (preproc == 2) {
                                 return tWORD;
                         } else if (preproc == 1)
@@ -1637,7 +1646,7 @@ int preproc_expr(int prec, struct num *rtn)
 
                 } else if (c == '|' + ('|' << 8) && prec < 2) {
                         sta = preproc_expr(2, rhs);
-                        rtn->num = (rtn->num && rhs->num);
+                        rtn->num = (rtn->num || rhs->num);
                         rtn->is_long_long = 0;
                         rtn->is_unsigned = 0;
 
