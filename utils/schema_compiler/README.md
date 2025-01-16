@@ -54,7 +54,7 @@ things:
 * Structures
 
 One structure must be provided as the the top-level structure of the schema. 
-It's name is should be supplied to the compiler using the --top command line
+Its name is should be supplied to the compiler using the --top command line
 option.
 
 Strings are are defined like this:
