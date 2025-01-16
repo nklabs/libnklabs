@@ -10,7 +10,9 @@ type "make"
 
 ## Usage instructions
 
-This builds the schema.c for [../../tests/nkdbase/schema.h](../../tests/nkdbase/schema.h).
+This builds the schema.c for
+[../../tests/nkdbase/schema.h](../../tests/nkdbase/schema.h), a nkdbase unit
+test schema.
 
 	./scomp schema.h --top testtop >schema.c
 
@@ -39,7 +41,7 @@ Compiler (gcc) and clang is implemented, therefore it is not recommended to #inc
 standard library header files.  It will fail on things like
 attributes and GNU-C extensions which are used GLIBC's header files.
 
-The macro __SCOMP__ is automatically #defined by the compiler and can be
+The macro \_\_SCOMP\_\_ is automatically #defined by the compiler and can be
 used by conditional preprocessor directives- for example for excluding
 header files #includes.
 
