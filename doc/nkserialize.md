@@ -90,9 +90,10 @@ struct top {
 };
 ```
 
-Meta-data in a .c file that describes the schema must also be be provided. 
+Meta-data in a C source file that describes the schema must also be be provided. 
 A [Schema Compiler](../utils/schema_compilers/README.md) can generate the
-meta-data based on a provided header file.
+meta-data based on a provided header file.  Here is the generated meta-data
+for the above schema:
 
 ```c
 
