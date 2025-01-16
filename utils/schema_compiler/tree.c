@@ -225,19 +225,56 @@ void show_unions()
     show_nodes(unions);
 }
 
-void gen_members(char *name, Node *n)
+void do_gen_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
-        gen_members(name, n->l);
-        gen_members(name, n->r);
+        do_gen_members(varray_name, varray_type, name, n->l);
+        do_gen_members(varray_name, varray_type, name, n->r);
     } else if (n->what == nNOTHING) {
     } else if (n->what == nDECL) {
         char tname[80];
+        if (varray_name[0])
+        {
+            // This member must be an array
+            if (n->r->what == ntARRAY)
+            {
+                if (*varray_type)
+                    printf("    { \"%s\", &ty_%s_%s_table, offsetof(struct %s, %s), 0 },\n", n->s, name, n->s, name, varray_name);
+                else
+                    printf("    { \"%s\", &ty_%s_%s_varray, offsetof(struct %s, %s), 0 },\n", n->s, name, n->s, name, varray_name);
+                varray_name[0] = 0;
+                goto done;
+            }
+            else
+            {
+                if (*varray_type)
+                    fprintf(stderr, "missing table after union table_len\n");
+                else
+                    fprintf(stderr, "missing varray after union len\n");
+                varray_name[0] = 0;
+                // Fall into switch..
+            }
+        }
         switch (n->r->what) {
+            case ntUNION:
+            {
+                // "union len" is used for varray length
+                strcpy(varray_name, n->s);
+                if (!strcmp(n->r->s, "table_len"))
+                    *varray_type = 1;
+                else
+                    *varray_type = 0;
+                goto done;
+            }
             case ntARRAY:
             {
                 if (n->r->r->what == ntSCHAR)
                     sprintf(tname, "ty_%s_%s_string", name, n->s);
+                else if (varray_name[0])
+                {
+                    sprintf(tname, "ty_%s_%s_varray", name, n->s);
+                    varray_name[0] = 0;
+                }
                 else
                     sprintf(tname, "ty_%s_%s_array", name, n->s);
                 break;
@@ -257,30 +294,76 @@ void gen_members(char *name, Node *n)
             default: sprintf(tname, "invalid"); break;
         }
         printf("    { \"%s\", &%s, offsetof(struct %s, %s), 0 },\n", n->s, tname, name, n->s);
+        done:;
     } else {
         printf("Huh?\n");
     }
 }
 
-void gen_array(char *owner, char *member, Node *n, int depth);
+void gen_members(char *name, Node *n)
+{
+    char varray_name[80];
+    int varray_type;
+    varray_name[0] = 0;
+    do_gen_members(varray_name, &varray_type, name, n);
+}
+
+void gen_array(char *owner, char *member, Node *n, int depth, int varray);
 void gen_struct(struct structbase *n, int top);
 
-void recur_members(char *name, Node *n)
+void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
-        recur_members(name, n->l);
-        recur_members(name, n->r);
+        do_recur_members(varray_name, varray_type, name, n->l);
+        do_recur_members(varray_name, varray_type, name, n->r);
     } else if (n->what == nNOTHING) {
     } else if (n->what == nDECL) {
         char tname[80];
+        if (varray_name[0])
+        {
+            // This member must be an array
+            if (n->r->what == ntARRAY)
+            {
+                if (*varray_type)
+                    gen_array(name, n->s, n->r->r, 0, 2);
+                else
+                    gen_array(name, n->s, n->r->r, 0, 1);
+                varray_name[0] = 0;
+                goto done;
+            }
+            else
+            {
+                varray_name[0] = 0;
+                // Fall into switch..
+            }
+        }
         switch (n->r->what) {
-            case ntARRAY: gen_array(name, n->s, n->r->r, 0); break;
+            case ntUNION:
+            {
+                // "union len" is used for varray length
+                strcpy(varray_name, n->s);
+                if (!strcmp(n->r->s, "table_len"))
+                    *varray_type = 1;
+                else
+                    *varray_type = 0;
+                break;
+            }
+            case ntARRAY: gen_array(name, n->s, n->r->r, 0, 0); break;
             case ntSTRUCT: gen_struct(n->r->uct, 0); break;
             default: break;
         }
+        done:;
     } else {
         printf("Huh?\n");
     }
+}
+
+void recur_members(char *name, Node *n)
+{
+    char varray_name[80];
+    int varray_type;
+    varray_name[0] = 0;
+    do_recur_members(varray_name, &varray_type, name, n);
 }
 
 void gen_struct(struct structbase *n, int top)
@@ -316,7 +399,7 @@ void gen_struct(struct structbase *n, int top)
     }
 }
 
-void gen_array(char *owner, char *member, Node *n, int depth)
+void gen_array(char *owner, char *member, Node *n, int depth, int varray)
 {
     char tname[80];
     int i;
@@ -339,7 +422,7 @@ void gen_array(char *owner, char *member, Node *n, int depth)
 
     if (n->what == ntARRAY)
     {
-        gen_array(owner, member, n->r, depth + 1);
+        gen_array(owner, member, n->r, depth + 1, 0);
     }
     else if (n->what == ntSTRUCT)
     {
@@ -348,9 +431,18 @@ void gen_array(char *owner, char *member, Node *n, int depth)
 
     if (depth)
         printf("const struct type ty_%s_%s_array%d = {\n", owner, member, depth);
+    else if (varray == 1)
+        printf("const struct type ty_%s_%s_varray = {\n", owner, member);
+    else if (varray == 2)
+        printf("const struct type ty_%s_%s_table = {\n", owner, member);
     else
         printf("const struct type ty_%s_%s_array = {\n", owner, member);
-    printf("    .what = tARRAY,\n");
+    if (varray == 1)
+        printf("    .what = tVARRAY,\n");
+    else if (varray == 2)
+        printf("    .what = tTABLE,\n");
+    else
+        printf("    .what = tARRAY,\n");
 
     printf("    .size = nk_member_size(struct %s, %s", owner, member);
     for (i = 0; i != depth; ++i)

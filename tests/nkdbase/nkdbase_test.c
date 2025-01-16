@@ -5,7 +5,7 @@
 #include "nkscan.h"
 #include "nkdbase.h"
 
-#include "database.h"
+#include "schema.h"
 
 // Example loaded structure
 
@@ -20,13 +20,13 @@ struct testtop testtop = {
         { .tstring = "Hello", .tfloat = .0628, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
 
     },
-    //.tvararray_len.len = 3,
+    .tvararray_len.len = 3,
     .tvararray = {
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.126, .tfloat = .0625, .tstring = "Hello" },
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.127, .tfloat = .0625, .tstring = "Hello" },
         { .tbool = true, .tint = 0x7FFFFFFE, .tuint = 0xEFFFFFFE, .tint8 = 0x7E, .tuint8 = 0xEE, .tint16 = 0x7FFE, .tuint16 = 0xEFFE, .tdouble = 0.128, .tfloat = .0625, .tstring = "Hello" }
     },
-    //.ttable_len.len = 3,
+    .ttable_len.len = 3,
     .ttable = {
         { .tstring = "Hello", .tfloat = .0630, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },
         { .tstring = "Hello", .tfloat = .0631, .tdouble = 0.125, .tuint16 = 0xEFFE, .tint16 = 0x7FFE, .tuint8 = 0xEE, .tint8 = 0x7E, .tuint = 0xEFFFFFFE, .tint = 0x7FFFFFFE, .tbool = false },

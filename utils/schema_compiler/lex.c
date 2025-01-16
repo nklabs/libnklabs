@@ -137,7 +137,8 @@ struct keyword {
 	char *name;
 	int token;
 } keyword[] = {
-	{ "_Bool", tBOOL }, // This how gcc and clang have it
+//	{ "_Bool", tBOOL }, // This how gcc and clang have it and use stdbool.h to get bool.
+	{ "bool", tBOOL }, // But we pretend bool is a built-in type.
 	{ "schar", tSCHAR }, // Same as char, but for strings
 	{ "auto", tAUTO },
 	{ "break", tBREAK },

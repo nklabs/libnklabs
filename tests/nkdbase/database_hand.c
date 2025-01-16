@@ -1,5 +1,8 @@
 // Hand-written Test database metadata
 
+#include "nkserialize.h"
+#include "database.h"
+
 const struct type tyTESTSTRING = {
     .what = tSTRING,
     .size = nk_member_size(struct testfwd, tstring),
@@ -84,7 +87,7 @@ const struct member testtop_members[] = {
     { NULL, NULL, 0 }
 };
 
-const struct type ty_testtop = {
+struct type ty_testtop = {
     .what = tSTRUCT,
     .size = sizeof(struct testtop),
     .members = testtop_members,

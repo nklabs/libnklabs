@@ -45,15 +45,15 @@ int main(int argc, char *argv[])
         set_macro("__SCOMP__", NULL, NULL, 0); // Define to indicate we're running in the schema compiler
 
         // Print defines: gcc -dM -E - < /dev/null
-        // Include path from: echo | clang -E -Wp,-v -
-        // add_path("/usr/lib/gcc/x86_64-pc-cygwin/7.3.0/include");
-        //add_path("/usr/lib/gcc/x86_64-linux-gnu/7.5.0/include");
+        // Include paths from: echo | clang -E -Wp,-v -
 
-        add_path("/usr/include");
-        add_path("/usr/lib/gcc/x86_64-linux-gnu/11/include"); // gcc
+        // No built-in include paths for schema compiler, but this how you add them:
+
+        //add_path("/usr/include");
+        //add_path("/usr/lib/gcc/x86_64-linux-gnu/11/include"); // gcc
         //add_path("/usr/lib/llvm-14/lib/clang/14.0.0/include"); // clang
-        add_path("/usr/local/include");
-        add_path("/usr/include/x86_64-linux-gnu");
+        //add_path("/usr/local/include");
+        //add_path("/usr/include/x86_64-linux-gnu");
 
         //add_path("/usr/include/w32api");
 
@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
 
         if (dump)
         {
-                printf("Typedefs:\n");
+                printf("\nTypedefs:\n");
                 show_typedefs();
-                printf("Structs:\n");
+                printf("\nStructs:\n");
                 show_structs();
-                printf("Unions:\n");
+                printf("\nUnions:\n");
                 show_unions();
         }
 

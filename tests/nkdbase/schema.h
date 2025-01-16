@@ -1,4 +1,10 @@
-#include <stdbool.h>
+#ifndef _Ischema
+#define _Ischema
+
+// Don't include header file for schema compiler
+#ifndef __SCOMP__
+#include "nkserialize.h"
+#endif
 
 // Test database
 // Type definitions
@@ -32,10 +38,10 @@ struct testbkwd {
 struct testtop {
     struct testfwd tstruct;
     struct testbkwd tarray[4];
-    //union len tvararray_len;
-    //struct testfwd tvararray[8];
-    struct testfwd tvararray[3];
-    //union len ttable_len;
-    //struct testbkwd ttable[7];
-    struct testbkwd ttable[3];
+    union len tvararray_len;
+    struct testfwd tvararray[8];
+    union table_len ttable_len;
+    struct testbkwd ttable[7];
 };
+
+#endif

@@ -3,7 +3,7 @@ TARGET = nkdbase
 OBJS = build/nkdbase.o build/nkscan.o build/nkprintf.o build/nkprintf_fp.o \
 build/nkstring.o build/nkdbase_test.o build/nkinfile.o build/nkstrtod.o \
 build/nkdectab.o build/nkcrclib.o build/nkoutfile.o build/nkserialize.o \
-build/nkchecked.o build/database.o
+build/nkchecked.o build/schema.o
 
 # Run test
 test : build/$(TARGET)
@@ -13,8 +13,9 @@ test : build/$(TARGET)
 # Force rebuild all
 remake: cleaner all
 
-database.c : database.h
-	../../utils/schema_compiler/scomp database.h --top testtop >database.c
+# Build schema's metadata
+schema.c : schema.h
+	../../utils/schema_compiler/scomp schema.h --top testtop >schema.c
 
 # Dependencies
 
