@@ -127,7 +127,7 @@ offset to each member in the structure.  tyNAME is used for member c,
 because it is a complex type.  tyNAME indicates that the type is a string
 and that its maximum length is 50.
 
-Notice that the schema is all marked as const.  This keeps the schema in
+Notice that the schema is all marked as const.  This keeps the meta-data in
 (the typically more expansive) flash memory of your microcontroller, so as
 not to use up the limited RAM.
 
