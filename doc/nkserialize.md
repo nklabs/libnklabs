@@ -82,8 +82,9 @@ types and fields are expected in the serialized string.  This allows for
 some flexibility for schema migrations:  Extra object members are ignored
 and missing ones are left with default values.
 
-The schema is defined in a C header file.  For example, suppose the C data
-structure that you want to serialize looks like this:
+The schema is defined in a C header file as a set of C language structs. 
+For example, suppose the C data structure that you want to serialize looks
+like this:
 
 ```c
 struct top {
