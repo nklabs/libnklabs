@@ -81,7 +81,7 @@ nkserialize is schema driven.  This means that a schema determines which
 types and fields are expected in the serialized string.  If you add an extra
 field to a structure for example, it will be ignored during deserialization.
 
-The schema is defined in C header file.  For example, suppose the C data
+The schema is defined in a C header file.  For example, suppose the C data
 structure that you want to serialize looks like this:
 
 ```c
