@@ -16,40 +16,41 @@ The string can be read or edited by humans, transferred over a network or
 saved in a file or flash memory.  Deserialization means we parse a string
 back into a native C data structure.
 
-The serialized format looks very much like JSON.  Here is an example:
+The serialized format is JSON, but with tables as an optional extension. 
+Here is an example:
 
     {
-      connector: {
-        sp: {
-          scale: 0.00251427,
-          offset: 0.0
+      "connector": {
+        "sp": {
+          "scale": 0.00251427,
+          "offset": 0.0
         },
-        f: {
-          scale: 0.00265934,
-          offset: -0.416
+        "f": {
+          "scale": 0.00265934,
+          "offset": -0.416
         },
       },
-      my_array: [
+      "my_array": [
         1, 2, 3, 4, 5
       ],
-      temp: {
-        in: {
-          scale: 0.0414627,
-          offset: 0.0
+      "temp": {
+        "in": {
+          "scale": 0.0414627,
+          "offset": 0.0
         },
-        ambient: {
-          scale: 0.0414627,
-          offset: 0.0
+        "ambient": {
+          "scale": 0.0414627,
+          "offset": 0.0
         }
       },
-      voltage: {
-        scale: 0.0163324,
-        offset: 0.0
+      "voltage": {
+        "scale": 0.0163324,
+        "offset": 0.0
       },
-      tinfo: {
-        tempco: 1314,
-        nom: 0,
-        f_table:
+      "tinfo": {
+        "tempco": 1314,
+        "nom": 0,
+        "f_table":
           (	bias	limit	tempco	enable	driver
           :	2.0	4.0	0	0	0
           :	2.0	4.0	0	0	0
@@ -59,10 +60,10 @@ The serialized format looks very much like JSON.  Here is an example:
           :	2.0	4.0	1314	1	0
           :	2.0	4.0	0	0	0
           ),
-      d_quiescent: 62.0,
-      pwd: "6D7FD05041051F080F766F94C591C4B8397FA66CF5FC8AB9854050978A",
-      salt: "00006C84F3A",
-      serno: "1234"
+      "d_quiescent": 62.0,
+      "pwd": "6D7FD05041051F080F766F94C591C4B8397FA66CF5FC8AB9854050978A",
+      "salt": "00006C84F3A",
+      "serno": "1234"
     }
 
 The following types are supported:
@@ -73,7 +74,8 @@ The following types are supported:
 * Strings, such as "abc".  C language escape sequences are allowed within strings.
 * Structures, such as { a:1, b:2, c:3 }.  The member names follow the rules for C identifiers.
 * Arrays, such as [ "first", "second", "third" ].  The types of all the members must be the same, but they can be complex types such as structures.
-* Tables, such as ( name, ssno : "joe", "123-45-6890" : "bill", "111-22-3333" ).  There is a header row specifying the column names followed by 0 or more data rows.  The deserialized format of a table is an array of structures.  Tables are printed so that they can be imported into spreadsheets.
+* Arrays may be fixed-length or variable length.
+* Tables, such as ( name, ssno : "joe", "123-45-6890" : "bill", "111-22-3333" ).  There is a header row specifying the column names followed by 0 or more data rows.  The deserialized format of a table is an array of structures.  Tables are printed so that they can be cut and pasted into spreadsheets.
 
 nkserialize is schema driven.  This means that a schema determines which
 types and fields are expected in the serialized string.  If you add an extra
@@ -86,7 +88,7 @@ structure that you want to serialize looks like this:
 struct top {
 	float a;
 	int b;
-	char c[50];
+	schar c[50];
 };
 ```
 
@@ -152,8 +154,11 @@ heap.
 
 Strings have length which can be less than the maximum length.  This is
 determined by the terminating NUL as usual.  But what about arrays and
-tables?  For these, a separate integer containing the actual length always
-precedes the array or table, for example for array 'd' and table 'e' below:
+tables?  Array can be fixed length (in which case the exact number of
+elements must be present in the serialized string) or variable length. 
+Tables are always variable length.  For variable length arrays and tables, a
+separate integer containing the actual length always precedes the array or
+table, for example for array 'd' and table 'e' below:
 
 ```c
 struct my_table_entry {
@@ -172,10 +177,11 @@ struct top {
 } foo;
 ```
 
-A union is used to force a fixed memory offset between the length and the
-following array (it contains a member which the C compiler is forced to
-align).  To access the integer containing the length, use
-foo.d_len.len.
+"union len" is a wrapper for the length integer.  The union indicates that
+the following array is variable length.  It also is used to force a fixed
+memory offset between the length and the following array (it contains a
+member which the C compiler is forced to align).  To access the integer
+containing the length, use foo.d_len.len.
 
 d_len.len can have any of the values 0 through 7 inclusive. 
 e_len.len can have of the values 0 through 20 inclusive.
@@ -204,7 +210,7 @@ const struct type tyMY_TABLE = {
 };
 
 const struc type tyMY_ARRAY = {
-	.what = tARRAY,
+	.what = tVARRAY,
 	.size = member_size(struct top, d),
 	.members = NULL,
 	.subtype = &tyINT
