@@ -78,8 +78,9 @@ The following types are supported:
 * Tables, such as ( name, ssno : "joe", "123-45-6890" : "bill", "111-22-3333" ).  There is a header row specifying the column names followed by 0 or more data rows.  The deserialized format of a table is an array of structures.  Tables are printed so that they can be cut and pasted into spreadsheets.
 
 nkserialize is schema driven.  This means that a schema determines which
-types and fields are expected in the serialized string.  If you add an extra
-field to a structure for example, it will be ignored during deserialization.
+types and fields are expected in the serialized string.  This allows for
+some flexibility for schema migrations:  Extra object members are ignored
+and missing ones are left with default values.
 
 The schema is defined in a C header file.  For example, suppose the C data
 structure that you want to serialize looks like this:
