@@ -154,7 +154,7 @@ heap.
 
 Strings have length which can be less than the maximum length.  This is
 determined by the terminating NUL as usual.  But what about arrays and
-tables?  Array can be fixed length (in which case the exact number of
+tables?  Arrays can be fixed length (in which case the exact number of
 elements must be present in the serialized string) or variable length. 
 Tables are always variable length.  For variable length arrays and tables, a
 separate integer containing the actual length always precedes the array or
@@ -186,7 +186,7 @@ containing the length, use foo.d_len.len.
 d_len.len can have any of the values 0 through 7 inclusive. 
 e_len.len can have of the values 0 through 20 inclusive.
 
-The schema for arrays and tables looks like this:
+The meta-data for arrays and tables looks like this:
 
 ```c
 const struct member my_table_entry_members[] = {
@@ -249,8 +249,9 @@ any type.
 
 ## Built-in types
 
-There are a number of built-in types that can appear in the .subtype field
-of "struct type" or in the .type field of struct member:
+The following meta-data "struct types" for primitive types are built-in. 
+These can appear in the .subtype field of "struct type" or in the .type
+field of "struct member":
 
 	tyINT		"int"
 	tyUINT		"unsigned int"
