@@ -229,10 +229,12 @@ int flash_write(uint32_t address, uint64_t data)
 
 	HAL_FLASH_Unlock();
 
-#ifdef FLASH_TYPEPROGRAM_DOUBLEWORD
+#if defined(FLASH_TYPEPROGRAM_DOUBLEWORD)
 	rtn = (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, address, data));
-#else
+#elif defined(FLASH_TYPEPROGRAM_WORD)
 	rtn = (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data));
+#elif defined(FLASH_TYPEPROGRAM_FLASHWORD)
+	rtn = (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, data));
 #endif
 
 	HAL_FLASH_Lock();
