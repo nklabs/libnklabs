@@ -25,6 +25,7 @@
 #define _nkoutfile
 
 #include <stdlib.h> // For size_t
+#include <stddef.h> // For ptrdiff_t
 
 // Nkfile pointer
 

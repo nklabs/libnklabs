@@ -26,9 +26,13 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "nkoutfile.h"
+#include "nkinfile.h"
 #include "nkmacros.h"
 #include "nkserialize_config.h"
+
+typedef char schar;	// Use in place of char in schema to indicate string
 
 enum val_type {
 	tBOOL,		// true or false
@@ -75,7 +79,16 @@ struct alignme {
 	double xxx;
 };
 
+// Use for arrays
+
 union len {
+	size_t len;
+	struct alignme alignme;
+}; 
+
+// Use for tables
+
+union table_len {
 	size_t len;
 	struct alignme alignme;
 }; 

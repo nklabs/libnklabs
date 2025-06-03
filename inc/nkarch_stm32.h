@@ -47,10 +47,15 @@ static inline __attribute__((always_inline)) void nk_irq_unlock_and_wait(nk_spin
 {
     switch (deepness) {
         case 1: {
-            HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+            // ST defines "Sleep mode" and "Low Power Sleep Mode"
+            // "Low Power Sleep Mode" (PAR_LOWERPOWERREGULATOR_ON) only works if the clock is below
+            // some limit, 131 KHz or 2 MHz, depends on the chip.
+            HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
             nk_irq_unlock(lock, flags);
             break;
         } case 2: {
+            // In STOP mode, you can use either PWR_MAINREGULATOR_ON ("STOP mode 0") or PWR_LOWPOWERREGULATOR_ON ("STOP mode 1").
+            //   LOWPOWER will increase the startup time when exiting STOP mode.
             HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
             nk_irq_unlock(lock, flags);
             break;
