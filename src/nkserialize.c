@@ -309,7 +309,21 @@ int nk_dbase_fprint(nkoutfile_t *f, const struct type *type, void *location, int
             }
             status |= nk_fprintf(f, "\"%s", ed);
             break;
-        } default: {
+        } case tUNION: {
+			const struct union_info *info = type->union_info;
+			int tag = *(int *)((char *)location + info->tag_offset);
+
+			for (size_t i = 0; i < info->variant_count; i++) {
+				const struct union_variant *variant = &info->variants[i];
+
+				if (variant->tag == tag) {
+					status |= nk_dbase_fprint(f, variant->type, (char *)location + variant->offset, ind, ed);
+					break;
+				}
+			}
+
+			break;
+		} default: {
             status |= nk_fprintf(f, "unknown%s", ed);
             break;
         }
@@ -435,6 +449,21 @@ int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location)
 				++s;
 			}
 			status |= nk_fputc(f, '"');
+			break;
+		} case tUNION: {
+			const struct union_info *info = type->union_info;
+			int tag = *(int *)((char *)location + info->tag_offset);
+
+			for (size_t i = 0; i < info->variant_count; i++) {
+				const struct union_variant *variant = &info->variants[i];
+
+				if (variant->tag == tag) {
+					status |= nk_dbase_serialize(f, variant->type, (char *)location + variant->offset);
+					break;
+				}
+			}
+
+			break;
 		}
 	}
 	return status;
@@ -1005,6 +1034,19 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				}
 				if (toolong) {
 					nk_fprintf(nkstderr, "Warning: ignoring %d extra rows in table\n", toolong);
+				}
+			}
+			break;
+		} case tUNION: {
+			const struct union_info *info = type->union_info;
+			int tag = *(int *)(location + info->tag_offset);
+
+			for (size_t i = 0; i < info->variant_count; i++) {
+				const struct union_variant *variant = &info->variants[i];
+
+				if (variant->tag == tag) {
+					sta = nk_fscan_keyval(f, variant->type, location + variant->offset);
+					break;
 				}
 			}
 			break;

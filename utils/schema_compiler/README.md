@@ -52,6 +52,7 @@ things:
   * The signed and unsigned modifiers are allowed.
 * Fixed length arrays of arrays, structures or primitive types
 * Structures
+* Unions
 
 One structure must be provided as the the top-level structure of the schema. 
 Its name is should be supplied to the compiler using the --top command line
@@ -68,6 +69,25 @@ included when the schema header file is fed into the schema compiler).
 
 Strings are NUL terminated variable length up to the size of the given schar
 array.
+
+Unions are allowed within structures as follows:
+
+	struct example {
+		int value_tag;
+
+		union value {
+			int integer;
+			float real;
+		} value;
+	};
+
+The discriminator for a union member must be named `<union_member_name>_tag`
+and must be declared as an `int` in the same containing structure.
+
+The integer tag indicates which member of the union is active. Union 
+members are assigned tag values starting at 1 in the order that they are
+declared. In this case value_tag = 1 selects value.integer and value_tag = 2
+selects value.real. Only the selected member is serialized or deserialized.
 
 Variable length arrays are allowed within structures as follows;
 

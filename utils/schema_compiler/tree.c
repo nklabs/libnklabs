@@ -258,13 +258,24 @@ void do_gen_members(char *varray_name, int *varray_type, char *name, Node *n)
         switch (n->r->what) {
             case ntUNION:
             {
+                const char *union_name = n->r->s;
+
                 // "union len" is used for varray length
-                strcpy(varray_name, n->s);
-                if (!strcmp(n->r->s, "table_len"))
+                
+                if (union_name && !strcmp(union_name, "table_len")) {
+                    strcpy(varray_name, n->s);
                     *varray_type = 1;
-                else
+                    goto done;
+                }
+                else if (union_name && !strcmp(union_name, "len")) {
+                    strcpy(varray_name, n->s);
                     *varray_type = 0;
-                goto done;
+                    goto done;
+                } else {
+                    sprintf(tname, "ty_%s_%s_union", name, n->s);
+                    break;
+                }
+
             }
             case ntARRAY:
             {
@@ -311,6 +322,120 @@ void gen_members(char *name, Node *n)
 void gen_array(char *owner, char *member, Node *n, int depth, int varray);
 void gen_struct(struct structbase *n, int top);
 
+static Node *find_member(Node *n, const char *name) 
+{
+    if (!n) {
+        return NULL;
+    }
+
+    if (n->what == nLIST) {
+        Node *found = find_member(n->l, name);
+
+        if (found) {
+            return found;
+        }
+
+        return find_member(n->r, name);
+    }
+
+    if (n->what == nDECL && !strcmp(n->s, name)) {
+        return n;
+    }
+
+    return NULL;
+}
+
+static void validate_union_tag(struct structbase *parent, Node *union_decl)
+{
+    char tag_name[128];
+
+    snprintf(tag_name, sizeof(tag_name), "%s_tag", union_decl->s);
+    Node *tag_member = find_member(parent->body, tag_name);
+
+    if(!tag_member) {
+        fprintf(stderr, "Error: union '%s' requires discriminator '%s'\n", union_decl->s, tag_name);
+        exit(EXIT_FAILURE);
+    }
+
+    if (tag_member->r->what != ntLONG) {
+        fprintf(stderr, "Error: discriminator '%s' must be an int\n", tag_name);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void gen_union_variants(Node *n, int *tag)
+{
+    if (n->what == nLIST) {
+        gen_union_variants(n->l, tag);
+        gen_union_variants(n->r, tag);
+    } else if (n->what == nDECL) {
+        char tname[80];
+
+        switch (n->r->what) {
+            case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
+            case ntBOOL: sprintf(tname, "tyBOOL"); break;
+            case ntCHAR: sprintf(tname, "tyINT8"); break;
+            case ntUCHAR: sprintf(tname, "tyUINT8"); break;
+            case ntSHORT: sprintf(tname, "tyINT16"); break;
+            case ntUSHORT: sprintf(tname, "tyUINT16"); break;
+            case ntLONG: sprintf(tname, "tyINT"); break;
+            case ntULONG: sprintf(tname, "tyUINT"); break;
+            case ntLONGLONG: sprintf(tname, "tyLONG"); break;
+            case ntULONGLONG: sprintf(tname, "tyULONG"); break;
+            case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
+            case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
+            default:
+                fprintf(stderr, "Unsupported union member: %s\n", n->s);
+                exit(EXIT_FAILURE);
+        }
+
+        printf("    { %d, &%s, 0 },\n", *tag, tname);
+        (*tag)++;
+    }
+}
+
+void gen_union_structs(Node *n) {
+    if (n->what == nLIST) {
+        gen_union_structs(n->l);
+        gen_union_structs(n->r);
+    } else if (n->what == nDECL) {
+        if (n->r->what == ntSTRUCT) {
+            gen_struct(n->r->uct, 0);
+        }
+    }
+}
+
+void gen_union(char *name, Node *n) 
+{
+    struct structbase *parent = lookup_struct(name);
+    validate_union_tag(parent, n);
+
+    int tag = 1;
+
+    gen_union_structs(n->r->r);
+
+    printf("const struct union_variant %s_%s_variants[] = {\n", name, n->s);
+    gen_union_variants(n->r->r, &tag);
+    printf("};\n\n");
+
+    // generate union info
+    printf("const struct union_info %s_%s_union_info = {\n", name, n->s);
+    printf("    .tag_offset = (ptrdiff_t)offsetof(struct %s, %s_tag) - (ptrdiff_t)offsetof(struct %s, %s),\n", name, n->s, name, n->s);
+    printf("    .variants = %s_%s_variants,\n", name, n->s);
+    printf("    .variant_count = %d,\n", tag - 1);
+    printf("};\n\n");
+
+    // generate union type
+    printf("const struct type ty_%s_%s_union = {\n", name, n->s);
+    printf("    .what = tUNION,\n");
+    printf("    .size = sizeof(((struct %s *) 0)->%s),\n", name, n->s);
+    printf("    .members = NULL,\n");
+    printf("    .subtype = NULL,\n");
+    printf("    .check = NULL,\n");
+    printf("    .union_info = &%s_%s_union_info,\n", name, n->s);
+    printf("};\n\n");
+}
+
 void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
@@ -340,12 +465,18 @@ void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
         switch (n->r->what) {
             case ntUNION:
             {
+                const char *union_name = n->r->s;
                 // "union len" is used for varray length
-                strcpy(varray_name, n->s);
-                if (!strcmp(n->r->s, "table_len"))
+                if (union_name && !strcmp(n->r->s, "table_len")) {
+                    strcpy(varray_name, n->s);
                     *varray_type = 1;
-                else
+                }
+                else if (union_name && !strcmp(n->r->s, "len")) { // 
+                    strcpy(varray_name, n->s);
                     *varray_type = 0;
+                } else {
+                    gen_union(name, n);
+                }
                 break;
             }
             case ntARRAY: gen_array(name, n->s, n->r->r, 0, 0); break;

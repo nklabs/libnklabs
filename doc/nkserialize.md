@@ -73,6 +73,7 @@ The following types are supported:
 * Floating point numbers, such as -1.3e4.
 * Strings, such as "abc".  C language escape sequences are allowed within strings.
 * Structures, such as { a:1, b:2, c:3 }.  The member names follow the rules for C identifiers.
+* Tagged unions. An integer tag determines which member of the union is serialized or deserialized. 
 * Arrays, such as [ "first", "second", "third" ].  The types of all the members must be the same, but they can be complex types such as structures.
 * Arrays may be fixed-length or variable length.
 * Tables, such as ( name, ssno : "joe", "123-45-6890" : "bill", "111-22-3333" ).  There is a header row specifying the column names followed by 0 or more data rows.  The deserialized format of a table is an array of structures.  Tables are printed so that they can be cut and pasted into spreadsheets.

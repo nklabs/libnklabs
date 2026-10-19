@@ -55,7 +55,9 @@ enum val_type {
 	tARRAY,		// A fixed array: subtype has type of each item
 	tVARRAY,	// A variable length array: subtype has type of each item
 
-	tTABLE		// A table (an array of structs): subtype has structure defining columns
+	tTABLE,		// A table (an array of structs): subtype has structure defining columns
+
+	tUNION		// a tagged union
 };
 
 struct type {
@@ -64,6 +66,8 @@ struct type {
 	const struct member *members;	// Member list for structures
 	const struct type *subtype;	// Array element type, table structure type
 	int (*check)(size_t location);	// Check validity after parsing (return 0 for good)
+
+	const struct union_info *union_info; // 
 };
 
 struct member {
@@ -71,6 +75,18 @@ struct member {
 	const struct type *type;	// Type of this member
 	size_t offset;			// Byte offset to it from parent
 	uint32_t triggers;		// Trigger on modification bitmap
+};
+
+struct union_variant {
+	int tag;
+	const struct type *type;
+	size_t offset;
+};
+
+struct union_info {
+	ptrdiff_t tag_offset;
+	const struct union_variant *variants;
+	size_t variant_count;
 };
 
 // This is how we store table and array sizes... this way forces alignment
