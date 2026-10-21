@@ -225,6 +225,9 @@ void show_unions()
     show_nodes(unions);
 }
 
+static Node *find_member(Node *n, const char *name);
+static int is_nullable_member(char *name, Node *n);
+
 void do_gen_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
@@ -255,55 +258,61 @@ void do_gen_members(char *varray_name, int *varray_type, char *name, Node *n)
                 // Fall into switch..
             }
         }
-        switch (n->r->what) {
-            case ntUNION:
-            {
-                const char *union_name = n->r->s;
 
-                // "union len" is used for varray length
-                
-                if (union_name && !strcmp(union_name, "table_len")) {
-                    strcpy(varray_name, n->s);
-                    *varray_type = 1;
-                    goto done;
+        if (n->r->what != ntUNION && is_nullable_member(name, n)) {
+            sprintf(tname, "ty_%s_%s_nullable", name, n->s);
+        } else {
+            switch (n->r->what) {
+                case ntUNION:
+                {
+                    const char *union_name = n->r->s;
+
+                    // "union len" is used for varray length
+                    
+                    if (union_name && !strcmp(union_name, "table_len")) {
+                        strcpy(varray_name, n->s);
+                        *varray_type = 1;
+                        goto done;
+                    }
+                    else if (union_name && !strcmp(union_name, "len")) {
+                        strcpy(varray_name, n->s);
+                        *varray_type = 0;
+                        goto done;
+                    } else {
+                        sprintf(tname, "ty_%s_%s_union", name, n->s);
+                        break;
+                    }
+
                 }
-                else if (union_name && !strcmp(union_name, "len")) {
-                    strcpy(varray_name, n->s);
-                    *varray_type = 0;
-                    goto done;
-                } else {
-                    sprintf(tname, "ty_%s_%s_union", name, n->s);
+                case ntARRAY:
+                {
+                    if (n->r->r->what == ntSCHAR)
+                        sprintf(tname, "ty_%s_%s_string", name, n->s);
+                    else if (varray_name[0])
+                    {
+                        sprintf(tname, "ty_%s_%s_varray", name, n->s);
+                        varray_name[0] = 0;
+                    }
+                    else
+                        sprintf(tname, "ty_%s_%s_array", name, n->s);
                     break;
                 }
-
+                case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
+                case ntBOOL: sprintf(tname, "tyBOOL"); break;
+                case ntCHAR: sprintf(tname, "tyINT8"); break;
+                case ntUCHAR: sprintf(tname, "tyUINT8"); break;
+                case ntSHORT: sprintf(tname, "tyINT16"); break;
+                case ntUSHORT: sprintf(tname, "tyUINT16"); break;
+                case ntLONG: sprintf(tname, "tyINT"); break;
+                case ntULONG: sprintf(tname, "tyUINT"); break;
+                case ntLONGLONG: sprintf(tname, "tyLONG"); break;
+                case ntULONGLONG: sprintf(tname, "tyULONG"); break;
+                case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
+                case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
+                default: sprintf(tname, "invalid"); break;
             }
-            case ntARRAY:
-            {
-                if (n->r->r->what == ntSCHAR)
-                    sprintf(tname, "ty_%s_%s_string", name, n->s);
-                else if (varray_name[0])
-                {
-                    sprintf(tname, "ty_%s_%s_varray", name, n->s);
-                    varray_name[0] = 0;
-                }
-                else
-                    sprintf(tname, "ty_%s_%s_array", name, n->s);
-                break;
-            }
-            case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
-            case ntBOOL: sprintf(tname, "tyBOOL"); break;
-            case ntCHAR: sprintf(tname, "tyINT8"); break;
-            case ntUCHAR: sprintf(tname, "tyUINT8"); break;
-            case ntSHORT: sprintf(tname, "tyINT16"); break;
-            case ntUSHORT: sprintf(tname, "tyUINT16"); break;
-            case ntLONG: sprintf(tname, "tyINT"); break;
-            case ntULONG: sprintf(tname, "tyUINT"); break;
-            case ntLONGLONG: sprintf(tname, "tyLONG"); break;
-            case ntULONGLONG: sprintf(tname, "tyULONG"); break;
-            case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
-            case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
-            default: sprintf(tname, "invalid"); break;
         }
+
         printf("    { \"%s\", &%s, offsetof(struct %s, %s), 0 },\n", n->s, tname, name, n->s);
         done:;
     } else {
@@ -319,7 +328,7 @@ void gen_members(char *name, Node *n)
     do_gen_members(varray_name, &varray_type, name, n);
 }
 
-void gen_array(char *owner, char *member, Node *n, int depth, int varray);
+void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray);
 void gen_struct(struct structbase *n, int top);
 
 static Node *find_member(Node *n, const char *name) 
@@ -363,15 +372,97 @@ static void validate_union_tag(struct structbase *parent, Node *union_decl)
     }
 }
 
-void gen_union_variants(Node *n, int *tag)
+static int is_nullable_member(char *name, Node *n) 
+{
+    if (n->r->what == ntUNION) {
+        return 0;
+    }
+
+    struct structbase *parent = lookup_struct(name);
+    char tag_name[80];
+
+    snprintf(tag_name, sizeof(tag_name), "%s_tag", n->s);
+
+    Node *tag_member = find_member(parent->body, tag_name);
+
+    if (!tag_member) {
+        return 0;
+    }
+
+    if (tag_member->r->what != ntLONG) {
+        fprintf(stderr, "Error: nullable discriminator '%s' must be an int\n", tag_name);
+        exit(EXIT_FAILURE);
+    }
+
+    return 1;
+}
+
+void gen_nullable(char *name, Node *n) {
+    char tname[80];
+
+    switch (n->r->what) {
+        case ntARRAY: {
+            if (n->r->r->what == ntSCHAR)
+                sprintf(tname, "ty_%s_%s_string", name, n->s);
+            else
+                sprintf(tname, "ty_%s_%s_array", name, n->s);
+            break;
+        }
+        case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
+        case ntBOOL: sprintf(tname, "tyBOOL"); break;
+        case ntCHAR: sprintf(tname, "tyINT8"); break;
+        case ntUCHAR: sprintf(tname, "tyUINT8"); break;
+        case ntSHORT: sprintf(tname, "tyINT16"); break;
+        case ntUSHORT: sprintf(tname, "tyUINT16"); break;
+        case ntLONG: sprintf(tname, "tyINT"); break;
+        case ntULONG: sprintf(tname, "tyUINT"); break;
+        case ntLONGLONG: sprintf(tname, "tyLONG"); break;
+        case ntULONGLONG: sprintf(tname, "tyULONG"); break;
+        case ntFLOAT: sprintf(tname, "tyFLOAT"); break;
+        case ntDOUBLE: sprintf(tname, "tyDOUBLE"); break;
+        default:
+            fprintf(stderr, "Unsupported nullable member: %s\n", n->s);
+            exit(EXIT_FAILURE);
+    }
+
+    printf("const struct union_variant %s_%s_nullable_variants[] = {\n", name, n->s);
+    printf("    { 1, &%s, 0 },\n", tname);
+    printf("};\n\n");
+
+    printf("const struct union_info %s_%s_nullable_info = {\n", name, n->s);
+    printf("    .tag_offset = (ptrdiff_t)offsetof(struct %s, %s_tag) - (ptrdiff_t)offsetof(struct %s, %s),\n",
+        name, n->s, name, n->s);
+    printf("    .variants = %s_%s_nullable_variants,\n", name, n->s);
+    printf("    .variant_count = 1,\n");
+    printf("};\n\n");
+
+    printf("const struct type ty_%s_%s_nullable = {\n", name, n->s);
+    printf("    .what = tUNION,\n");
+    printf("    .size = sizeof(((struct %s *)0)->%s),\n", name, n->s);
+    printf("    .members = NULL,\n");
+    printf("    .subtype = NULL,\n");
+    printf("    .check = NULL,\n");
+    printf("    .union_info = &%s_%s_nullable_info,\n", name, n->s);
+    printf("};\n\n");
+}
+
+void gen_union_variants(char *name, char *union_name, Node *n, int *tag)
 {
     if (n->what == nLIST) {
-        gen_union_variants(n->l, tag);
-        gen_union_variants(n->r, tag);
+        gen_union_variants(name, union_name, n->l, tag);
+        gen_union_variants(name, union_name, n->r, tag);
     } else if (n->what == nDECL) {
         char tname[80];
 
         switch (n->r->what) {
+            case ntARRAY: {
+                if (n->r->r->what == ntSCHAR) {
+                    sprintf(tname, "ty_%s_%s_%d_string", name, union_name, *tag);
+                } else {
+                    sprintf(tname, "ty_%s_%s_%d_array", name, union_name, *tag);
+                }
+                break;
+            }
             case ntSTRUCT: sprintf(tname, "ty_%s", n->r->s); break;
             case ntBOOL: sprintf(tname, "tyBOOL"); break;
             case ntCHAR: sprintf(tname, "tyINT8"); break;
@@ -394,14 +485,21 @@ void gen_union_variants(Node *n, int *tag)
     }
 }
 
-void gen_union_structs(Node *n) {
+void gen_union_members(char *name, char *union_name, Node *n, int *tag) {
     if (n->what == nLIST) {
-        gen_union_structs(n->l);
-        gen_union_structs(n->r);
+        gen_union_members(name, union_name, n->l, tag);
+        gen_union_members(name, union_name, n->r, tag);
     } else if (n->what == nDECL) {
         if (n->r->what == ntSTRUCT) {
             gen_struct(n->r->uct, 0);
+        } else if (n->r->what == ntARRAY) {
+            char member[128];
+            char path[128];
+            sprintf(member, "%s_%d", union_name, *tag);
+            sprintf(path, "%s.%s", union_name, n->s);
+            gen_array(name, member, path, n->r->r, 0, 0);
         }
+        (*tag)++;
     }
 }
 
@@ -412,10 +510,12 @@ void gen_union(char *name, Node *n)
 
     int tag = 1;
 
-    gen_union_structs(n->r->r);
+    gen_union_members(name, n->s, n->r->r, &tag);
+
+    tag = 1;
 
     printf("const struct union_variant %s_%s_variants[] = {\n", name, n->s);
-    gen_union_variants(n->r->r, &tag);
+    gen_union_variants(name, n->s, n->r->r, &tag);
     printf("};\n\n");
 
     // generate union info
@@ -450,9 +550,9 @@ void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
             if (n->r->what == ntARRAY)
             {
                 if (*varray_type)
-                    gen_array(name, n->s, n->r->r, 0, 2);
+                    gen_array(name, n->s, n->s, n->r->r, 0, 2);
                 else
-                    gen_array(name, n->s, n->r->r, 0, 1);
+                    gen_array(name, n->s, n->s, n->r->r, 0, 1);
                 varray_name[0] = 0;
                 goto done;
             }
@@ -479,10 +579,15 @@ void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
                 }
                 break;
             }
-            case ntARRAY: gen_array(name, n->s, n->r->r, 0, 0); break;
+            case ntARRAY: gen_array(name, n->s, n->s, n->r->r, 0, 0); break;
             case ntSTRUCT: gen_struct(n->r->uct, 0); break;
             default: break;
         }
+
+        if (n->r->what != ntUNION && is_nullable_member(name, n)) {
+            gen_nullable(name, n);
+        }
+
         done:;
     } else {
         printf("Huh?\n");
@@ -530,7 +635,7 @@ void gen_struct(struct structbase *n, int top)
     }
 }
 
-void gen_array(char *owner, char *member, Node *n, int depth, int varray)
+void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray)
 {
     char tname[80];
     int i;
@@ -540,7 +645,7 @@ void gen_array(char *owner, char *member, Node *n, int depth, int varray)
     {
         printf("const struct type ty_%s_%s_string = {\n", owner, member);
         printf("    .what = tSTRING,\n");
-        printf("    .size = nk_member_size(struct %s, %s", owner, member);
+        printf("    .size = nk_member_size(struct %s, %s", owner, path);
         for (i = 0; i != depth; ++i)
             printf("[0]");
         printf("),\n");
@@ -553,7 +658,7 @@ void gen_array(char *owner, char *member, Node *n, int depth, int varray)
 
     if (n->what == ntARRAY)
     {
-        gen_array(owner, member, n->r, depth + 1, 0);
+        gen_array(owner, member, path, n->r, depth + 1, 0);
     }
     else if (n->what == ntSTRUCT)
     {
@@ -575,7 +680,7 @@ void gen_array(char *owner, char *member, Node *n, int depth, int varray)
     else
         printf("    .what = tARRAY,\n");
 
-    printf("    .size = nk_member_size(struct %s, %s", owner, member);
+    printf("    .size = nk_member_size(struct %s, %s", owner, path);
     for (i = 0; i != depth; ++i)
         printf("[0]");
     printf("),\n");

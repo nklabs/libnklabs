@@ -313,6 +313,10 @@ int nk_dbase_fprint(nkoutfile_t *f, const struct type *type, void *location, int
 			const struct union_info *info = type->union_info;
 			int tag = *(int *)((char *)location + info->tag_offset);
 
+			if (tag == 0) {
+				status |= nk_fprintf(f, "null%s", ed);
+				break;
+			}
 			for (size_t i = 0; i < info->variant_count; i++) {
 				const struct union_variant *variant = &info->variants[i];
 
@@ -453,6 +457,11 @@ int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location)
 		} case tUNION: {
 			const struct union_info *info = type->union_info;
 			int tag = *(int *)((char *)location + info->tag_offset);
+
+			if (tag == 0) {
+				status |= nk_fprintf(f, "null");
+				break;
+			}
 
 			for (size_t i = 0; i < info->variant_count; i++) {
 				const struct union_variant *variant = &info->variants[i];
@@ -1039,12 +1048,18 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 			break;
 		} case tUNION: {
 			const struct union_info *info = type->union_info;
-			int tag = *(int *)(location + info->tag_offset);
+			int *tag = (int *)(location + info->tag_offset);
+
+			if (nk_fscan(f, "null %e")) {
+				*tag = 0;
+				sta = 1;
+				break;
+			}
 
 			for (size_t i = 0; i < info->variant_count; i++) {
 				const struct union_variant *variant = &info->variants[i];
 
-				if (variant->tag == tag) {
+				if (variant->tag == *tag) {
 					sta = nk_fscan_keyval(f, variant->type, location + variant->offset);
 					break;
 				}

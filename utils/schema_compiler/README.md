@@ -89,6 +89,27 @@ members are assigned tag values starting at 1 in the order that they are
 declared. In this case value_tag = 1 selects value.integer and value_tag = 2
 selects value.real. Only the selected member is serialized or deserialized.
 
+A tag value of 0 represents a null value.  When the tag is 0, the union
+member is serialized as `null` and no union member is selected.
+
+Non-union members may also be nullable by providing a corresponding tag
+member in the same containing structure:
+
+	struct example {
+		int value_tag;
+		int value;
+	};
+
+The discriminator for a nullable member must be named `<member_name>_tag`
+and must be declared as an `int` in the same containing structure.
+
+A tag value of 0 indicates that the member is null.  A tag value of 1
+indicates that the member contains a value.
+
+In this case `value_tag = 0` causes `value` to be serialized as `null`,
+while `value_tag = 1` causes the value of `value` to be serialized or
+deserialized normally.
+
 Variable length arrays are allowed within structures as follows;
 
 	union len my_array_len;
