@@ -168,9 +168,12 @@ int nk_dbase_fprint(nkoutfile_t *f, const struct type *type, void *location, int
             size_t y;
             const struct type *subtype = type->subtype;
             const struct member *m;
-            size_t nrows = ((union len *)location)->len;
-            location = (char *)location + sizeof(union len);
-
+            int len = *(int *)((char *)location + type->array_info->len_offset);
+			if (len < 0 || type->subtype->size == 0 || (size_t)len > type->size / type->subtype->size) {
+				nk_fprintf(nkstderr, "Error: invalid table length\n");
+				return -1;
+			}
+			size_t nrows = (size_t)len;
             status |= nk_fputc(f, '(');
 
             for (m = subtype->members; m->name; ++m) {
@@ -195,8 +198,12 @@ int nk_dbase_fprint(nkoutfile_t *f, const struct type *type, void *location, int
             break;
         } case tVARRAY: {
             size_t x;
-            size_t len = ((union len *)location)->len;
-            location = (char *)location + sizeof(union len);
+            int count = *(int *)((char *)location + type->array_info->len_offset);
+			if (count < 0 || type->subtype->size == 0 || (size_t)count > type->size / type->subtype->size) {
+				nk_fprintf(nkstderr, "Error: invalid table length\n");
+				return -1;
+			}
+			size_t len = (size_t)count;
             status |= nk_fprintf(f, "[\n");
             for (x = 0; x != len; ++x) {
             	status |= nk_findent(f, ind + 2);
@@ -357,8 +364,12 @@ int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location)
 			break;
 		} case tVARRAY: {
 			status |= nk_fputc(f, '[');
-			size_t count = ((union len *)location)->len;
-			location = (char *)location + sizeof(union len);
+			int len = *(int *)((char *)location + type->array_info->len_offset);
+			if (len < 0 || type->subtype->size == 0 || (size_t)len > type->size / type->subtype->size) {
+				nk_fprintf(nkstderr, "Error: invalid table length\n");
+				return -1;
+			}
+			size_t count = (size_t)len;
 			while (count--) {
 				status |= nk_dbase_serialize(f, type->subtype, location);
 				location = (char *)location + type->subtype->size;
@@ -383,8 +394,12 @@ int nk_dbase_serialize(nkoutfile_t *f, const struct type *type, void *location)
 		} case tTABLE: {
 			const struct member *m;
 			status |= nk_fputc(f, '(');
-			size_t count = ((union len *)location)->len;
-			location = (char *)location + sizeof(union len);
+			int len = *(int *)((char *)location + type->array_info->len_offset);
+			if (len < 0 || type->subtype->size == 0 || (size_t)len > type->size / type->subtype->size) {
+				nk_fprintf(nkstderr, "Error: invalid table length\n");
+				return -1;
+			}
+			size_t count = (size_t)len;
 			m = type->subtype->members;
 			while (m->name) {
 				status |= nk_fprintf(f, "%s ", m->name);
@@ -919,7 +934,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 					if (nk_fpeek(f) ==',') {
 						nk_fnext_fast(f);
 					} else if (idx < size) {
-						rtn = nk_fscan_keyval(f, type->subtype, location + sizeof(union len) + idx);
+						rtn = nk_fscan_keyval(f, type->subtype, location + idx);
 						if (!rtn)
 							break;
 						idx += type->subtype->size;
@@ -935,7 +950,8 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 					nk_fnext_fast(f);
 					sta = rtn;
 				}
-				((union len *)location)->len = idx / type->subtype->size; // Save number of elements in array
+				size_t count = idx / type->subtype->size;
+				*(int *)(location + type->array_info->len_offset) = (int)count;
 				if (toolong)
 					nk_fprintf(nkstderr, "Warning: array exceeded allocated size (ignored %d items)\n", toolong);
 			}
@@ -980,10 +996,9 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 				int col;
 				int maxcol;
 				size_t maxrows;
-				size_t *nrows = &((union len *)location)->len;
+				int *nrows = (int *)(location + type->array_info->len_offset);
 				size_t row;
 				int toolong = 0;
-				location += sizeof(union len);
 
 				rtn = 1;
 				
@@ -1036,7 +1051,7 @@ int nk_fscan_keyval(nkinfile_t *f, const struct type *type, size_t location)
 					else
 						++toolong;
 				}
-				*nrows = row; // Save row count
+				*nrows = (int)row; // Save row count
 
 				if (nk_fscan(f, " )%e")) {
 					sta = rtn;
@@ -1098,8 +1113,8 @@ const struct type *nk_xpath(char *key, const struct type *type, void **location_
         if (nk_fscan(&f, "[ %zu ]%e", &idx)) {
             size_t count;
             if (type->what == tVARRAY || type->what == tTABLE) {
-                count = ((union len *)location)->len;
-                location = (char *)location + sizeof(union len);
+                int len = *(int *)((char *)location + type->array_info->len_offset);
+				count = (size_t)len;
                 if (idx >= count) {
                     nk_fprintf(nkstderr, "Array index out of bounds in key %s\n", key);
                     return 0;

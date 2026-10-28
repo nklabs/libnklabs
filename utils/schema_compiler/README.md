@@ -112,28 +112,35 @@ deserialized normally.
 
 Variable length arrays are allowed within structures as follows;
 
-	union len my_array_len;
+	int my_array_len;
 	int my_array[30];
 
-The "union len" indicates a variable length array follows.  The maximum
-length of the array is 30 in this case.  The actual number of elements in
-the array is given by my_array_len.len, and can range from 0 to 30 in this
-case.  When the array is serialized, only my_array_len.len elements will be
-included.  When it is deserialized, my_array_len.len will hold the number of
-elements loaded into my_array.
+The integer field my_array_len indicates that my_array is a variable array
+length. The length must have the same name as the array with _len appended,
+but does not need to immediately precede the array in the structure.
+
+The maximum length of the array is 30 in this case.  The actual number of 
+elements in the array is given by my_array_len.len, and can range from 0 
+to 30 in this case.  When the array is serialized, only my_array_len 
+elements will be included.  When it is deserialized, my_array_len will hold 
+the number of elements loaded into my_array.
 
 Tables are a special form of arrays of structures and my be included within
 structures as follows:
 
-	union table_len my_table_len;
+	int my_table_table_len;
 	struct row my_table[30];
 
-The "union table_len" indicates a variable length table.  The maximum number
-of rows is 30 in this case.  The actual number of rows in the table is
-given by my_table_len.len, and can range from 0 to 30 in this case.  When
-the table is serialized, only my_table_len.len rows will be included. 
-When it is deserialized, my_table_len.len will hold the number of rows
-loaded into my_table.
+The integer field my_table_table_len indicates that my_table is a variable 
+length table. The length field must have the same name as the table with 
+_table_len appended, but does not need to immediately precede the table in
+the structure.
+
+The maximum number of rows is 30 in this case.  The actual number of rows in 
+the table is given by my_table_len.len, and can range from 0 to 30 in this 
+case. When the table is serialized, only my_table_len.len rows will be 
+included. When it is deserialized, my_table_len.len will hold the number of 
+rows loaded into my_table.
 
 Tables and variable arrays are serialized differently.  Tables are formatted
 two-dimensionally such that they can be cut-and-paste into a spreadsheet. 

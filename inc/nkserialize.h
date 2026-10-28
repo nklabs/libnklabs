@@ -67,7 +67,8 @@ struct type {
 	const struct type *subtype;	// Array element type, table structure type
 	int (*check)(size_t location);	// Check validity after parsing (return 0 for good)
 
-	const struct union_info *union_info; // 
+	const struct union_info *union_info; 
+	const struct array_info *array_info;
 };
 
 struct member {
@@ -87,6 +88,10 @@ struct union_info {
 	ptrdiff_t tag_offset;
 	const struct union_variant *variants;
 	size_t variant_count;
+};
+
+struct array_info {
+	ptrdiff_t len_offset;
 };
 
 // This is how we store table and array sizes... this way forces alignment
