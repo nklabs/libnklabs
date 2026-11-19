@@ -229,14 +229,37 @@ static Node *find_member(Node *n, const char *name);
 static int is_nullable_member(char *name, Node *n);
 static int get_array_type(char *name, Node *n);
 
-void do_gen_members(char *name, Node *n)
+void do_gen_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
-        do_gen_members(name, n->l);
-        do_gen_members(name, n->r);
+        do_gen_members(varray_name, varray_type, name, n->l);
+        do_gen_members(varray_name, varray_type, name, n->r);
     } else if (n->what == nNOTHING) {
     } else if (n->what == nDECL) {
         char tname[80];
+
+        if (varray_name[0])
+        {
+            // This member must be an array
+            if (n->r->what == ntARRAY)
+            {
+                if (*varray_type)
+                    printf("    { \"%s\", &ty_%s_%s_table, offsetof(struct %s, %s), 0 },\n", n->s, name, n->s, name, varray_name);
+                else
+                    printf("    { \"%s\", &ty_%s_%s_varray, offsetof(struct %s, %s), 0 },\n", n->s, name, n->s, name, varray_name);
+                varray_name[0] = 0;
+                goto done;
+            }
+            else
+            {
+                if (*varray_type)
+                    fprintf(stderr, "missing table after union table_len\n");
+                else
+                    fprintf(stderr, "missing varray after union len\n");
+                varray_name[0] = 0;
+                // Fall into switch..
+            }
+        }
 
         if (n->r->what == ntLONG) {
             struct structbase *parent = lookup_struct(name);
@@ -280,8 +303,23 @@ void do_gen_members(char *name, Node *n)
             switch (n->r->what) {
                 case ntUNION:
                 {
-                    sprintf(tname, "ty_%s_%s_union", name, n->s);
-                    break;
+                    const char *union_name = n->r->s;
+
+                    // "union len" is used for varray length
+                    
+                    if (union_name && !strcmp(union_name, "table_len")) {
+                        strcpy(varray_name, n->s);
+                        *varray_type = 1;
+                        goto done;
+                    }
+                    else if (union_name && !strcmp(union_name, "len")) {
+                        strcpy(varray_name, n->s);
+                        *varray_type = 0;
+                        goto done;
+                    } else {
+                        sprintf(tname, "ty_%s_%s_union", name, n->s);
+                        break;
+                    }
                 }
                 case ntARRAY:
                 {
@@ -319,6 +357,7 @@ void do_gen_members(char *name, Node *n)
         }
 
         printf("    { \"%s\", &%s, offsetof(struct %s, %s), 0 },\n", n->s, tname, name, n->s);
+        done:;
     } else {
         printf("Huh?\n");
     }
@@ -326,10 +365,13 @@ void do_gen_members(char *name, Node *n)
 
 void gen_members(char *name, Node *n)
 {
-    do_gen_members(name, n);
+    char varray_name[80];
+    int varray_type;
+    varray_name[0] = 0;
+    do_gen_members(varray_name, &varray_type, name, n);
 }
 
-void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray);
+void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray, bool legacy);
 void gen_struct(struct structbase *n, int top);
 
 static Node *find_member(Node *n, const char *name) 
@@ -535,7 +577,7 @@ void gen_union_members(char *name, char *union_name, Node *n, int *tag) {
             char path[128];
             sprintf(member, "%s_%d", union_name, *tag);
             sprintf(path, "%s.%s", union_name, n->s);
-            gen_array(name, member, path, n->r->r, 0, 0);
+            gen_array(name, member, path, n->r->r, 0, 0, false);
         }
         (*tag)++;
     }
@@ -574,21 +616,51 @@ void gen_union(char *name, Node *n)
     printf("};\n\n");
 }
 
-void do_recur_members(char *name, Node *n)
+void do_recur_members(char *varray_name, int *varray_type, char *name, Node *n)
 {
     if (n->what == nLIST) {
-        do_recur_members(name, n->l);
-        do_recur_members(name, n->r);
+        do_recur_members(varray_name, varray_type, name, n->l);
+        do_recur_members(varray_name, varray_type, name, n->r);
     } else if (n->what == nNOTHING) {
     } else if (n->what == nDECL) {
         char tname[80];
+        if (varray_name[0])
+        {
+            // This member must be an array
+            if (n->r->what == ntARRAY)
+            {
+                if (*varray_type)
+                    gen_array(name, n->s, n->s, n->r->r, 0, 2, true);
+                else
+                    gen_array(name, n->s, n->s, n->r->r, 0, 1, true);
+                varray_name[0] = 0;
+                goto done;
+            }
+            else
+            {
+                varray_name[0] = 0;
+                // Fall into switch...
+            }
+        }
         switch (n->r->what) {
             case ntUNION:
             {
-                gen_union(name, n);
+                const char *union_name = n->r->s;
+                // "union len" is used for varray length
+                if (union_name && !strcmp(n->r->s, "table_len")) {
+                    strcpy(varray_name, n->s);
+                    *varray_type = 1;
+                }
+                else if (union_name && !strcmp(n->r->s, "len")) { // 
+                    strcpy(varray_name, n->s);
+                    *varray_type = 0;
+                } else {
+                    gen_union(name, n);
+                }
                 break;
             }
-            case ntARRAY: gen_array(name, n->s, n->s, n->r->r, 0, get_array_type(name, n)); break;
+
+            case ntARRAY: gen_array(name, n->s, n->s, n->r->r, 0, get_array_type(name, n), false); break;
             case ntSTRUCT: gen_struct(n->r->uct, 0); break;
             default: break;
         }
@@ -597,6 +669,7 @@ void do_recur_members(char *name, Node *n)
             gen_nullable(name, n);
         }
 
+        done:;
     } else {
         printf("Huh?\n");
     }
@@ -604,7 +677,10 @@ void do_recur_members(char *name, Node *n)
 
 void recur_members(char *name, Node *n)
 {
-    do_recur_members(name, n);
+    char varray_name[80];
+    int varray_type;
+    varray_name[0] = 0;
+    do_recur_members(varray_name, &varray_type, name, n);
 }
 
 void gen_struct(struct structbase *n, int top)
@@ -640,7 +716,7 @@ void gen_struct(struct structbase *n, int top)
     }
 }
 
-void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray)
+void gen_array(char *owner, char *member, char *path, Node *n, int depth, int varray, bool legacy)
 {
     char tname[80];
     int i;
@@ -663,14 +739,14 @@ void gen_array(char *owner, char *member, char *path, Node *n, int depth, int va
 
     if (n->what == ntARRAY)
     {
-        gen_array(owner, member, path, n->r, depth + 1, 0);
+        gen_array(owner, member, path, n->r, depth + 1, 0, false);
     }
     else if (n->what == ntSTRUCT)
     {
         gen_struct(n->uct, 0);
     }
 
-    if (depth == 0 && varray != 0) {
+    if (depth == 0 && varray != 0 && !legacy) {
         printf("const struct array_info %s_%s_array_info = {\n", owner, member);
 
         if (varray == 1) {
@@ -733,7 +809,7 @@ void gen_array(char *owner, char *member, char *path, Node *n, int depth, int va
     printf("    .subtype = &%s,\n", tname);
     printf("    .check = NULL,\n");
 
-    if (depth == 0 && varray != 0) {
+    if (depth == 0 && varray != 0 && !legacy) {
         printf("    .array_info = &%s_%s_array_info,\n", owner, member);
     }
     printf("};\n\n");

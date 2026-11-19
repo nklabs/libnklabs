@@ -38,9 +38,9 @@ struct testbkwd {
 struct testtop {
     struct testfwd tstruct;
     struct testbkwd tarray[4];
-    int tvararray_len;
+    union len tvararray_len;
     struct testfwd tvararray[8];
-    int ttable_table_len;
+    union table_len ttable_len;
     struct testbkwd ttable[7];
 };
 
